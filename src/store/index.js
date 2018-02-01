@@ -4,7 +4,6 @@ import actions from './actions';
 import getters from './getters';
 import mutations from './mutations';
 import modules from './modules';
-console.log(modules);
 Vue.use(Vuex);
 
 export default new Vuex.Store({

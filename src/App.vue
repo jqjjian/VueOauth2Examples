@@ -3,16 +3,19 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { session, catchError, buildMenu } from '@/util';
 import { intercept, oauthApi } from '@/api';
 import { mapActions } from 'vuex';
 import oauthconfig from '@/config';
-import userPath from '@/router';
+import userPath from '@/router/fullpath';
 export default {
     name: 'App',
     data () {
         return {
-            myInterceptor: null
+            myInterceptor: null,
+            menuData: [],
+            userData: []
         };
     },
     methods: {
@@ -20,6 +23,29 @@ export default {
             'getUserByToken',
             'initializeUser'
         ]),
+        storageMenu (allowedRouter) {
+            // allowedRouter.forEach(route => {
+            //     if (route.children) {
+            //         if (!route.meta) route.meta = {};
+            //         route.meta.children = route.children;
+            //     }
+            // });
+            this.menuData = allowedRouter;
+        },
+        extendRoutes (allowedRouter) {
+            const vm = this;
+            // const originPath = util.deepcopy(userPath);
+            const originPath = userPath;
+            originPath[0].children = allowedRouter;
+            vm.$router.addRoutes(
+                originPath.concat([
+                    {
+                        path: '*',
+                        redirect: '/404'
+                    }
+                ])
+            );
+        },
         setInterceptor (resourcePermission) {
             const vm = this;
             vm.myInterceptor = intercept.instance.interceptors.request.use(config => {
@@ -163,6 +189,32 @@ export default {
                 vm.setInterceptor(resourcePermission);
                 const allowedRouter = vm.getRoutes(userInfo);
                 console.log(allowedRouter);
+                // 注入动态路由
+                vm.extendRoutes(allowedRouter);
+                // 保存菜单数据
+                vm.storageMenu(allowedRouter);
+                // 用户信息持久化
+                // vm.storageUser(Object.assign(localUser || {}, userInfo))
+                vm.userData = userInfo;
+                Vue.prototype.$_has = rArray => {
+                    let resources = [];
+                    let permission = true;
+                    if (Array.isArray(rArray)) {
+                        rArray.forEach(function(e) {
+                            resources = resources.concat(e.p);
+                        });
+                    } else {
+                        resources = resources.concat(rArray.p);
+                    }
+                    resources.forEach(function(p) {
+                        if (!resourcePermission[p]) {
+                            // console.log("进入", permission === false);
+                            permission = false;
+                        }
+                    });
+                    return permission;
+                };
+                typeof cb === 'function' && cb();
             } catch (err) {
                 console.error(err);
                 catchError(err);

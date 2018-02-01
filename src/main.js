@@ -8,7 +8,14 @@ import router from './router';
 import store from './store';
 Vue.use(MintUI);
 Vue.config.productionTip = false;
-
+Vue.directive('has', {
+    bind: function(el, binding) {
+        if (!Vue.prototype.$_has(binding.value)) {
+            el.parentNode.removeChild(el);
+        }
+    }
+});
+Vue.config.productionTip = false;
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
