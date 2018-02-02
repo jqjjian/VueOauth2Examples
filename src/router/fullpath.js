@@ -2,11 +2,12 @@ export default [
     {
         path: '/',
         name: '首页',
-        component: resolve => require(['../views/index.vue'], resolve),
+        component: () => import('../views/index.vue'),
         children: [
             {
                 path: '/mobile',
                 name: 'mobile',
+                component: () => import('../components/Container.vue'),
                 meta: {
                     name: '养车易移动端系统'
                     // icon: 'fa fa-usersetting'
@@ -22,6 +23,7 @@ export default [
                     {
                         path: '/mobile/business-manage',
                         name: 'business-manage',
+                        component: () => import('../views/business-manage/index.vue'),
                         meta: {
                             name: '业务管理'
                         },

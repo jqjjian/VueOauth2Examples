@@ -16,6 +16,20 @@ export const session = function(key, value) {
     }
 };
 
+export const go = (url, $router) => {
+    if (/^javas/.test(url) || !url) return;
+    const useRouter = typeof url === 'object' || ($router && typeof url === 'string' && !/http/.test(url));
+    if (useRouter) {
+        if (typeof url === 'object' && url.replace === true) {
+            $router.replace(url);
+        } else {
+            url === 'BACK' ? $router.go(-1) : $router.push(url);
+        }
+    } else {
+        window.location.href = url;
+    }
+};
+
 // 菜单数据组织
 export const buildMenu = function(array, ckey = 'parentId') {
     console.log('菜单结构', array);
@@ -24,6 +38,7 @@ export const buildMenu = function(array, ckey = 'parentId') {
         return e.id;
     }) : [];
     for (let v of array) {
+        // 一级菜单
         if (!v[ckey] || v[ckey] === v.id) {
             delete v[ckey];
             menuData.push(v);
@@ -53,10 +68,10 @@ export const buildMenu = function(array, ckey = 'parentId') {
     //     }
     // });
     console.log('菜单AA', menuData);
-    let findChildren = function(parentArr) {
+    const findChildren = parentArr => {
         if (Array.isArray(parentArr) && parentArr.length) {
-            parentArr.forEach(function(parentNode) {
-                array.forEach(function(node) {
+            for (let parentNode of parentArr) {
+                for (let node of array) {
                     if (parentNode.id === node[ckey]) {
                         if (parentNode.children) {
                             parentNode.children.push(node);
@@ -64,11 +79,25 @@ export const buildMenu = function(array, ckey = 'parentId') {
                             parentNode.children = [node];
                         }
                     }
-                });
+                }
                 if (parentNode.children) {
                     findChildren(parentNode.children);
                 }
-            });
+            }
+            // parentArr.forEach(function(parentNode) {
+            //     array.forEach(function(node) {
+            //         if (parentNode.id === node[ckey]) {
+            //             if (parentNode.children) {
+            //                 parentNode.children.push(node);
+            //             } else {
+            //                 parentNode.children = [node];
+            //             }
+            //         }
+            //     });
+            //     if (parentNode.children) {
+            //         findChildren(parentNode.children);
+            //     }
+            // });
         }
     };
     findChildren(menuData);

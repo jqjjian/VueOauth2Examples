@@ -192,7 +192,7 @@ export default {
                 // 注入动态路由
                 vm.extendRoutes(allowedRouter);
                 // 保存菜单数据
-                vm.storageMenu(allowedRouter);
+                vm.storageMenu(allowedRouter[0].children);
                 // 用户信息持久化
                 // vm.storageUser(Object.assign(localUser || {}, userInfo))
                 vm.userData = userInfo;
