@@ -2,7 +2,9 @@
 
 module.exports = {
     plugins: {
-        'postcss-cssnext': {},
+        'postcss-cssnext': {
+            warnForDuplicates: false
+        },
         'postcss-import': {},
         'postcss-url': {},
         precss: {},

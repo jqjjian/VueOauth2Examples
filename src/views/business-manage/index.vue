@@ -1,17 +1,10 @@
 <template>
     <grid :cols="3">
-        <grid-item label="开单报价">
-            <i slot="icon"></i>
-        </grid-item>
-        <grid-item label="待审批">
-            <i slot="icon"></i>
-        </grid-item>
-        <grid-item label="待施工">
-            <i slot="icon"></i>
-        </grid-item>
-        <grid-item label="待质检">
-            <i slot="icon"></i>
-        </grid-item>
+        <template v-for="(v, i) in menus">
+            <grid-item :label="v.meta.name" :link="{name: `${v.name}-item`}" :key="i">
+                <i class="" slot="icon"></i>
+            </grid-item>
+        </template>
     </grid>
 </template>
 <script>
@@ -20,6 +13,15 @@ export default {
     components: {
         Grid,
         GridItem
+    },
+    data () {
+        return {
+            menus: []
+        };
+    },
+    created () {
+        console.log(this.$route);
+        this.menus = this.$route.meta.children;
     }
 };
 </script>

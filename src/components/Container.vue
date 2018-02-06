@@ -4,7 +4,11 @@
 
 <script>
 export default {
-    name: 'Container'
+    name: 'Container',
+    menus: [],
+    created () {
+        this.menus = this.$parent.menus;
+    }
 };
 </script>
 

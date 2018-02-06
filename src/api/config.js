@@ -54,6 +54,7 @@ instance.interceptors.response.use(
         return response;
     },
     error => {
+        Indicator.close();
         // console.log('error', error.config);
         // console.log('error-url', error.config.url);
         // const originalRequest = error.config;

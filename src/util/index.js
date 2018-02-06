@@ -1,4 +1,5 @@
-import { MessageBox } from 'mint-ui';
+// import { MessageBox } from 'mint-ui';
+import Vue from 'vue';
 export const session = function(key, value) {
     if (value === void 0) {
         const localToken = sessionStorage.getItem(key);
@@ -112,9 +113,14 @@ export const catchError = function(error) {
                 //     message: error.response.data.message || '请求参数异常',
                 //     type: 'error'
                 // });
-                MessageBox.alert(error.response.data.message || '请求参数异常').then(action => {
-                    console.log(action);
+                Vue.$toast({
+                    position: 'top',
+                    message: error.response.data.message || '请求参数异常'
+                    // iconClass: 'icon icon-success'
                 });
+                // MessageBox.alert(error.response.data.message || '请求参数异常').then(action => {
+                //     console.log(action);
+                // });
             },
             '401': () => {
                 sessionStorage.removeItem('user');
@@ -125,9 +131,14 @@ export const catchError = function(error) {
                 //         location.reload();
                 //     }
                 // });
-                MessageBox.alert(error.response.data.message || '密码错误或账号不存在！').then(action => {
-                    location.reload();
+                Vue.$toast({
+                    position: 'top',
+                    message: error.response.data.message || '密码错误或账号不存在！'
+                    // iconClass: 'icon icon-success'
                 });
+                // MessageBox.alert(error.response.data.message || '密码错误或账号不存在！').then(action => {
+                //     location.reload();
+                // });
             },
             '403': () => {
                 sessionStorage.removeItem('user');
@@ -135,9 +146,14 @@ export const catchError = function(error) {
                 //     message: error.response.data.message || '无访问权限，请联系企业管理员',
                 //     type: 'warning'
                 // });
-                MessageBox.alert(error.response.data.message || '无访问权限，请联系企业管理员！').then(action => {
-                    console.log(action);
+                Vue.$toast({
+                    position: 'top',
+                    message: error.response.data.message || '无访问权限，请联系企业管理员！'
+                    // iconClass: 'icon icon-success'
                 });
+                // MessageBox.alert(error.response.data.message || '无访问权限，请联系企业管理员！').then(action => {
+                //     console.log(action);
+                // });
             }
         };
         if (infos.hasOwnProperty(`${error.response.status}`)) {
@@ -147,9 +163,14 @@ export const catchError = function(error) {
             //     message: error.response.data.message || '服务端异常，请联系技术支持',
             //     type: 'error'
             // });
-            MessageBox.alert(error.response.data.message || '服务端异常，请联系技术支持。').then(action => {
-                console.log(action);
+            Vue.$toast({
+                position: 'top',
+                message: error.response.data.message || '服务端异常，请联系技术支持。'
+                // iconClass: 'icon icon-success'
             });
+            // MessageBox.alert(error.response.data.message || '服务端异常，请联系技术支持。').then(action => {
+            //     console.log(action);
+            // });
         }
     }
     return Promise.reject(error);

@@ -1,5 +1,7 @@
 <template>
-   <router-view id="app" @login="loginDirect" @logout="logoutDirect"></router-view>
+    <div>
+        <router-view id="app" @login="loginDirect" @logout="logoutDirect"></router-view>
+    </div>
 </template>
 
 <script>
@@ -9,10 +11,12 @@ import { intercept, oauthApi } from '@/api';
 import { mapActions } from 'vuex';
 import oauthconfig from '@/config';
 import userPath from '@/router/fullpath';
+import * as R from 'ramda';
 export default {
     name: 'App',
     data () {
         return {
+            popupVisible: false,
             myInterceptor: null,
             menuData: [],
             userData: []
@@ -34,8 +38,23 @@ export default {
         },
         extendRoutes (allowedRouter) {
             const vm = this;
-            // const originPath = util.deepcopy(userPath);
-            const originPath = userPath;
+            const originPath = R.clone(userPath);
+            const newRoute = R.clone(allowedRouter);
+            // const originPath = userPath;
+            for (let v of newRoute[0].children) {
+                const clone = R.merge({}, v);
+                clone.meta.show = false;
+                clone.path = v.path + '-sub';
+                clone.name = v.name + '-sub';
+                clone.component = () => import('./components/Container.vue');
+                if (clone.children && clone.children.length) {
+                    for (let j of clone.children) {
+                        j.path = `${clone.path}/${j.name}`;
+                        j.name = `${j.name}-item`;
+                    }
+                }
+                allowedRouter[0].children.push(clone);
+            }
             originPath[0].children = allowedRouter;
             vm.$router.addRoutes(
                 originPath.concat([
@@ -80,9 +99,15 @@ export default {
                     console.log('aaaaa', config.method + ',' + perName);
                     if (!resourcePermission[config.method + ',' + perName]) {
                         console.warn(resourcePermission, config.method + ',' + perName);
-                        vm.$message({
-                            message: '无访问权限，请联系系统管理员',
-                            type: 'warning'
+                        // vm.$message({
+                        //     message: '无访问权限，请联系系统管理员',
+                        //     type: 'warning'
+                        // });
+
+                        vm.$toast({
+                            position: 'top',
+                            message: '无访问权限，请联系系统管理员'
+                            // iconClass: 'icon icon-success'
                         });
                         return Promise.reject(new TypeError('no permission'));
                     }
@@ -141,6 +166,7 @@ export default {
                         console.log(Array.isArray(route.children));
                         if (Array.isArray(route.children)) {
                             route.children = findLocalRoute(route.children, route.path);
+                            route.meta.children = findLocalRoute(route.children, route.path);
                         }
                         replyResult.push(route);
                     }
@@ -279,6 +305,15 @@ export default {
             });
         },
         logoutDirect () {
+        }
+    },
+    watch: {
+        popupVisible(val) {
+            if (val) {
+                setTimeout(() => {
+                    this.popupVisible = false;
+                }, 2000);
+            }
         }
     },
     created () {

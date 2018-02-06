@@ -3,6 +3,7 @@ export default [
         path: '/',
         name: '首页',
         component: () => import('../views/index.vue'),
+        redirect: '/mobile/business-manage',
         children: [
             {
                 path: '/mobile',
@@ -31,6 +32,7 @@ export default [
                             {
                                 path: '/mobile/business-manage/order-price',
                                 name: 'order-price',
+                                component: () => import('../views/business-manage/order-price.vue'),
                                 meta: {
                                     name: '开单报价'
                                 }

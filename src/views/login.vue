@@ -1,6 +1,6 @@
 <template>
     <div class="wrap" @keyup.enter="login">
-        <mt-popup class="popup" popup-transition="popup-fade" position="top" v-model="popupVisible" :modal="false">
+        <mt-popup class="popup" popup-transition="popup-fade" position="top" :model="popupVisible">
             <div>{{text}}</div>
         </mt-popup>
         <mt-header fixed title="系统登录">
