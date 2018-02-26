@@ -7,30 +7,22 @@ let modelUrl = '/car/model';
 
 const requestBrand = {
     p: ['get,/car/brand'],
-    r: params => {
-        return config.get(brandUrl, params);
-    }
+    r: params => config.get(brandUrl, params)
 };
 
 const requestStyle = {
     p: ['get,/car/style'],
-    r: params => {
-        return config.get(styleUrl, params);
-    }
+    r: params => config.get(styleUrl, params)
 };
 
 const requestYear = {
     p: ['get,/car/styleyear'],
-    r: params => {
-        return config.get(styleyearUrl, params);
-    }
+    r: params => config.get(styleyearUrl, params)
 };
 
 const requestModel = {
     p: ['get,/car/model'],
-    r: params => {
-        return config.get(modelUrl, params);
-    }
+    r: params => config.get(modelUrl, params)
 };
 
 export default {
