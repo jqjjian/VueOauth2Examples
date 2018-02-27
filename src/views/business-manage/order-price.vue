@@ -43,13 +43,13 @@
             <mt-cell title="服务报价信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
                 <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.describe})`" :key="i + 'index'">
-                    <mt-button type="primary" size="small" class="cell-btn">进入仓库</mt-button>
+                    <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">进入仓库</mt-button>
                     <mt-button type="primary" size="small">添加工时</mt-button>
                 </mt-cell>
             </template>
         </div>
         <div class="page-part">
-            <mt-button type="primary" size="large" @click.native="handleSubmit">提交</mt-button>
+            <mt-button type="primary" size="large" @click.native="handleSubmit">确认开单</mt-button>
         </div>
         <mt-popup
         :modal="false"
@@ -185,6 +185,19 @@
         :actions="actions"
         v-model="sheetVisible">
         </mt-actionsheet>
+        <mt-popup
+        :modal="false"
+        v-model="selectServicePopupVisible"
+        position="right"
+        class="mint-popup-select-car"
+        popup-transition="popup-fade">
+            <mt-header fixed title="选择配件">
+                <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
+                <mt-button icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
+                <!-- </router-link> -->
+                <!-- <mt-button icon="more" slot="right"></mt-button> -->
+            </mt-header>
+        </mt-popup>
     </div>
 </template>
 
@@ -195,14 +208,15 @@ import * as R from 'ramda';
 export default {
     data() {
         return {
-            selectCarPopupVisible: false,
-            popupVisible: false,
-            popupYearVisible: false,
-            popupModelVisible: false,
+            selectCarPopupVisible: false, // 车品牌
+            popupVisible: false, // 车系
+            popupYearVisible: false, // 车年款
+            popupModelVisible: false, // 车型号
             showSelectCarList: true,
-            popupColorVisible: false,
+            popupColorVisible: false, // 车颜色
             sheetVisible: false,
             popupServiceVisible: false,
+            selectServicePopupVisible: false,
             selectCarindex: [],
             selectCarObj: {},
             brandName: '',
@@ -304,6 +318,7 @@ export default {
                     value: '紫色'
                 }
             ],
+            comprehensiveStatus: 1, // 综合服务单进度状态
             actions: [
                 {
                     name: '良好',
@@ -363,7 +378,7 @@ export default {
                 carColor: '请选择车辆颜色',
                 appearance: '请选择辆车辆外观状况'
             },
-            form: {
+            form: { // 综合服务单
                 // serviceType: [],
                 // comprehensiveCd: '', //
                 // comprehensiveId: 0, //
@@ -677,7 +692,7 @@ export default {
                 this.form.createDate = data.createDate;
                 this.form.updateDate = data.updateDate;
                 this.$toast({
-                    message: '提交成功',
+                    message: '开单成功',
                     iconClass: 'icon icon-success',
                     duration: 2000
                 });
