@@ -10,6 +10,10 @@ import router from './router';
 import store from './store';
 Vue.use(MintUI);
 Vue.prototype.$toast = MintUI.Toast;
+Vue.prototype.$message = MintUI.MessageBox;
+Vue.prototype.$alert = MintUI.MessageBox.alert;
+Vue.prototype.$confirm = MintUI.MessageBox.alert;
+Vue.prototype.$alert = MintUI.MessageBox.prompt;
 Vue.config.productionTip = false;
 Vue.directive('has', {
     bind: function(el, binding) {

@@ -49,7 +49,7 @@
             </template>
         </div>
         <div class="page-part">
-            <mt-button type="primary" size="large" @click.native="handleSubmit">确认开单</mt-button>
+            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button>
         </div>
         <mt-popup
         :modal="false"
@@ -477,6 +477,11 @@ export default {
             }
         };
     },
+    computed: {
+        btnText () {
+            return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus - 1];
+        }
+    },
     methods: {
         async handleSelectBrandCode () {
             const vm = this;
@@ -668,7 +673,7 @@ export default {
         //     console.log(i);
         //     this.serviceValue.serviceIndex = i;
         // },
-        async handleSubmit () {
+        async comprehensiveSubmit () {
             console.log('submit');
             const serviceData = this.serviceData;
             if (serviceData.length > 1) {
@@ -691,14 +696,47 @@ export default {
                 this.form.comprehensiveId = data.comprehensiveId;
                 this.form.createDate = data.createDate;
                 this.form.updateDate = data.updateDate;
+                this.comprehensiveStatus++;
                 this.$toast({
-                    message: '开单成功',
+                    message: '开单成功!',
                     iconClass: 'icon icon-success',
                     duration: 2000
                 });
             } catch (err) {
                 console.error(err);
                 catchError(err);
+            }
+        },
+        async changeComprehensiveStatus () {
+            try {
+                const result = await this.$message({
+                    title: '提示',
+                    message: '确定执行此操作？',
+                    showCancelButton: true
+                });
+                if (result === 'confirm') {
+                    const res = await comprehensiveApi.updateSchedule.r({
+                        billId: this.form.comprehensiveId,
+                        status: this.comprehensiveStatus
+                    });
+                    console.log(res);
+                    this.$toast({
+                        message: `已${this.btnText}!`,
+                        iconClass: 'icon icon-success',
+                        duration: 2000
+                    });
+                    this.comprehensiveStatus++;
+                }
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            }
+        },
+        handleSubmit () {
+            if (this.comprehensiveStatus === 1) {
+                this.comprehensiveSubmit();
+            } else {
+                this.changeComprehensiveStatus();
             }
         }
     },
