@@ -40,15 +40,37 @@ export default [
                             {
                                 path: '/mobile/business-manage/pending',
                                 name: 'pending',
+                                component: () => import('../views/business-manage/pending.vue'),
                                 meta: {
                                     name: '待审批'
                                 }
                             },
                             {
+                                path: '/mobile/business-manage/pendingEdit',
+                                name: 'pendingEdit',
+                                component: () => import('../views/business-manage/order-price.vue'),
+                                meta: {
+                                    name: '待审批',
+                                    allow: true,
+                                    hide: true
+                                }
+                            },
+                            {
                                 path: '/mobile/business-manage/construction',
                                 name: 'construction',
+                                component: () => import('../views/business-manage/construction.vue'),
                                 meta: {
                                     name: '待施工'
+                                }
+                            },
+                            {
+                                path: '/mobile/business-manage/constructionEdit',
+                                name: 'constructionOperation',
+                                component: () => import('../views/business-manage/construction-operation.vue'),
+                                meta: {
+                                    name: '待施工',
+                                    allow: true,
+                                    hide: true
                                 }
                             },
                             {

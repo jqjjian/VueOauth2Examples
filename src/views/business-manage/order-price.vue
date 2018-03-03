@@ -158,11 +158,10 @@
         </mt-popup>
         <mt-popup
         v-model="popupColorVisible"
-        position="bottom"
         popup-transition="popup-fade"
-        class="mint-popup-select-color"
+        class="mint-popup-select-list"
         >
-            <div class="select-color-wrap" :class="[popupColorVisible ? 'active' : '']">
+            <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
                 <mt-radio
                 title="选择车辆颜色："
                 v-model="cacheData.carColor"
@@ -321,19 +320,19 @@ export default {
             comprehensiveStatus: 1, // 综合服务单进度状态
             actions: [
                 {
-                    name: '良好',
-                    method: () => {
-                        console.log(this);
-                        this.form.seCarInfo.appearance = 1;
-                        this.cacheData.appearance = '良好';
-                    }
-                },
-                {
                     name: '不正常',
                     method: () => {
                         console.log(this);
                         this.form.seCarInfo.appearance = 0;
                         this.cacheData.appearance = '不正常';
+                    }
+                },
+                {
+                    name: '良好',
+                    method: () => {
+                        console.log(this);
+                        this.form.seCarInfo.appearance = 1;
+                        this.cacheData.appearance = '良好';
                     }
                 }
             ],
@@ -486,9 +485,6 @@ export default {
         async handleSelectBrandCode () {
             const vm = this;
             vm.selectCarPopupVisible = true;
-            for (let v of Object.values(this.selectCatStyleCacheData)) {
-                console.log(v);
-            }
             try {
                 const res = await carApi.requestBrand.r();
                 console.log(res);
@@ -717,7 +713,7 @@ export default {
                 if (result === 'confirm') {
                     const res = await comprehensiveApi.updateSchedule.r({
                         billId: this.form.comprehensiveId,
-                        status: this.comprehensiveStatus
+                        status: this.comprehensiveStatus === 2 ? 3 : this.comprehensiveStatus
                     });
                     console.log(res);
                     this.$toast({
@@ -725,8 +721,42 @@ export default {
                         iconClass: 'icon icon-success',
                         duration: 2000
                     });
-                    this.comprehensiveStatus++;
+                    if (this.comprehensiveStatus === 2) {
+                        this.comprehensiveStatus += 2;
+                    } else {
+                        this.comprehensiveStatus++;
+                    }
                 }
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            }
+        },
+        async handleQuery (id) {
+            try {
+                const { data } = await comprehensiveApi.request.r({
+                    accountSquared: '',
+                    operatorId: '',
+                    serviceType: '',
+                    comprehensiveId: id,
+                    fromDate: '',
+                    endDate: '2018-03-01 22:22:22',
+                    orderType: 0,
+                    orderStyle: 0,
+                    status: 1,
+                    param: '',
+                    page: 1,
+                    pageSize: 9999
+                });
+                console.log(data[0]);
+                this.form = R.merge(this.form, data[0]);
+                this.comprehensiveStatus = this.form.status;
+                this.selectCatStyleData.carType = this.form.seCarInfo.carType;
+                this.selectCatStyleData.carTrain = this.form.seCarInfo.carTrainCode;
+                if (this.form.seCarInfo.carColor !== '') {
+                    this.cacheData.carColor = this.form.seCarInfo.carColor;
+                }
+                this.cacheData.appearance = this.actions[this.form.seCarInfo.appearance].name;
             } catch (err) {
                 console.error(err);
                 catchError(err);
@@ -748,6 +778,10 @@ export default {
     },
     created () {
         this.getServiceType();
+        const id = this.$route.query.id;
+        if (id) {
+            this.handleQuery(id);
+        }
     },
     mounted () {
     }
@@ -756,7 +790,7 @@ export default {
 
 <style lang="postcss">
     .container-box {
-        background: #eee
+        background: #eee;
     }
     .page-part{
         padding-bottom: 15px;

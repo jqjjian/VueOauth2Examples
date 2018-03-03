@@ -162,7 +162,7 @@ export default {
                     console.log('routeeeeee', route);
                     const pathKey = (base ? base + '/' : '') + route.path;
                     console.log('pathKey', pathKey);
-                    if (hashMenus[pathKey]) {
+                    if (hashMenus[pathKey] || route.meta.allow) {
                         console.log(Array.isArray(route.children));
                         if (Array.isArray(route.children)) {
                             route.children = findLocalRoute(route.children, route.path);

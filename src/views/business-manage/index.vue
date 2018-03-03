@@ -1,7 +1,7 @@
 <template>
     <grid :cols="3">
         <template v-for="(v, i) in menus">
-            <grid-item :label="v.meta.name" :link="{name: `${v.name}-item`}" :key="i">
+            <grid-item v-if="!v.meta.hide" :label="v.meta.name" :link="{name: `${v.name}-item`}" :key="i">
                 <i class="" slot="icon"></i>
             </grid-item>
         </template>
