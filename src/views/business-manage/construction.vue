@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { comprehensiveApi } from '@/api';
+import { constructApi } from '@/api';
 import { catchError } from '@/util';
 export default {
     data () {
@@ -32,7 +32,7 @@ export default {
         },
         async handleQuery () {
             try {
-                const { data } = await comprehensiveApi.request.r({
+                const { data } = await constructApi.request.r({
                     accountSquared: '',
                     operatorId: '',
                     serviceType: '',

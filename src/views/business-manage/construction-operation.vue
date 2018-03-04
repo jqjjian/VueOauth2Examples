@@ -18,35 +18,40 @@
             <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" readonly disableClear></mt-field>
             <mt-field label="车辆外观状况：" v-model="form.seCarInfo.appearance" readonly disableClear></mt-field>
         </div>
-        <div class="page-part">
-            <mt-cell title="服务项目"></mt-cell>
-            <mt-cell title="1.洗车" is-link></mt-cell>
+        <div v-for="(v, i) in form.seProjectList" class="page-part" :key="v.comprehensiveCd">
+            <mt-cell v-if="i === 0" title="服务项目"></mt-cell>
+            <mt-cell :title="`${i- 0 + 1}. ${v.projectName}`" ><mt-button size="small" type="primary" icon="" :disabled="v.status === 2 ? true: false" @click.native="handleConstruct(v.serviceProjectId, v)">{{projectState[v.status]}}</mt-button></mt-cell>
             <div class="accessories-title">配件：</div>
-            <mt-cell class="accessories-item" title="1.雨刮" label="配件编码：33333">数量：2</mt-cell>
-            <mt-cell class="accessories-item" title="2.雨刮" label="配件编码：33333">数量：2</mt-cell>
+            <!-- <mt-cell class="accessories-item" title="1.雨刮" label="配件编码：33333">数量：2</mt-cell>
+            <mt-cell class="accessories-item" title="2.雨刮" label="配件编码：33333">数量：2</mt-cell> -->
             <div class="accessories-title">材料：</div>
-            <mt-cell class="accessories-item" title="1.雨刮" label="属性1">数量：2</mt-cell>
+            <!-- <mt-cell class="accessories-item" title="1.雨刮" label="属性1">数量：2</mt-cell>
             <mt-cell class="accessories-item" title="2.雨刮" label="属性1">数量：2</mt-cell>
-            <mt-cell class="accessories-item" title="3.雨刮" label="属性1">数量：2</mt-cell>
+            <mt-cell class="accessories-item" title="3.雨刮" label="属性1">数量：2</mt-cell> -->
             <div class="accessories-title">工时：</div>
-            <mt-cell class="accessories-item" title="1.发动机大修" >金额：50元</mt-cell>
+            <!-- <mt-cell class="accessories-item" title="1.发动机大修" >金额：50元</mt-cell> -->
             <div class="accessories-title">设备：</div>
-            <mt-cell class="accessories-item" title="1.板手" label="设备编码：33333">数量：2</mt-cell>
+            <!-- <mt-cell class="accessories-item" title="1.板手" label="设备编码：33333">数量：2</mt-cell> -->
         </div>
-        <div class="page-part">
-            <mt-cell title="1.洗车" is-link></mt-cell>
-        </div>
+        <!-- <div class="page-part">
+            <mt-cell title="2.美容"><mt-button size="small" type="primary" icon="">开始施工</mt-button></mt-cell>
+        </div> -->
     </div>
 </template>
 
 <script>
-import { comprehensiveApi } from '@/api';
+import { constructApi } from '@/api';
 import { catchError } from '@/util';
 import * as R from 'ramda';
 export default {
     data () {
         return {
             carType: '',
+            projectState: [
+                '施工',
+                '完工',
+                '质检中'
+            ],
             form: {
                 seCarInfo: { // 车辆信息
                     adviseMileageMaintenance: null, // 建议保养里程
@@ -66,7 +71,8 @@ export default {
                     // verificationEndTime: '2017-06-20 18:00:00', //
                     vin: '', // VIN
                     carColor: '' // 车辆颜色
-                }
+                },
+                seProjectList: []
             }
         };
     },
@@ -74,7 +80,7 @@ export default {
         async handleQuery (id) {
             console.log(this.R);
             try {
-                const { data } = await comprehensiveApi.request.r({
+                const { data } = await constructApi.request.r({
                     accountSquared: '',
                     operatorId: '',
                     serviceType: '',
@@ -91,6 +97,17 @@ export default {
                 console.log(data[0]);
                 this.form = R.merge(this.form, data[0]);
                 this.carType = `${this.form.seCarInfo.brandCode} ${this.form.seCarInfo.carType}`;
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            }
+        },
+        async handleConstruct (serviceProjectId, item) {
+            try {
+                const { data } = await constructApi.setConstruct.r({
+                    serviceProjectId
+                });
+                item.status = data.status;
             } catch (err) {
                 console.error(err);
                 catchError(err);
@@ -117,31 +134,31 @@ export default {
             .mint-cell{
                 min-height: 20px;
             }
-        }
-        .mint-field {
-            .mint-cell-title {
-                width: 80px;
-                // text-align: right;
-                span {
-                    display: inline-block;
-                }
-            }
-            &:nth-child(2),
-            &:nth-child(3) {
+            .mint-field {
                 .mint-cell-title {
-                    width: 50px;
+                    width: 80px;
+                    // text-align: right;
+                    span {
+                        display: inline-block;
+                    }
                 }
-            }
-            &:nth-child(4) {
-                .mint-cell-title {
-                    width: 60px;
+                &:nth-child(2),
+                &:nth-child(3) {
+                    .mint-cell-title {
+                        width: 50px;
+                    }
                 }
-            }
-            &:nth-child(8),
-            &:nth-child(9),
-            &:nth-child(11){
-                .mint-cell-title {
-                    width: 115px;
+                &:nth-child(4) {
+                    .mint-cell-title {
+                        width: 60px;
+                    }
+                }
+                &:nth-child(8),
+                &:nth-child(9),
+                &:nth-child(11){
+                    .mint-cell-title {
+                        width: 115px;
+                    }
                 }
             }
         }
