@@ -43,15 +43,15 @@
             <mt-cell title="服务报价信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
                 <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.describe})`" :key="i + 'index'">
-                    <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">进入仓库</mt-button>
-                    <mt-button type="primary" size="small">添加工时</mt-button>
+                    <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">报价</mt-button>
+                    <mt-button type="primary" size="small">审批</mt-button>
                 </mt-cell>
             </template>
         </div>
         <div class="page-part">
-            <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
-            <br>
-            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button>
+            <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">更新资料</mt-button>
+            <!-- <br>
+            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button> -->
         </div>
         <mt-popup
         :modal="false"
@@ -355,7 +355,8 @@ export default {
                     title: '',
                     name: '选择服务项目',
                     describe: '',
-                    value: 0
+                    value: 0,
+                    status: 0
                 }
             ],
             selectCatStyleData: { // 选择品牌车型
@@ -475,6 +476,68 @@ export default {
                 // totalExtraFee: 120.5, //
                 // totalFee: 220.5, //
                 // totalHourFee: 100.5 //
+            },
+            workState: {
+                toQuote: [
+                    {
+                        name: '报价',
+                        value: '',
+                        state: 1
+                    },
+                    {
+                        name: '审批',
+                        value: 'approve',
+                        state: 2
+                    }
+                ],
+                approve: [
+                    {
+                        name: '修改',
+                        value: 'toQuote',
+                        state: 1
+                    },
+                    {
+                        name: '下派',
+                        value: 'construction',
+                        state: 3
+                    }
+                ],
+                construction: [
+                    {
+                        name: '撤回',
+                        value: 'approve',
+                        state: 2
+                    },
+                    {
+                        name: '返回报价',
+                        value: 'approve',
+                        state: 2
+                    },
+                    {
+                        name: '施工',
+                        value: 'testing',
+                        state: 4
+                    }
+                ],
+                testing: [
+                    {
+                        name: '返工',
+                        value: 'construction',
+                        state: 3
+                    },
+                    {
+                        name: '完成质检',
+                        value: 'finish',
+                        state: 5
+                    }
+                ],
+                finish: [
+                    {
+                        name: '完工',
+                        value: '',
+                        state: 6
+                    }
+                ]
             }
         };
     },
@@ -628,6 +691,7 @@ export default {
                     this.form.seProjectList.push({
                         projectName: v.title,
                         projectType: v.value,
+                        status: v.status,
                         description: v.describe,
                         children: []
                     });
@@ -715,7 +779,6 @@ export default {
                     this.form.seProjectList.push({
                         projectName: v.title,
                         projectType: v.value,
-                        description: v.describe,
                         children: []
                     });
                 }
@@ -792,6 +855,16 @@ export default {
                     this.cacheData.carColor = this.form.seCarInfo.carColor;
                 }
                 this.cacheData.appearance = this.actions[this.form.seCarInfo.appearance].name;
+                const serviceData = this.form.seProjectList.map(v => {
+                    return {
+                        title: v.projectName,
+                        name: '',
+                        describe: v.description,
+                        value: v.projectType,
+                        status: v.status
+                    };
+                });
+                this.serviceData = [...serviceData, ...this.serviceData];
             } catch (err) {
                 console.error(err);
                 catchError(err);

@@ -1,14 +1,14 @@
 import config from './config';
 
-let boardUrl = '/comprehensive/index'; // 获取所有工单
-let quotationUrl = '/assessment/index'; // 获取待估价工单
-let buildUrl = '/construct/index'; // 获取待施工工单
-let qcUrl = '/quality'; // 质检接口
-let saveUrl = '/comprehensive/save'; // 保存工单
-let updateScheduleUrl = '/comprehensive/updateSchedule'; // 更新工单状态
-let cancelUrl = '/comprehensive/avalible'; // 取消工单
-let buildSingleUrl = '/construct'; // 单个项目施工
-let accountUrl = '/comprehensive/account';
+const boardUrl = '/comprehensive/index'; // 获取所有工单
+const quotationUrl = '/assessment/index'; // 获取待估价工单
+const buildUrl = '/construct/index'; // 获取待施工工单
+const qcUrl = '/quality'; // 质检接口
+const saveUrl = '/comprehensive/save'; // 保存工单
+const updateScheduleUrl = '/comprehensive/updateSchedule'; // 更新工单状态
+const cancelUrl = '/comprehensive/avalible'; // 取消工单
+const buildSingleUrl = '/construct'; // 单个项目施工
+const accountUrl = '/comprehensive/account';
 
 // 所有服务单-查询
 const request = {

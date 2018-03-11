@@ -148,7 +148,7 @@ export const catchError = function(error) {
                 // });
                 Vue.$toast({
                     position: 'top',
-                    message: error.response.data.message || '无访问权限，请联系企业管理员！'
+                    message: error.response.data.message || '无访问权限，请联系管理员！'
                     // iconClass: 'icon icon-success'
                 });
                 // MessageBox.alert(error.response.data.message || '无访问权限，请联系企业管理员！').then(action => {

@@ -42,15 +42,15 @@ export default [
                                 name: 'pending',
                                 component: () => import('../views/business-manage/pending.vue'),
                                 meta: {
-                                    name: '待审批'
+                                    name: '工单列表'
                                 }
                             },
                             {
                                 path: '/mobile/business-manage/pendingEdit',
                                 name: 'pendingEdit',
-                                component: () => import('../views/business-manage/order-price.vue'),
+                                component: () => import('../views/business-manage/pendingEdit.vue'),
                                 meta: {
-                                    name: '待审批',
+                                    name: '工单',
                                     allow: true,
                                     hide: true
                                 }
@@ -76,6 +76,7 @@ export default [
                             {
                                 path: '/mobile/business-manage/quality-inspection',
                                 name: 'quality-inspection',
+                                component: () => import('../views/business-manage/quality-inspection.vue'),
                                 meta: {
                                     name: '待质检'
                                 }
