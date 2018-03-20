@@ -49,7 +49,7 @@
             </template>
         </div>
         <div class="page-part">
-            <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">更新资料</mt-button>
+            <mt-button type="primary" size="large" @click.native="saveSubmit">{{btnText}}</mt-button>
             <!-- <br>
             <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button> -->
         </div>
@@ -142,86 +142,187 @@
                 <!-- </router-link> -->
                 <!-- <mt-button icon="more" slot="right"></mt-button> -->
             </mt-header>
+            <div class="container-box scroll">
+                <div class="page-part info">
+                    <mt-cell title="车辆信息"></mt-cell>
+                    <!-- <mt-cell title="品牌车型"
+                    :label="selectCatStyleData.carType"
+                    is-link :value="selectCatStyleData.carTrain === '' ? '选择车型' : selectCatStyleData.carTrain"
+                    @click.native="handleSelectBrandCode"
+                    ></mt-cell> -->
+                    <mt-field label="车牌号：" v-model="form.seCustomerInfo.carNumber" readonly disableClear></mt-field>
+                    <mt-cell is-link :title="`车型：${form.seCarInfo.brandCode}`" :label="form.seCarInfo.carType">{{form.seCarInfo.carTrainCode}}</mt-cell>
+                    <!-- <mt-field label="车型：" v-model="form.seCarInfo.carType" readonly disableClear></mt-field> -->
+                    <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
+                    <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
+                    <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
+                    <!-- <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" readonly disableClear></mt-field>
+                    <mt-field label="车辆颜色：" v-model="form.carColor" readonly disableClear></mt-field>
+                    <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" readonly disableClear></mt-field>
+                    <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" readonly disableClear></mt-field>
+                    <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" readonly disableClear></mt-field>
+                    <mt-field label="车辆外观状况：" v-model="form.seCarInfo.appearance" readonly disableClear></mt-field> -->
+                </div>
+                <div class="page-part">
+                    <mt-cell title="服务项目"></mt-cell>
+                    <mt-cell :title="serviceData[serviceActive].title">
+                        <mt-button size="small" type="primary" icon="" class="cell-btn">添加工时</mt-button>
+                        <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button>
+                    </mt-cell>
+                    <template v-for="(v, i) in currentParts">
+                        <div class="accessories-title" :key="v.name + i">{{v.name}}：</div>
+                        <template v-for="(k, j) in v.children">
+                            <mt-cell-swipe :key="k.id" v-if="v.children.length" class="accessories-item" :right="del" :title="`${j + 1}.${k.projectName}`" :label="`配件编码：${k.fittingId}`">数量：{{k.number}}</mt-cell-swipe>
+                        </template>
+                    </template>
+                    <!-- <div class="accessories-title">配件：</div>
+                    <div class="accessories-title">材料：</div>
+                    <mt-cell class="accessories-item" title="1.雨刮" label="属性1">数量：2</mt-cell>
+                    <mt-cell class="accessories-item" title="2.雨刮" label="属性1">数量：2</mt-cell>
+                    <mt-cell class="accessories-item" title="3.雨刮" label="属性1">数量：2</mt-cell>
+                    <div class="accessories-title">工时：</div>
+                    <mt-cell class="accessories-item" title="1.发动机大修" >金额：50元</mt-cell>
+                    <div class="accessories-title">设备：</div>
+                    <mt-cell class="accessories-item" title="1.板手" label="设备编码：33333">数量：2</mt-cell> -->
+                </div>
+            </div>
         </mt-popup>
+        <mt-popup :modal="false" v-model="selectServicePopupListVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
+            <mt-header fixed title="选择配件">
+                <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
+                <mt-button icon="back" slot="left" @click.native="selectServicePopupListVisible = false">返回</mt-button>
+                <!-- </router-link> -->
+                <!-- <mt-button icon="more" slot="right"></mt-button> -->
+            </mt-header>
+            <div class="parts-list container-box">
+                <div class="page-part">
+                    <mt-navbar v-model="selected">
+                        <template v-for="(v, i) in ['配件', '材料', '设备']">
+                            <mt-tab-item :id="`${i}`" :key="v + i">{{v}}</mt-tab-item>
+                        </template>
+                    </mt-navbar>
+                </div>
+                <mt-tab-container v-model="selected">
+                    <template v-for="(n, j) in 3">
+                        <mt-tab-container-item :id="`${j}`" :key="'index' + j">
+                            <template v-for="(v, i) in fittingsData[selected]">
+                                <mt-cell :title="`${i + 1}.${v.fittingName}`" :label="`库存：${v.num} `" :key="v.fittingName + i">
+                                    <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="openSelectNum(v)">添加</mt-button>
+                                </mt-cell>
+                            </template>
+                        </mt-tab-container-item>
+                    </template>
+                    <!-- <mt-tab-container-item id="0">
+                        <template v-for="(v, i) in fittingsData[selected]">
+                            <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
+                        </template>
+                    </mt-tab-container-item>
+                    <mt-tab-container-item id="1">
+                        <template v-for="(v, i) in fittingsData[selected]">
+                            <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
+                        </template>
+                    </mt-tab-container-item>
+                    <mt-tab-container-item id="2">
+                        <template v-for="(v, i) in fittingsData[selected]">
+                            <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
+                        </template>
+                    </mt-tab-container-item> -->
+                </mt-tab-container>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="pickerVisible" position="bottom" class="pickerVisible">
+            <mt-cell :title="`选择数量：${selectNum}`">
+                <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="submitAddParts">确定</mt-button>
+            </mt-cell>
+            <mt-picker :slots="numberSlots" @change="onNumberChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
+        </mt-popup>
+        <!-- <mt-actionsheet
+            :actions="actions"
+            v-model="pickerVisible">
+            <div>333</div>
+        </mt-actionsheet> -->
     </div>
 </template>
 
 <script>
-import { carApi, dictionaryApi, comprehensiveApi } from '@/api';
+import { carApi, dictionaryApi, comprehensiveApi, fittingApi } from '@/api';
 import { catchError } from '@/util';
 import * as R from 'ramda';
 export default {
     data() {
         return {
+            selected: '0',
             selectCarPopupVisible: false, // 车品牌
             popupVisible: false, // 车系
             popupYearVisible: false, // 车年款
             popupModelVisible: false, // 车型号
-            showSelectCarList: true,
+            showSelectCarList: true, // 车品牌
             popupColorVisible: false, // 车颜色
-            sheetVisible: false,
-            popupServiceVisible: false,
+            sheetVisible: false, // 车辆情况
+            popupServiceVisible: false, // 服务项目
             selectServicePopupVisible: false,
-            selectCarindex: [],
-            selectCarObj: {},
-            brandName: '',
-            styleName: '',
-            styleId: '',
-            modelName: '',
-            selectCarListindex: [],
-            selectCarListObj: {},
-            serviceValue: {
+            selectServicePopupListVisible: false,
+            pickerVisible: false, // 配件计数器
+            selectCarindex: [], // 车品牌列表
+            selectCarObj: {}, // 排序后车品牌列表
+            // brandName: '',
+            // styleName: '',
+            // styleId: '',
+            // modelName: '',
+            selectCarListindex: [], // 车系分类
+            selectCarListObj: {}, // 车系分类子项目列表
+            serviceValue: { // 服务项目选择状态
                 title: '',
                 serviceIndex: 0
             },
-            selectCarYearindex: [],
-            selectServiceindex: [
-                {
-                    label: '机修',
-                    value: '机修'
-                },
-                {
-                    label: '保养',
-                    value: '保养'
-                },
-                {
-                    label: '电子',
-                    value: '电子'
-                },
-                {
-                    label: '美容',
-                    value: '美容'
-                },
-                {
-                    label: '钣金',
-                    value: '钣金'
-                },
-                {
-                    label: '喷漆',
-                    value: '喷漆'
-                },
-                {
-                    label: '精品',
-                    value: '精品'
-                },
-                {
-                    label: '内饰翻新',
-                    value: '内饰翻新'
-                },
-                {
-                    label: '轮胎',
-                    value: '轮胎'
-                },
-                {
-                    label: '其他',
-                    value: '其他'
-                }
+            selectCarYearindex: [], // 车年款
+            selectServiceindex: [ // 服务项目列表
+                // {
+                //     label: '机修',
+                //     value: '机修'
+                // },
+                // {
+                //     label: '保养',
+                //     value: '保养'
+                // },
+                // {
+                //     label: '电子',
+                //     value: '电子'
+                // },
+                // {
+                //     label: '美容',
+                //     value: '美容'
+                // },
+                // {
+                //     label: '钣金',
+                //     value: '钣金'
+                // },
+                // {
+                //     label: '喷漆',
+                //     value: '喷漆'
+                // },
+                // {
+                //     label: '精品',
+                //     value: '精品'
+                // },
+                // {
+                //     label: '内饰翻新',
+                //     value: '内饰翻新'
+                // },
+                // {
+                //     label: '轮胎',
+                //     value: '轮胎'
+                // },
+                // {
+                //     label: '其他',
+                //     value: '其他'
+                // }
             ],
-            selectCarYearObj: {},
-            selectCarStyle: [],
-            yearValue: '',
-            searchValue: '',
-            carColors: [
+            // selectCarYearObj: {},
+            selectCarStyle: [], // 车款式
+            yearValue: '', // 车年款值
+            searchValue: '', // 搜索
+            carColors: [ // 车颜色
                 {
                     label: '银色',
                     value: '银色'
@@ -263,8 +364,8 @@ export default {
                     value: '紫色'
                 }
             ],
-            comprehensiveStatus: 1, // 综合服务单进度状态
-            actions: [
+            comprehensiveStatus: 0, // 综合服务单进度状态
+            actions: [ // 车外观情况
                 {
                     name: '不正常',
                     method: () => {
@@ -282,7 +383,7 @@ export default {
                     }
                 }
             ],
-            swipeData: [
+            swipeData: [ // 服务项目左滑删除样式
                 {
                     content: '删除',
                     style: {
@@ -294,7 +395,7 @@ export default {
                     }
                 }
             ],
-            serviceData: [
+            serviceData: [ // 服务项目列表状态
                 {
                     children: [],
                     title: '',
@@ -305,7 +406,9 @@ export default {
                     serviceProjectId: ''
                 }
             ],
-            selectCatStyleData: {
+            serviceActive: 0, // 当前操作服务项目索引
+            parts: [], // 当前操作服务项目配件列表
+            selectCatStyleData: { // 选择车型状态
                 // 选择品牌车型
                 brand: '',
                 brandCode: '',
@@ -314,7 +417,7 @@ export default {
                 carType: '',
                 carModelYear: ''
             },
-            selectCatStyleCacheData: {
+            selectCatStyleCacheData: { // 选择车型状态缓存
                 // 选择品牌车型缓存数据
                 brand: '',
                 brandCode: '',
@@ -428,7 +531,7 @@ export default {
                 // totalFee: 220.5, //
                 // totalHourFee: 100.5 //
             },
-            sviceStateIndex: ['toQuote', 'approve', 'construction', 'constructionIng', 'testing', 'finish'],
+            sviceStateIndex: ['toQuote', 'approve', 'construction', 'constructionIng', 'testing', 'finish'], // 项目状态索引
             workState: {
                 toQuote: [
                     {
@@ -495,12 +598,75 @@ export default {
                         name: '完工'
                     }
                 ]
-            }
+            },
+            del: [ // 项目配件删除样式
+                {
+                    content: '删除',
+                    style: {
+                        background: 'red',
+                        color: '#fff'
+                    },
+                    handler: () => {
+                        console.log(this);
+                    }
+                }
+            ],
+            fittingsData: [ // 配件列表
+                [],
+                [],
+                []
+            ],
+            numberSlots: [ // 配件数量选择器样式
+                {
+                    flex: 1,
+                    defaultIndex: 0,
+                    values: [...(new Array(10)).keys()].map(v => `${v + 1}`),
+                    textAlign: 'center'
+                }
+            ],
+            selectNum: 1, // 配件数量
+            picker: null, // 配件数量选择器
+            serviceProjectId: 0, // 当前操作服务项目ID
+            selectedPart: null
         };
     },
     computed: {
         btnText() {
-            return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
+            // return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
+            return this.comprehensiveStatus === 0 ? '确定开单' : '更新资料';
+        },
+        currentParts () {
+            const arr = [
+                {
+                    name: '配件',
+                    children: []
+                },
+                {
+                    name: '材料',
+                    children: []
+                },
+                {
+                    name: '工时',
+                    children: []
+                },
+                {
+                    name: '设备',
+                    children: []
+                }
+            ];
+            this.parts.map((v, i) => {
+                v.index = i;
+                if (v.feeType === 1) {
+                    arr[0].children.push(v);
+                } else if (v.feeType === 2) {
+                    arr[1].children.push(v);
+                } else if (v.feeType === 3) {
+                    arr[3].children.push(v);
+                } else {
+                    arr[2].children.push(v);
+                }
+            });
+            return arr;
         }
     },
     methods: {
@@ -524,7 +690,7 @@ export default {
                         };
                     }
                 }
-                console.log(vm.selectCarObj);
+                console.log('selectCarObj', vm.selectCarObj);
             } catch (err) {
                 console.error(err);
                 catchError(err);
@@ -542,7 +708,7 @@ export default {
                 console.log(res);
                 vm.selectCarListindex = [...new Set(R.map(R.prop('factoryName'))(res.data))];
                 vm.selectCarListObj = {};
-                console.log(vm.selectCarListindex);
+                console.log('selectCarListindex', vm.selectCarListindex);
                 for (let v of res.data) {
                     if (vm.selectCarListObj[v.factoryName]) {
                         vm.selectCarListObj[v.factoryName].children.push(v);
@@ -590,7 +756,7 @@ export default {
                 catchError(err);
             }
         },
-        async handleSelectCarModelYear(year) {
+        async handleSelectCarModelYear(year) { // 选择年款
             const vm = this;
             const styleId = vm.selectCatStyleCacheData.carTrainCode;
             vm.selectCatStyleCacheData.carModelYear = year;
@@ -904,33 +1070,37 @@ export default {
             }
         },
         handleSubmit() {
-            if (this.comprehensiveStatus === 1) {
-                this.comprehensiveSubmit();
-            } else {
-                this.changeComprehensiveStatus();
-            }
+            // if (this.comprehensiveStatus === 1) {
+            //     this.comprehensiveSubmit();
+            // } else {
+            //     this.changeComprehensiveStatus();
+            // }
+            this.comprehensiveSubmit();
         },
-        async workStateMethods (i, status) {
+        async workStateMethods(i, status) {
             console.log('status', status);
             const that = this;
             const project = that.serviceData[i];
+            // const comprehensiveId = that.form.comprehensiveId;
             const fns = {
-                toQuote () {
+                toQuote() {
                     that.selectServicePopupVisible = true;
+                    that.serviceActive = i;
+                    that.parts = project.children;
                 },
-                approve () {
+                approve() {
                     console.log('提交');
                 },
-                construction () {
+                construction() {
                     console.log('下派');
                 },
-                constructionIng () {
+                constructionIng() {
                     console.log('开始施工');
                 },
-                testing () {
+                testing() {
                     console.log('质检');
                 },
-                finish () {
+                finish() {
                     console.log('完成');
                 }
             };
@@ -948,6 +1118,55 @@ export default {
                 console.error(err);
                 catchError(err);
             }
+        },
+        async getFittingindex() {
+            const that = this;
+            that.selectServicePopupListVisible = true;
+            if (that.fittingsData[that.selected].length === 0) {
+                const arr = R.clone(that.fittingsData);
+                try {
+                    const { data } = await fittingApi.inventoryFitting.r({
+                        classifyId: that.selected - 0 + 1
+                    });
+                    console.log(data);
+                    arr[that.selected] = data;
+                    that.fittingsData = arr;
+                    console.log(that.fittingsData);
+                } catch (err) {
+                    console.error(err);
+                    catchError(err);
+                }
+            }
+        },
+        openSelectNum(part) {
+            console.log('配件', part);
+            this.selectedPart = part;
+            this.pickerVisible = true;
+            if (this.pciker !== null) {
+                this.picker.setSlotValue(0, '1');
+            }
+            this.numberSlots[0].defaultIndex = 0;
+            this.selectNum = '1';
+        },
+        onNumberChange (picker, values) {
+            console.log(values[0]);
+            this.selectNum = values[0];
+            if (this.picker === null) {
+                this.picker = picker;
+            }
+        },
+        submitAddParts () {
+            const partsName = R.map(R.prop('projectName'))(this.parts);
+            const index = partsName.indexOf(this.selectedPart.projectName);
+            console.log(partsName);
+            console.log(index);
+            console.log(this.selectedPart);
+            if (index !== -1) {
+                this.parts[index].number += this.selectNum;
+            } else {
+                this.parts.push(this.selectedPart);
+            }
+            this.pickerVisible = false;
         }
     },
     watch: {
@@ -970,6 +1189,15 @@ export default {
 <style lang="postcss">
 .container-box {
     background: #eee;
+    &.scroll {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: scroll;
+    }
 }
 .page-part {
     padding-bottom: 15px;
@@ -987,6 +1215,55 @@ export default {
             .mint-cell-title {
                 width: 50px;
             }
+        }
+    }
+    &.info {
+        margin-top: 50px;
+        .mint-cell {
+            min-height: 20px;
+            &:last-child {
+                background: #fff;
+            }
+        }
+        .mint-field {
+            .mint-cell-title {
+                width: 80px;
+                // text-align: right;
+                span {
+                    display: inline-block;
+                }
+            }
+            &:nth-child(3) {
+            }
+            &:nth-child(4) {
+                .mint-cell-title {
+                    width: 50px;
+                }
+            }
+            &:nth-child(2),
+            &:nth-child(5) {
+                .mint-cell-title {
+                    width: 70px;
+                }
+            }
+            &:nth-child(6) {
+                .mint-cell-title {
+                    width: 80px;
+                }
+            }
+        }
+    }
+    .accessories-title {
+        padding: 10px 10px;
+        background: #eee;
+        font-size: 14px;
+        color: #000;
+    }
+    .accessories-item {
+        .mint-cell-title,
+        .mint-cell-value {
+            font-size: 14px;
+            color: #999;
         }
     }
 }
@@ -1093,5 +1370,20 @@ export default {
 }
 .mint-popup-select-color {
     width: 100%;
+}
+.parts-list {
+    padding-top: 40px;
+    .mint-tab-container {
+        background: #fff;
+    }
+}
+.pickerVisible {
+    width: 100%;
+    .picker-slot-wrapper, .picker-item {
+        backface-visibility: hidden;
+    }
+    p {
+        padding: 5px 10px;
+    }
 }
 </style>

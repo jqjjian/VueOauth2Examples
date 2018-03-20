@@ -41,7 +41,7 @@ export default {
                     endDate: '',
                     orderType: 0,
                     orderStyle: 0,
-                    status: 1,
+                    status: '',
                     param: '',
                     page: 1,
                     pageSize: 9999

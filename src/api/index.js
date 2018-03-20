@@ -5,3 +5,4 @@ export { default as workProjectApi } from './workProjectApi';
 export { default as dictionaryApi } from './dictionaryApi';
 export { default as comprehensiveApi } from './comprehensiveApi';
 export { default as constructApi } from './constructApi';
+export { default as fittingApi } from './fittingApi';
