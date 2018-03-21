@@ -172,7 +172,7 @@
                     <template v-for="(v, i) in currentParts">
                         <div class="accessories-title" :key="v.name + i">{{v.name}}：</div>
                         <template v-for="(k, j) in v.children">
-                            <mt-cell-swipe :key="k.id" v-if="v.children.length" class="accessories-item" :right="del" :title="`${j + 1}.${k.projectName}`" :label="`配件编码：${k.fittingId}`">数量：{{k.number}}</mt-cell-swipe>
+                            <mt-cell-swipe :key="k.id + j" v-if="v.children.length" class="accessories-item" :right="del" :title="`${j + 1}.${k.materialName}`" :label="`配件编码：${k.materialId}`">数量：{{k.number}}</mt-cell-swipe>
                         </template>
                     </template>
                     <!-- <div class="accessories-title">配件：</div>
@@ -206,7 +206,7 @@
                     <template v-for="(n, j) in 3">
                         <mt-tab-container-item :id="`${j}`" :key="'index' + j">
                             <template v-for="(v, i) in fittingsData[selected]">
-                                <mt-cell :title="`${i + 1}.${v.fittingName}`" :label="`库存：${v.num} `" :key="v.fittingName + i">
+                                <mt-cell :title="`${i + 1}.${v.materialName}`" :label="`库存：${v.num} `" :key="v.materialName + i">
                                     <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="openSelectNum(v)">添加</mt-button>
                                 </mt-cell>
                             </template>
@@ -1123,15 +1123,20 @@ export default {
             const that = this;
             that.selectServicePopupListVisible = true;
             if (that.fittingsData[that.selected].length === 0) {
-                const arr = R.clone(that.fittingsData);
+                // const arr = R.clone(that.fittingsData);
                 try {
-                    const { data } = await fittingApi.inventoryFitting.r({
-                        classifyId: that.selected - 0 + 1
+                    const res = await fittingApi.inventoryFitting.r({
+                        // inventoryFlag: true,
+                        fittingId: 34,
+                        classifyId: that.selected - 0 + 1,
+                        // param: '',
+                        page: 1,
+                        pageSize: 99999
                     });
-                    console.log(data);
-                    arr[that.selected] = data;
-                    that.fittingsData = arr;
-                    console.log(that.fittingsData);
+                    console.log('配件列表', res);
+                    // arr[that.selected] = data;
+                    // that.fittingsData = arr;
+                    // console.log(that.fittingsData);
                 } catch (err) {
                     console.error(err);
                     catchError(err);

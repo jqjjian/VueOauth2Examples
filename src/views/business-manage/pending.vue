@@ -33,10 +33,10 @@ export default {
         async handleQuery () {
             try {
                 const { data } = await comprehensiveApi.request.r({
-                    accountSquared: '',
-                    operatorId: '',
-                    serviceType: '',
-                    comprehensiveId: '',
+                    // accountSquared: '',
+                    // operatorId: '',
+                    // serviceType: '',
+                    // comprehensiveId: '',
                     fromDate: '',
                     endDate: '',
                     orderType: 0,
