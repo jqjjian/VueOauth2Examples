@@ -27,10 +27,33 @@
         <div class="page-part service">
             <mt-cell title="需求信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
-                <mt-cell-swipe :title="v.title !== '' ? `${i + 1}. ${v.title}` : ''" is-link :right="swipeData" :key="i" @click.native="handleOpenSelectService(i)">
+                <mt-cell-swipe :title="v.title !== '' ? `${i + 1}. ${v.title}` : ''"
+                    is-link
+                    :right="[ // 服务项目左滑删除样式
+                        {
+                            content: '取消',
+                            style: {
+                                background: '#ddd',
+                                color: '#fff'
+                            },
+                            handler: () => {
+                            }
+                        },
+                        {
+                            content: '删除',
+                            style: {
+                                background: 'red',
+                                color: '#fff'
+                            },
+                            handler() {
+                                deleteServiceProject(i);
+                            }
+                        }
+                    ]"
+                    :key="v.title + i + '-index'" @click.native="handleOpenSelectService(i)">
                     {{v.name}}
                 </mt-cell-swipe>
-                <mt-field v-if="v.title !== ''" v-model="v.describe" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
+                <mt-field v-if="v.title !== ''" v-model="v.description" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
             </template>
             <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
             <!-- <mt-cell is-link>备注</mt-cell> -->
@@ -38,9 +61,9 @@
         <div class="page-part">
             <mt-cell title="服务报价信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
-                <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.describe})`" :key="i + 'index'">
+                <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.description})`" :key="i + 'index'">
                     <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
-                        <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native="workStateMethods(i, k)">{{k.name}}</mt-button>
+                        <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
                         <span v-else :key="k.name + j">{{k.name}}</span>
                     </template>
                     <!-- <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">报价</mt-button>
@@ -139,6 +162,7 @@
             <mt-header fixed title="选择配件">
                 <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
                 <mt-button icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
+                <mt-button slot="right" @click.native="saveServiceParts">保存</mt-button>
                 <!-- </router-link> -->
                 <!-- <mt-button icon="more" slot="right"></mt-button> -->
             </mt-header>
@@ -167,23 +191,17 @@
                     <mt-cell title="服务项目"></mt-cell>
                     <mt-cell :title="serviceData[serviceActive].title">
                         <mt-button size="small" type="primary" icon="" class="cell-btn">添加工时</mt-button>
-                        <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button>
+                        <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
                     </mt-cell>
                     <template v-for="(v, i) in currentParts">
                         <div class="accessories-title" :key="v.name + i">{{v.name}}：</div>
                         <template v-for="(k, j) in v.children">
-                            <mt-cell-swipe :key="k.id + j" v-if="v.children.length" class="accessories-item" :right="del" :title="`${j + 1}.${k.materialName}`" :label="`配件编码：${k.materialId}`">数量：{{k.number}}</mt-cell-swipe>
+                            <mt-cell-swipe :key="'swipe' + j" v-if="v.children.length" class="accessories-item" :right="del" :title="`${j + 1}.${k.materialName}`" :label="`编码：${k.materialId}`">{{`数量：${k.number}`}}</mt-cell-swipe>
                         </template>
                     </template>
-                    <!-- <div class="accessories-title">配件：</div>
-                    <div class="accessories-title">材料：</div>
-                    <mt-cell class="accessories-item" title="1.雨刮" label="属性1">数量：2</mt-cell>
-                    <mt-cell class="accessories-item" title="2.雨刮" label="属性1">数量：2</mt-cell>
-                    <mt-cell class="accessories-item" title="3.雨刮" label="属性1">数量：2</mt-cell>
-                    <div class="accessories-title">工时：</div>
-                    <mt-cell class="accessories-item" title="1.发动机大修" >金额：50元</mt-cell>
-                    <div class="accessories-title">设备：</div>
-                    <mt-cell class="accessories-item" title="1.板手" label="设备编码：33333">数量：2</mt-cell> -->
+                    <mt-palette-button class="addPart" content="+" mainButtonStyle="color:#fff;background-color:#26a2ff;" @click.native="getFittingindex">
+                        <div class="my-icon-button"></div>
+                    </mt-palette-button>
                 </div>
             </div>
         </mt-popup>
@@ -198,15 +216,15 @@
                 <div class="page-part">
                     <mt-navbar v-model="selected">
                         <template v-for="(v, i) in ['配件', '材料', '设备']">
-                            <mt-tab-item :id="`${i}`" :key="v + i">{{v}}</mt-tab-item>
+                            <mt-tab-item :id="`${i}`" :key="v + i + 'material'">{{v}}</mt-tab-item>
                         </template>
                     </mt-navbar>
                 </div>
                 <mt-tab-container v-model="selected">
                     <template v-for="(n, j) in 3">
-                        <mt-tab-container-item :id="`${j}`" :key="'index' + j">
+                        <mt-tab-container-item :id="`${j}`" :key="'index' + j + 'part'">
                             <template v-for="(v, i) in fittingsData[selected]">
-                                <mt-cell :title="`${i + 1}.${v.materialName}`" :label="`库存：${v.num} `" :key="v.materialName + i">
+                                <mt-cell :title="`${i + 1}.${v.materialName}`" :label="`库存：${v.num} `" :key="v.materialName + i + 'part'">
                                     <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="openSelectNum(v)">添加</mt-button>
                                 </mt-cell>
                             </template>
@@ -260,8 +278,8 @@ export default {
             popupColorVisible: false, // 车颜色
             sheetVisible: false, // 车辆情况
             popupServiceVisible: false, // 服务项目
-            selectServicePopupVisible: false,
-            selectServicePopupListVisible: false,
+            selectServicePopupVisible: false, // 服务项目信息报价
+            selectServicePopupListVisible: false, // 配件列表
             pickerVisible: false, // 配件计数器
             selectCarindex: [], // 车品牌列表
             selectCarObj: {}, // 排序后车品牌列表
@@ -271,12 +289,14 @@ export default {
             // modelName: '',
             selectCarListindex: [], // 车系分类
             selectCarListObj: {}, // 车系分类子项目列表
-            serviceValue: { // 服务项目选择状态
+            serviceValue: {
+                // 服务项目选择状态
                 title: '',
                 serviceIndex: 0
             },
             selectCarYearindex: [], // 车年款
-            selectServiceindex: [ // 服务项目列表
+            selectServiceindex: [
+                // 服务项目列表
                 // {
                 //     label: '机修',
                 //     value: '机修'
@@ -322,7 +342,8 @@ export default {
             selectCarStyle: [], // 车款式
             yearValue: '', // 车年款值
             searchValue: '', // 搜索
-            carColors: [ // 车颜色
+            carColors: [
+                // 车颜色
                 {
                     label: '银色',
                     value: '银色'
@@ -365,7 +386,8 @@ export default {
                 }
             ],
             comprehensiveStatus: 0, // 综合服务单进度状态
-            actions: [ // 车外观情况
+            actions: [
+                // 车外观情况
                 {
                     name: '不正常',
                     method: () => {
@@ -383,24 +405,36 @@ export default {
                     }
                 }
             ],
-            swipeData: [ // 服务项目左滑删除样式
+            swipeData: [
+                // 服务项目左滑删除样式
+                {
+                    content: '取消',
+                    style: {
+                        background: '#ddd',
+                        color: '#fff'
+                    },
+                    handler: () => {
+                        console.log(this);
+                    }
+                },
                 {
                     content: '删除',
                     style: {
                         background: 'red',
                         color: '#fff'
                     },
-                    handler: () => {
+                    handler() {
                         console.log(this);
                     }
                 }
             ],
-            serviceData: [ // 服务项目列表状态
+            serviceData: [
+                // 服务项目列表状态
                 {
                     children: [],
                     title: '',
                     name: '选择服务项目',
-                    describe: '',
+                    description: '',
                     value: 0,
                     status: '',
                     serviceProjectId: ''
@@ -408,7 +442,8 @@ export default {
             ],
             serviceActive: 0, // 当前操作服务项目索引
             parts: [], // 当前操作服务项目配件列表
-            selectCatStyleData: { // 选择车型状态
+            selectCatStyleData: {
+                // 选择车型状态
                 // 选择品牌车型
                 brand: '',
                 brandCode: '',
@@ -417,7 +452,8 @@ export default {
                 carType: '',
                 carModelYear: ''
             },
-            selectCatStyleCacheData: { // 选择车型状态缓存
+            selectCatStyleCacheData: {
+                // 选择车型状态缓存
                 // 选择品牌车型缓存数据
                 brand: '',
                 brandCode: '',
@@ -599,7 +635,8 @@ export default {
                     }
                 ]
             },
-            del: [ // 项目配件删除样式
+            del: [
+                // 项目配件删除样式
                 {
                     content: '删除',
                     style: {
@@ -611,23 +648,26 @@ export default {
                     }
                 }
             ],
-            fittingsData: [ // 配件列表
+            fittingsData: [
+                // 配件列表
                 [],
                 [],
                 []
             ],
-            numberSlots: [ // 配件数量选择器样式
+            numberSlots: [
+                // 配件数量选择器样式
                 {
                     flex: 1,
                     defaultIndex: 0,
-                    values: [...(new Array(10)).keys()].map(v => `${v + 1}`),
+                    values: [...new Array(10).keys()].map(v => `${v + 1}`),
                     textAlign: 'center'
                 }
             ],
             selectNum: 1, // 配件数量
             picker: null, // 配件数量选择器
             serviceProjectId: 0, // 当前操作服务项目ID
-            selectedPart: null
+            selectedPart: null,
+            currentService: null
         };
     },
     computed: {
@@ -635,7 +675,7 @@ export default {
             // return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
             return this.comprehensiveStatus === 0 ? '确定开单' : '更新资料';
         },
-        currentParts () {
+        currentParts() {
             const arr = [
                 {
                     name: '配件',
@@ -756,7 +796,8 @@ export default {
                 catchError(err);
             }
         },
-        async handleSelectCarModelYear(year) { // 选择年款
+        async handleSelectCarModelYear(year) {
+            // 选择年款
             const vm = this;
             const styleId = vm.selectCatStyleCacheData.carTrainCode;
             vm.selectCatStyleCacheData.carModelYear = year;
@@ -815,7 +856,7 @@ export default {
                         projectName: v.title,
                         projectType: v.value,
                         status: v.status,
-                        description: v.describe,
+                        description: v.description,
                         children: []
                     });
                 }
@@ -836,6 +877,31 @@ export default {
                     iconClass: 'icon icon-success',
                     duration: 2000
                 });
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            }
+        },
+        async saveServiceParts() {
+            // 保存服务项目报价
+            const that = this;
+            try {
+                const result = await this.$message({
+                    title: '提示',
+                    message: '确定保存服务项目信息？',
+                    showCancelButton: true
+                });
+                if (result === 'confirm') {
+                    that.currentService.children = this.parts;
+                    const res = await comprehensiveApi.seproject.r([that.currentService]);
+                    console.log(res);
+                    this.$toast({
+                        message: `保存成功!`,
+                        iconClass: 'icon icon-success',
+                        duration: 2000
+                    });
+                    this.selectServicePopupVisible = false;
+                }
             } catch (err) {
                 console.error(err);
                 catchError(err);
@@ -864,6 +930,7 @@ export default {
             console.log(color);
         },
         handleOpenSelectService(i) {
+            // 打开可选服务项目列表
             this.popupServiceVisible = true;
             this.serviceValue.serviceIndex = i;
             this.serviceValue.title = this.serviceData[i].title;
@@ -882,7 +949,7 @@ export default {
                 this.serviceData.push({
                     title: '',
                     name: '选择服务项目',
-                    describe: '',
+                    description: '',
                     value: 0,
                     serviceProjectId: ''
                 });
@@ -892,24 +959,11 @@ export default {
                 // this.form.seProjectList = [];
                 const seProjectList = _seProjectList.map((v, i) => {
                     return {
-                        children: [
-                            // {
-                            //     barCode: 'barCode',
-                            //     feeType: 1,
-                            //     fittingId: 4,
-                            //     id: 0,
-                            //     number: 5,
-                            //     price: 10,
-                            //     projectName: 'test',
-                            //     serviceProjectId: 4,
-                            //     totalAccount: 100.6,
-                            //     workProjectId: 4
-                            // }
-                        ],
+                        children: v.children,
                         comprehensiveId: this.form.comprehensiveId,
                         constructorId: '',
                         constructorName: '',
-                        description: v.describe,
+                        description: v.description,
                         projectName: v.title,
                         projectType: v.value,
                         serviceProjectId: v.serviceProjectId
@@ -918,22 +972,22 @@ export default {
                 console.log('选择项目', seProjectList);
                 try {
                     const res = await comprehensiveApi.seproject.r(seProjectList);
-                    console.log(res);
+                    console.log('新增服务项目后', res);
                     this.serviceData = res.map((v, i) => {
                         return {
                             title: v.projectName,
                             name: '',
-                            describe: v.description,
+                            description: v.description,
                             value: v.projectType,
                             serviceProjectId: v.serviceProjectId,
                             status: v.status,
-                            children: v.children
+                            children: seProjectList[i].children
                         };
                     });
                     this.serviceData.push({
                         title: '',
                         name: '选择服务项目',
-                        describe: '',
+                        description: '',
                         value: 0,
                         serviceProjectId: '',
                         status: '',
@@ -943,15 +997,6 @@ export default {
                     console.error(err);
                     catchError(err);
                 }
-                // for (let v of Object.values(_seProjectList)) {
-                //     this.form.seProjectList.push({
-                //         projectName: v.title,
-                //         projectType: v.value,
-                //         status: v.status,
-                //         description: v.describe,
-                //         children: []
-                //     });
-                // }
             }
             this.popupServiceVisible = false;
         },
@@ -1055,9 +1100,14 @@ export default {
                 const serviceData = this.form.seProjectList.map(v => {
                     return {
                         title: v.projectName,
+                        projectName: v.projectName,
                         name: '',
-                        describe: v.description,
+                        comprehensiveId: v.comprehensiveId,
+                        constructorId: '',
+                        constructorName: '',
+                        description: v.description,
                         value: v.projectType,
+                        projectType: v.projectType,
                         status: v.status,
                         serviceProjectId: v.serviceProjectId,
                         children: v.children
@@ -1081,12 +1131,14 @@ export default {
             console.log('status', status);
             const that = this;
             const project = that.serviceData[i];
+            console.log('project', project);
+            that.currentService = project;
             // const comprehensiveId = that.form.comprehensiveId;
             const fns = {
                 toQuote() {
                     that.selectServicePopupVisible = true;
                     that.serviceActive = i;
-                    that.parts = project.children;
+                    that.parts = R.clone(project.children);
                 },
                 approve() {
                     console.log('提交');
@@ -1123,20 +1175,20 @@ export default {
             const that = this;
             that.selectServicePopupListVisible = true;
             if (that.fittingsData[that.selected].length === 0) {
-                // const arr = R.clone(that.fittingsData);
+                const arr = R.clone(that.fittingsData);
                 try {
-                    const res = await fittingApi.inventoryFitting.r({
+                    const { data } = await fittingApi.inventoryFitting.r({
                         // inventoryFlag: true,
-                        fittingId: 34,
+                        // fittingId: 34,
                         classifyId: that.selected - 0 + 1,
                         // param: '',
                         page: 1,
                         pageSize: 99999
                     });
-                    console.log('配件列表', res);
-                    // arr[that.selected] = data;
-                    // that.fittingsData = arr;
-                    // console.log(that.fittingsData);
+                    console.log('配件列表', data);
+                    arr[that.selected] = data;
+                    that.fittingsData = arr;
+                    console.log(that.fittingsData);
                 } catch (err) {
                     console.error(err);
                     catchError(err);
@@ -1144,6 +1196,7 @@ export default {
             }
         },
         openSelectNum(part) {
+            // 配件数量选择
             console.log('配件', part);
             this.selectedPart = part;
             this.pickerVisible = true;
@@ -1153,25 +1206,35 @@ export default {
             this.numberSlots[0].defaultIndex = 0;
             this.selectNum = '1';
         },
-        onNumberChange (picker, values) {
+        onNumberChange(picker, values) {
             console.log(values[0]);
             this.selectNum = values[0];
             if (this.picker === null) {
                 this.picker = picker;
             }
         },
-        submitAddParts () {
+        submitAddParts() {
+            // 确定添加配件
             const partsName = R.map(R.prop('projectName'))(this.parts);
             const index = partsName.indexOf(this.selectedPart.projectName);
             console.log(partsName);
             console.log(index);
             console.log(this.selectedPart);
-            if (index !== -1) {
-                this.parts[index].number += this.selectNum;
-            } else {
-                this.parts.push(this.selectedPart);
-            }
+            this.selectedPart.number = this.selectNum;
+            this.selectedPart.feeType = this.selectedPart.classifyId;
+            this.selectedPart.materialId = this.selectedPart.classifyId;
+            this.selectedPart.serviceProjectId = this.currentService.serviceProjectId;
+            this.selectedPart.totalAccount = 0;
+            this.parts.push(this.selectedPart);
+            // if (index !== -1) {
+            //     this.parts[index].number += this.selectNum;
+            // } else {
+            //     this.parts.push(this.selectedPart);
+            // }
             this.pickerVisible = false;
+        },
+        async deleteServiceProject(i) {
+            console.log(i);
         }
     },
     watch: {
@@ -1384,11 +1447,17 @@ export default {
 }
 .pickerVisible {
     width: 100%;
-    .picker-slot-wrapper, .picker-item {
+    .picker-slot-wrapper,
+    .picker-item {
         backface-visibility: hidden;
     }
     p {
         padding: 5px 10px;
     }
+}
+.addPart {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
 }
 </style>
