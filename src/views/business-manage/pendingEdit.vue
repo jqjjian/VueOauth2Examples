@@ -27,7 +27,7 @@
         <div class="page-part service">
             <mt-cell title="需求信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
-                <mt-cell-swipe :title="v.title !== '' ? `${i + 1}. ${v.title}` : ''"
+                <mt-cell-swipe :title="`${i + 1}. ${v.projectName}`"
                     is-link
                     :right="[ // 服务项目左滑删除样式
                         {
@@ -46,22 +46,22 @@
                                 color: '#fff'
                             },
                             handler() {
-                                deleteServiceProject(i);
+                                deleteServiceProject(i, v);
                             }
                         }
                     ]"
-                    :key="v.title + i + '-index'" @click.native="handleOpenSelectService(i)">
-                    {{v.name}}
+                    :key="v.projectName + i + '-index'" @click.native="handleOpenSelectService(i)">
                 </mt-cell-swipe>
-                <mt-field v-if="v.title !== ''" v-model="v.description" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
+                <mt-field v-model="v.description" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
             </template>
+            <mt-cell is-link @click.native="handleOpenSelectService(null)">新增服务项目</mt-cell>
             <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
             <!-- <mt-cell is-link>备注</mt-cell> -->
         </div>
         <div class="page-part">
             <mt-cell title="服务报价信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
-                <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.description})`" :key="i + 'index'">
+                <mt-cell :title="v.projectName" :label="`描述：(${v.description})`" :key="i + 'index'">
                     <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
                         <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
                         <span v-else :key="k.name + j">{{k.name}}</span>
@@ -80,7 +80,7 @@
             <mt-search v-model="searchValue" :show="showSelectCarList" cancel-text="取消" placeholder="搜索">
                 <mt-index-list class="car-list" ref="list">
                     <template v-for="(v, i) in selectCarindex">
-                        <mt-index-section v-if="selectCarindex.length" :index="v" :key="i">
+                        <mt-index-section v-if="selectCarindex.length" :index="v" :key="i + 'carindex'">
                             <template v-for="(j, k) in selectCarObj[v].children">
                                 <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brand === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
                             </template>
@@ -94,9 +94,9 @@
                 <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
                 <mt-index-list>
                     <template v-for="(v, i) in selectCarListindex">
-                        <mt-index-section v-if="selectCarListindex.length" :index="v" :key="i">
+                        <mt-index-section v-if="selectCarListindex.length" :index="v" :key="i + 'cartitle'">
                             <template v-for="(j, k) in selectCarListObj[v].children">
-                                <mt-cell :title="j.styleName" :class="[selectCatStyleCacheData.carTrain === j.styleName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarTrain(j.id, j.styleName)"></mt-cell>
+                                <mt-cell :title="j.styleName" :class="[selectCatStyleCacheData.carTrain === j.styleName ? 'active' : '']" :key="k + 'carlist'" is-link @click.native="handleSelectCarTrain(j.id, j.styleName)"></mt-cell>
                             </template>
                         </mt-index-section>
                     </template>
@@ -107,31 +107,12 @@
             <div class="select-list-wrap" :class="[popupYearVisible ? 'active' : '']">
                 <mt-radio title="选择年份：" v-model="yearValue" :options="selectCarYearindex" @change="handleSelectCarModelYear">
                 </mt-radio>
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
             </div>
         </mt-popup>
         <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
                 <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
                 </mt-radio>
-                <!-- <mt-button type="primary" size="large">确定</mt-button> -->
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
             </div>
         </mt-popup>
         <mt-popup v-model="popupModelVisible" position="bottom" popup-transition="popup-fade" class="popup-model">
@@ -145,15 +126,6 @@
             <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
                 <mt-radio title="选择车辆颜色：" v-model="cacheData.carColor" :options="carColors" @change="handleSelectCarColor">
                 </mt-radio>
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
             </div>
         </mt-popup>
         <mt-actionsheet :actions="actions" v-model="sheetVisible">
@@ -433,7 +405,7 @@ export default {
                 {
                     children: [],
                     title: '',
-                    name: '选择服务项目',
+                    name: '新增服务项目',
                     description: '',
                     value: 0,
                     status: '',
@@ -607,7 +579,7 @@ export default {
                 ],
                 constructionIng: [
                     {
-                        name: '无法施工',
+                        name: '停工',
                         value: 'approve',
                         state: 2
                     },
@@ -846,25 +818,25 @@ export default {
                 catchError(err);
             }
         },
-        async saveSubmit() {
-            const serviceData = this.serviceData;
-            if (serviceData.length > 1) {
-                const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
-                this.form.seProjectList = [];
-                for (let v of Object.values(_seProjectList)) {
-                    this.form.seProjectList.push({
-                        projectName: v.title,
-                        projectType: v.value,
-                        status: v.status,
-                        description: v.description,
-                        children: []
-                    });
-                }
-            }
-            this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
-            this.form.seCarInfo.carTrainCode = this.selectCatStyleData.carTrain;
-            this.form.seCarInfo.brandCode = this.selectCatStyleData.brand;
-            console.log(this.form);
+        async saveSubmit() { // 保存更新服务单信息
+            // const serviceData = this.serviceData;
+            // if (serviceData.length > 1) {
+            //     const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
+            //     this.form.seProjectList = [];
+            //     for (let v of Object.values(_seProjectList)) {
+            //         this.form.seProjectList.push({
+            //             projectName: v.title,
+            //             projectType: v.value,
+            //             status: v.status,
+            //             description: v.description,
+            //             children: []
+            //         });
+            //     }
+            // }
+            // this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
+            // this.form.seCarInfo.carTrainCode = this.selectCatStyleData.carTrain;
+            // this.form.seCarInfo.brandCode = this.selectCatStyleData.brand;
+            // console.log(this.form);
             try {
                 const { data } = await comprehensiveApi.save.r(this.form);
                 console.log(data);
@@ -923,7 +895,7 @@ export default {
             this.selectCatStyleData = R.merge({}, this.selectCatStyleCacheData);
             this.cancelSelectCarType();
         },
-        handleSelectCarColor(color) {
+        handleSelectCarColor(color) { // 打开选择车辆颜色
             this.cacheData.carColor = color;
             this.form.seCarInfo.carColor = color;
             this.popupColorVisible = false;
@@ -933,72 +905,50 @@ export default {
             // 打开可选服务项目列表
             this.popupServiceVisible = true;
             this.serviceValue.serviceIndex = i;
-            this.serviceValue.title = this.serviceData[i].title;
+            this.serviceValue.title = i !== null ? this.serviceData[i].projectName : '';
             console.log(this.serviceValue.title);
         },
         async handleSelectService(v) {
-            // 确定选择服务项目
             console.log(v);
-            const labels = R.map(R.prop('label'))(this.selectServiceindex);
+            // 确定选择服务项目
             const index = this.serviceValue.serviceIndex;
-            this.serviceData[index].title = v;
-            this.serviceData[index].name = '';
-            this.serviceData[index].value = labels.indexOf(v) + 1;
-            const serviceData = this.serviceData;
-            if (index >= this.serviceData.length - 1) {
+            console.log(index);
+            if (index !== null) {
+                this.serviceData[index].projectName = v;
+            } else {
                 this.serviceData.push({
-                    title: '',
-                    name: '选择服务项目',
+                    comprehensiveId: this.form.comprehensiveId,
+                    constructorId: '',
+                    constructorName: '',
                     description: '',
-                    value: 0,
+                    projectName: v,
+                    projectType: 0,
                     serviceProjectId: ''
                 });
             }
-            if (serviceData.length > 1) {
-                const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
-                // this.form.seProjectList = [];
-                const seProjectList = _seProjectList.map((v, i) => {
-                    return {
-                        children: v.children,
-                        comprehensiveId: this.form.comprehensiveId,
-                        constructorId: '',
-                        constructorName: '',
-                        description: v.description,
-                        projectName: v.title,
-                        projectType: v.value,
-                        serviceProjectId: v.serviceProjectId
-                    };
-                });
-                console.log('选择项目', seProjectList);
-                try {
-                    const res = await comprehensiveApi.seproject.r(seProjectList);
-                    console.log('新增服务项目后', res);
-                    this.serviceData = res.map((v, i) => {
-                        return {
-                            title: v.projectName,
-                            name: '',
-                            description: v.description,
-                            value: v.projectType,
-                            serviceProjectId: v.serviceProjectId,
-                            status: v.status,
-                            children: seProjectList[i].children
-                        };
-                    });
-                    this.serviceData.push({
-                        title: '',
-                        name: '选择服务项目',
-                        description: '',
-                        value: 0,
-                        serviceProjectId: '',
-                        status: '',
-                        children: []
-                    });
-                } catch (err) {
-                    console.error(err);
-                    catchError(err);
-                }
-            }
-            this.popupServiceVisible = false;
+            console.log(this.serviceData);
+            // try {
+            //     const res = await comprehensiveApi.seproject.r(this.serviceData);
+            //     console.log('新增服务项目后', res);
+            //     this.serviceData = res.map((v, i) => {
+            //         return {
+            //             title: v.projectName,
+            //             constructorId: '',
+            //             constructorName: '',
+            //             description: v.description,
+            //             value: v.projectType,
+            //             projectName: v.projectName,
+            //             projectType: v.projectType,
+            //             serviceProjectId: v.serviceProjectId,
+            //             status: v.status,
+            //             children: v.children
+            //         };
+            //     });
+            // } catch (err) {
+            //     console.error(err);
+            //     catchError(err);
+            // }
+            // this.popupServiceVisible = false;
         },
         // inputFunc (v) {
         //     this.serviceData[this.serviceValue.serviceIndex].describe = v;
@@ -1070,7 +1020,7 @@ export default {
                 catchError(err);
             }
         },
-        async handleQuery(id) {
+        async handleQuery(id) { // 查询服务单详情
             try {
                 const { data } = await comprehensiveApi.request.r({
                     accountSquared: '',
@@ -1097,23 +1047,7 @@ export default {
                     this.cacheData.carColor = this.form.seCarInfo.carColor;
                 }
                 this.cacheData.appearance = this.actions[this.form.seCarInfo.appearance].name;
-                const serviceData = this.form.seProjectList.map(v => {
-                    return {
-                        title: v.projectName,
-                        projectName: v.projectName,
-                        name: '',
-                        comprehensiveId: v.comprehensiveId,
-                        constructorId: '',
-                        constructorName: '',
-                        description: v.description,
-                        value: v.projectType,
-                        projectType: v.projectType,
-                        status: v.status,
-                        serviceProjectId: v.serviceProjectId,
-                        children: v.children
-                    };
-                });
-                this.serviceData = [...serviceData, ...this.serviceData];
+                this.serviceData = this.form.seProjectList;
             } catch (err) {
                 console.error(err);
                 catchError(err);
@@ -1233,8 +1167,30 @@ export default {
             // }
             this.pickerVisible = false;
         },
-        async deleteServiceProject(i) {
-            console.log(i);
+        async deleteServiceProject(i, v) {
+            const status = this.serviceData[i].status;
+            try {
+                const result = await this.$message({
+                    title: '提示',
+                    message: '是否删除该项目？',
+                    showCancelButton: true
+                });
+                if (result === 'confirm') {
+                    if (status <= 3) {
+                        this.serviceData = R.remove(i, i + 1, this.serviceData);
+                        // this.handleSelectService(v.title);
+                    } else {
+                        this.$toast({
+                            message: `该项目已${status !== 6 ? '施工' : '完工'}，无法删除。`,
+                            iconClass: 'icon icon-success',
+                            duration: 2000
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            }
         }
     },
     watch: {
