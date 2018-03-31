@@ -11,7 +11,6 @@ const buildSingleUrl = '/construct'; // 单个项目施工
 const accountUrl = '/comprehensive/account';
 const seProjectUrl = '/seproject'; // 保存更新服务项目接口
 const seProjectUpDateUrl = `${seProjectUrl}/updateStatus`; // 更新服务项目状态接口
-
 // 所有服务单-查询
 const request = {
     p: ['get,/comprehensive/index'],
@@ -88,6 +87,10 @@ const seprojectUpdateStatus = {
     p: [`post,${seProjectUpDateUrl}`],
     r: params => config.postJson(seProjectUpDateUrl, params)
 };
+const deleteProject = {
+    p: [`post,${seProjectUrl}`],
+    r: params => config.del(seProjectUrl, params)
+};
 
 export default {
     request,
@@ -100,5 +103,6 @@ export default {
     buildSingle,
     account,
     seproject,
-    seprojectUpdateStatus
+    seprojectUpdateStatus,
+    deleteProject
 };

@@ -4,7 +4,7 @@
             <div class="page-part" :key="i">
                 <mt-cell :title="`${v.carNumber}(${v.brandCode})`"
                 is-link
-                :label="`开单时间：${v.startTime}`"
+                :label="`开单时间：${v.createDate}`"
                 @click.native="handleEditComprehensive(v.comprehensiveId)"
                 >{{v.tel}}</mt-cell>
             </div>
@@ -54,7 +54,7 @@ export default {
                         carNumber: v.seCustomerInfo ? v.seCustomerInfo.carNumber : '',
                         brandCode: v.seCarInfo.brandCode,
                         tel: v.seCustomerInfo ? v.seCustomerInfo.tel : '',
-                        startTime: v.seCustomerInfo ? v.seCustomerInfo.startTime : '',
+                        createDate: v.createDate,
                         carTrainCode: v.seCarInfo.carTrainCode
                     };
                 });

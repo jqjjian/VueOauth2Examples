@@ -25,10 +25,10 @@
             <mt-cell title="车辆颜色：" is-link :value="cacheData.carColor" @click.native="popupColorVisible = true"></mt-cell>
             <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" placeholder="请输入建议保养里程" ></mt-field>
             <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" placeholder="请输入建议保养时间" ></mt-field>
-            <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" placeholder="请输入剩余油量" ></mt-field>
+            <mt-cell title="剩余油量：" is-link v-model="cacheData.innage"  @click.native="popupInnageVisible = true"></mt-cell>
             <mt-cell title="车辆外观状况：" is-link :value="cacheData.appearance" @click.native="sheetVisible = true"></mt-cell>
         </div>
-        <div class="page-part service">
+        <!-- <div class="page-part service">
             <mt-cell title="需求信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
                 <mt-cell-swipe :title="v.title !== '' ? `${i + 1}. ${v.title}` : ''" is-link :right="swipeData" :key="i" @click.native="handleOpenSelectService(i)">
@@ -37,7 +37,6 @@
                 <mt-field v-if="v.title !== ''" v-model="v.describe" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
             </template>
             <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
-            <!-- <mt-cell is-link>备注</mt-cell> -->
         </div>
         <div class="page-part">
             <mt-cell title="服务报价信息"></mt-cell>
@@ -47,11 +46,11 @@
                     <mt-button type="primary" size="small">添加工时</mt-button>
                 </mt-cell>
             </template>
-        </div>
+        </div> -->
         <div class="page-part">
-            <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
-            <br>
-            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button>
+            <!-- <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
+            <br> -->
+            <mt-button type="primary" size="large" @click.native="comprehensiveSubmit">{{btnText}}</mt-button>
         </div>
         <mt-popup
         :modal="false"
@@ -182,6 +181,30 @@
                 </mt-index-list> -->
             </div>
         </mt-popup>
+        <mt-popup
+        v-model="popupInnageVisible"
+        popup-transition="popup-fade"
+        class="mint-popup-select-list"
+        >
+            <div class="select-list-wrap" :class="[popupInnageVisible ? 'active' : '']">
+                <mt-radio
+                title="选择剩余油量："
+                v-model="cacheData._innage"
+                :options="innageData"
+                @change="handleSelectInnager"
+                >
+                </mt-radio>
+                <!-- <mt-index-list>
+                    <template v-for="(v, i) in selectCarYearindex">
+                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
+                            <template v-for="(j, k) in selectCarYearObj[v].children">
+                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
+                            </template>
+                        </mt-index-section>
+                    </template>
+                </mt-index-list> -->
+            </div>
+        </mt-popup>
         <mt-actionsheet
         :actions="actions"
         v-model="sheetVisible">
@@ -218,6 +241,7 @@ export default {
             sheetVisible: false,
             popupServiceVisible: false,
             selectServicePopupVisible: false,
+            popupInnageVisible: false,
             selectCarindex: [],
             selectCarObj: {},
             brandName: '',
@@ -374,15 +398,24 @@ export default {
                 carType: '',
                 carModelYear: ''
             },
-            cacheData: {
+            cacheData: { // 缓存数据
                 brandCode: '选择车型',
                 carColor: '请选择车辆颜色',
-                appearance: '请选择辆车辆外观状况'
+                appearance: '请选择辆车辆外观状况',
+                innage: '请选择剩余油量',
+                _innage: ''
             },
+            innageData: [
+                { value: '1', label: '空' },
+                { value: '2', label: '1/4' },
+                { value: '3', label: '1/2' },
+                { value: '4', label: '3/4' },
+                { value: '5', label: '满' }
+            ],
             form: { // 综合服务单
                 // serviceType: [],
                 // comprehensiveCd: '', //
-                // comprehensiveId: 0, //
+                comprehensiveId: '', //
                 // customerRequest: '', //
                 // dispatchReport: 'xxxx', //
                 // errorDescription: '', // 故障描述
@@ -410,11 +443,6 @@ export default {
                     vin: '', // VIN
                     carColor: '' // 车辆颜色
                 },
-                // seCarReport: {
-                //   dataJson: 'string', //
-                //   inspectAdvise: 'string', //
-                //   inspectType: 1 //
-                // },
                 seCustomerInfo: { // 送修人信息
                     carNumber: '', // 车牌号码：
                     customerAddress: '', // 顾客地址
@@ -433,58 +461,17 @@ export default {
                     tel: '' // 手机号码
                     // tipCarOwner: 0, //
                     // workDepartment: 'xxxxx' //
-                },
-                // seExtraProjectList: [
-                //   {
-                //     discount: 50, //
-                //     extraProjectCd: 0, //
-                //     extraProjectName: 'test', //
-                //     number: 5, //
-                //     price: 10, //
-                //     remark: '备注', //
-                //     totalAccount: 50 //
-                //   }
-                // ],
-                seProjectList: [
-                    // {
-                    //     children: [
-                    //         // Array[服务单服务子项目
-                    //         // {
-                    //         //     barCode: 'barCode', // 配件条形码
-                    //         //     discount: 50, // 折扣率
-                    //         //     feeType: 1, // 收费类型 1工时费 2配件费
-                    //         //     number: 5, // 数量
-                    //         //     originalPrice: 10, // 仓库原单价
-                    //         //     price: 10, // 单价
-                    //         //     projectName: 'test', // 名称
-                    //         //     serviceProjectId: 4, // 对应的服务单元项目ID
-                    //         //     totalAccount: 100.6, //金额
-                    //         //     wareDiscount: 50, // 仓库折扣率
-                    //         //     workProjectId: 4 //服务工时项目ID
-                    //         // }
-                    //     ],
-                    //     // constructorId: '4', // 施工员ID
-                    //     // constructorName: 'xxx', // 施工员名称
-                    //     projectName: '', // 服务项目名称
-                    //     projectType: 0 // 项目类型 1：保养 2：钣喷 3：美容 4：洗车 5：机修 6：精品 7：改装 8：轮胎 9：其他 ,
-                    //     // status: 1, // 状态
-                    //     // workProjectId: 4 // 服务工时项目ID
-                    // }
-                ]
-                // totalAccessoryFee: 120.5, //
-                // totalExtraFee: 120.5, //
-                // totalFee: 220.5, //
-                // totalHourFee: 100.5 //
+                }
             }
         };
     },
     computed: {
         btnText () {
-            return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
+            return this.form.comprehensiveId !== '' ? '保存信息' : '确认开单';
         }
     },
     methods: {
-        async handleSelectBrandCode () {
+        async handleSelectBrandCode () { // 查询车品牌
             const vm = this;
             vm.selectCarPopupVisible = true;
             try {
@@ -509,7 +496,7 @@ export default {
             }
             // this.popupVisible = true;
         },
-        async handleSelectCarBrand (brandId, name) {
+        async handleSelectCarBrand (brandId, name) { // 通过车品牌ID获取所有车系
             console.log(brandId);
             const vm = this;
             vm.popupVisible = true;
@@ -535,7 +522,7 @@ export default {
                 catchError(err);
             }
         },
-        async handleSelectCarTrain (styleId, name) {
+        async handleSelectCarTrain (styleId, name) { // 通过车系ID获取该车系年款
             const vm = this;
             vm.yearValue = '';
             vm.selectCatStyleCacheData.carTrain = name;
@@ -554,22 +541,12 @@ export default {
                 } else {
 
                 }
-                // console.log(vm.selectCarYearindex);
-                // for (let v of res.data) {
-                //     if (vm.selectCarYearObj[v.year]) {
-                //         vm.selectCarYearObj[v.year].children.push(v);
-                //     } else {
-                //         vm.selectCarYearObj[v.year] = {
-                //             children: [v]
-                //         };
-                //     }
-                // }
             } catch (err) {
                 console.error(err);
                 catchError(err);
             }
         },
-        async handleSelectCarModelYear (year) {
+        async handleSelectCarModelYear (year) { // 通过年款值获取该年款车型
             const vm = this;
             const styleId = vm.selectCatStyleCacheData.carTrainCode;
             vm.selectCatStyleCacheData.carModelYear = year;
@@ -619,21 +596,22 @@ export default {
                 catchError(err);
             }
         },
-        async saveSubmit () {
-            const serviceData = this.serviceData;
-            if (serviceData.length > 1) {
-                const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
-                this.form.seProjectList = [];
-                for (let v of Object.values(_seProjectList)) {
-                    this.form.seProjectList.push({
-                        projectName: v.title,
-                        projectType: v.value,
-                        description: v.describe,
-                        children: []
-                    });
-                }
-            }
+        async saveSubmit () { // 保存工单
+            // const serviceData = this.serviceData;
+            // if (serviceData.length > 1) {
+            //     const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
+            //     this.form.seProjectList = [];
+            //     for (let v of Object.values(_seProjectList)) {
+            //         this.form.seProjectList.push({
+            //             projectName: v.title,
+            //             projectType: v.value,
+            //             description: v.describe,
+            //             children: []
+            //         });
+            //     }
+            // }
             this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
+            this.form.seCarInfo.carTrainCode = this.selectCatStyleDat.carTrain;
             console.log(this.form);
             try {
                 const { data } = await comprehensiveApi.save.r(this.form);
@@ -704,23 +682,29 @@ export default {
         //     console.log(i);
         //     this.serviceValue.serviceIndex = i;
         // },
-        async comprehensiveSubmit () {
+        handleSelectInnager (v) {
+            console.log(v);
+            this.cacheData.innage = this.innageData[v - 1].label;
+            this.form.seCarInfo.innage = v - 0;
+        },
+        async comprehensiveSubmit () { // 开单 | 保存服务单信息
             console.log('submit');
-            this.comprehensiveStatus++;
-            const serviceData = this.serviceData;
-            if (serviceData.length > 1) {
-                const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
-                this.form.seProjectList = [];
-                for (let v of Object.values(_seProjectList)) {
-                    this.form.seProjectList.push({
-                        projectName: v.title,
-                        projectType: v.value,
-                        description: v.describe,
-                        children: []
-                    });
-                }
-            }
+            // this.comprehensiveStatus++;
+            // const serviceData = this.serviceData;
+            // if (serviceData.length > 1) {
+            //     const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
+            //     this.form.seProjectList = [];
+            //     for (let v of Object.values(_seProjectList)) {
+            //         this.form.seProjectList.push({
+            //             projectName: v.title,
+            //             projectType: v.value,
+            //             description: v.describe,
+            //             children: []
+            //         });
+            //     }
+            // }
             this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
+            // this.form.seCarInfo.innage -= 0;
             console.log(this.form);
             try {
                 const { data } = await comprehensiveApi.save.r(this.form);
@@ -729,8 +713,9 @@ export default {
                 this.form.comprehensiveId = data.comprehensiveId;
                 this.form.createDate = data.createDate;
                 this.form.updateDate = data.updateDate;
+                this.cacheData._innage = this.form.seCarInfo.innage + '';
                 this.$toast({
-                    message: '开单成功!',
+                    message: `${this.form.comprehensiveId !== '' ? '保存' : '开单'}成功!`,
                     iconClass: 'icon icon-success',
                     duration: 2000
                 });
@@ -795,13 +780,6 @@ export default {
             } catch (err) {
                 console.error(err);
                 catchError(err);
-            }
-        },
-        handleSubmit () {
-            if (this.comprehensiveStatus === 1) {
-                this.comprehensiveSubmit();
-            } else {
-                this.changeComprehensiveStatus();
             }
         }
     },

@@ -1,33 +1,33 @@
 <template>
     <div class="container-box">
-        <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
+        <!-- <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
             <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
             <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
-        </div>
-        <div class="page-part">
+        </div> -->
+        <div class="page-part car-info">
             <mt-cell title="送修人信息"></mt-cell>
-            <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" placeholder="请输入送修人名称"></mt-field>
-            <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" placeholder="请输入联系手机号码" type="tel"></mt-field>
-            <mt-field label="车牌号码：" v-model="form.seCustomerInfo.carNumber" placeholder="请输入车牌号码"></mt-field>
-            <mt-field label="住址：" v-model="form.seCustomerInfo.customerAddress" placeholder="请输入住址"></mt-field>
+            <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" readonly disableClear></mt-field>
+            <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" readonly disableClear ></mt-field>
+            <mt-field label="车牌号码：" v-model="form.seCustomerInfo.carNumber" readonly disableClear ></mt-field>
+            <mt-field label="住址：" v-model="form.seCustomerInfo.customerAddress" readonly disableClear></mt-field>
         </div>
-        <div class="page-part">
+        <div class="page-part car-info">
             <mt-cell title="车辆信息"></mt-cell>
-            <mt-cell title="品牌车型" :label="selectCatStyleData.carType" is-link :value="selectCatStyleData.carTrain === '' ? '选择车型' : selectCatStyleData.carTrain" @click.native="handleSelectBrandCode"></mt-cell>
-            <mt-field label="排量：" v-model="form.seCarInfo.displacement" placeholder="请输入排量"></mt-field>
-            <mt-field label="VIN码：" v-model="form.seCarInfo.vin" placeholder="请输入VIN码" type="tel"></mt-field>
-            <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" placeholder="请输入发动机号"></mt-field>
-            <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" placeholder="请输入行驶里程"></mt-field>
-            <mt-cell title="车辆颜色：" is-link :value="cacheData.carColor" @click.native="popupColorVisible = true"></mt-cell>
-            <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" placeholder="请输入建议保养里程"></mt-field>
-            <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" placeholder="请输入建议保养时间"></mt-field>
-            <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" placeholder="请输入剩余油量"></mt-field>
-            <mt-cell title="车辆外观状况：" is-link :value="cacheData.appearance" @click.native="sheetVisible = true"></mt-cell>
+            <mt-field label="品牌车型:" readonly disableClear></mt-field>
+            <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
+            <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
+            <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
+            <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage"  readonly disableClear></mt-field>
+            <mt-field label="车辆颜色：" v-model="cacheData.carColor" readonly disableClear></mt-field>
+            <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance"  readonly disableClear></mt-field>
+            <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime"  readonly disableClear></mt-field>
+            <mt-field label="剩余油量：" v-model="form.seCarInfo.innage"  readonly disableClear></mt-field>
+            <mt-field label="车辆外观状况：" v-model="cacheData.appearance" readonly disableClear></mt-field>
         </div>
         <div class="page-part service">
             <mt-cell title="需求信息"></mt-cell>
             <template v-for="(v, i) in serviceData">
-                <mt-cell-swipe :title="`${i + 1}. ${v.projectName}`"
+                <mt-cell-swipe v-if="serviceData.length !== 0" :title="`${i + 1}. ${v.projectName}`"
                     is-link
                     :right="[ // 服务项目左滑删除样式
                         {
@@ -71,12 +71,12 @@
                 </mt-cell>
             </template>
         </div>
-        <div class="page-part">
+        <!-- <div class="page-part">
             <mt-button type="primary" size="large" @click.native="saveSubmit">{{btnText}}</mt-button>
-            <!-- <br>
-            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button> -->
-        </div>
-        <mt-popup :modal="false" v-model="selectCarPopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
+            <br>
+            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button>
+        </div> -->
+        <!-- <mt-popup :modal="false" v-model="selectCarPopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
             <mt-search v-model="searchValue" :show="showSelectCarList" cancel-text="取消" placeholder="搜索">
                 <mt-index-list class="car-list" ref="list">
                     <template v-for="(v, i) in selectCarindex">
@@ -88,8 +88,8 @@
                     </template>
                 </mt-index-list>
             </mt-search>
-        </mt-popup>
-        <mt-popup v-model="popupVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+        </mt-popup> -->
+        <!-- <mt-popup v-model="popupVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap" :class="[popupVisible ? 'active' : '', popupYearVisible ? 'checked' : '']">
                 <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
                 <mt-index-list>
@@ -102,34 +102,34 @@
                     </template>
                 </mt-index-list>
             </div>
-        </mt-popup>
-        <mt-popup v-model="popupYearVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+        </mt-popup> -->
+        <!-- <mt-popup v-model="popupYearVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap" :class="[popupYearVisible ? 'active' : '']">
                 <mt-radio title="选择年份：" v-model="yearValue" :options="selectCarYearindex" @change="handleSelectCarModelYear">
                 </mt-radio>
             </div>
-        </mt-popup>
+        </mt-popup> -->
         <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
                 <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
                 </mt-radio>
             </div>
         </mt-popup>
-        <mt-popup v-model="popupModelVisible" position="bottom" popup-transition="popup-fade" class="popup-model">
+        <!-- <mt-popup v-model="popupModelVisible" position="bottom" popup-transition="popup-fade" class="popup-model">
             <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择款式：</p>
             <template v-for="(v, i) in selectCarStyle">
                 <mt-cell :title="`${1 + i}. ` + v.modelName" :class="[selectCatStyleCacheData.carType === v.modelName ? 'active' : '']" :key="i" is-link @click.native="handleSelectCarType(v.modelName)">
                 </mt-cell>
             </template>
-        </mt-popup>
-        <mt-popup v-model="popupColorVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+        </mt-popup> -->
+        <!-- <mt-popup v-model="popupColorVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
                 <mt-radio title="选择车辆颜色：" v-model="cacheData.carColor" :options="carColors" @change="handleSelectCarColor">
                 </mt-radio>
             </div>
-        </mt-popup>
-        <mt-actionsheet :actions="actions" v-model="sheetVisible">
-        </mt-actionsheet>
+        </mt-popup> -->
+        <!-- <mt-actionsheet :actions="actions" v-model="sheetVisible">
+        </mt-actionsheet> -->
         <mt-popup :modal="false" v-model="selectServicePopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
             <mt-header fixed title="选择配件">
                 <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
@@ -161,7 +161,7 @@
                 </div>
                 <div class="page-part">
                     <mt-cell title="服务项目"></mt-cell>
-                    <mt-cell :title="serviceData[serviceActive].title">
+                    <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" :title="serviceData[serviceActive].title">
                         <mt-button size="small" type="primary" icon="" class="cell-btn">添加工时</mt-button>
                         <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
                     </mt-cell>
@@ -242,13 +242,12 @@ export default {
     data() {
         return {
             selected: '0',
-            selectCarPopupVisible: false, // 车品牌
-            popupVisible: false, // 车系
-            popupYearVisible: false, // 车年款
-            popupModelVisible: false, // 车型号
-            showSelectCarList: true, // 车品牌
-            popupColorVisible: false, // 车颜色
-            sheetVisible: false, // 车辆情况
+            // popupVisible: false, // 车系
+            // popupYearVisible: false, // 车年款
+            // popupModelVisible: false, // 车型号
+            // showSelectCarList: true, // 车品牌
+            // popupColorVisible: false, // 车颜色
+            // sheetVisible: false, // 车辆情况
             popupServiceVisible: false, // 服务项目
             selectServicePopupVisible: false, // 服务项目信息报价
             selectServicePopupListVisible: false, // 配件列表
@@ -402,15 +401,15 @@ export default {
             ],
             serviceData: [
                 // 服务项目列表状态
-                {
-                    children: [],
-                    title: '',
-                    name: '新增服务项目',
-                    description: '',
-                    value: 0,
-                    status: '',
-                    serviceProjectId: ''
-                }
+                // {
+                //     children: [],
+                //     title: '',
+                //     name: '新增服务项目',
+                //     description: '',
+                //     value: 0,
+                //     status: '',
+                //     serviceProjectId: ''
+                // }
             ],
             serviceActive: 0, // 当前操作服务项目索引
             parts: [], // 当前操作服务项目配件列表
@@ -682,33 +681,33 @@ export default {
         }
     },
     methods: {
-        async handleSelectBrandCode() {
-            const vm = this;
-            vm.selectCarPopupVisible = true;
-            try {
-                const res = await carApi.requestBrand.r();
-                console.log(res);
-                vm.selectCarindex = R.sort((a, b) => (a > b ? 1 : a === b ? 0 : -1), [
-                    ...new Set(R.map(R.prop('firstLetter'))(res.data))
-                ]);
-                console.log(vm.selectCarindex);
-                vm.selectCarObj = {};
-                for (let v of res.data) {
-                    if (vm.selectCarObj[v.firstLetter]) {
-                        vm.selectCarObj[v.firstLetter].children.push(v);
-                    } else {
-                        vm.selectCarObj[v.firstLetter] = {
-                            children: [v]
-                        };
-                    }
-                }
-                console.log('selectCarObj', vm.selectCarObj);
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-            // this.popupVisible = true;
-        },
+        // async handleSelectBrandCode() {
+        //     const vm = this;
+        //     vm.selectCarPopupVisible = true;
+        //     try {
+        //         const res = await carApi.requestBrand.r();
+        //         console.log(res);
+        //         vm.selectCarindex = R.sort((a, b) => (a > b ? 1 : a === b ? 0 : -1), [
+        //             ...new Set(R.map(R.prop('firstLetter'))(res.data))
+        //         ]);
+        //         console.log(vm.selectCarindex);
+        //         vm.selectCarObj = {};
+        //         for (let v of res.data) {
+        //             if (vm.selectCarObj[v.firstLetter]) {
+        //                 vm.selectCarObj[v.firstLetter].children.push(v);
+        //             } else {
+        //                 vm.selectCarObj[v.firstLetter] = {
+        //                     children: [v]
+        //                 };
+        //             }
+        //         }
+        //         console.log('selectCarObj', vm.selectCarObj);
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        //     // this.popupVisible = true;
+        // },
         async handleSelectCarBrand(brandId, name) {
             console.log(brandId);
             const vm = this;
@@ -735,7 +734,7 @@ export default {
                 catchError(err);
             }
         },
-        async handleSelectCarTrain(styleId, name) {
+        async handleSelectCarTrain(styleId, name) { // 选择车系
             const vm = this;
             vm.yearValue = '';
             vm.selectCatStyleCacheData.carTrain = name;
@@ -882,16 +881,16 @@ export default {
         handleSelectCarType(name) {
             this.selectCatStyleCacheData.carType = name;
         },
-        cancelSelectCarType() {
-            this.selectCarPopupVisible = false;
-            this.popupVisible = false;
-            this.popupYearVisible = false;
-            this.popupModelVisible = false;
-            for (let k of Object.keys(this.selectCatStyleCacheData)) {
-                this.selectCatStyleCacheData[k] = '';
-            }
-        },
-        checkedCarType() {
+        // cancelSelectCarType() {
+        //     this.selectCarPopupVisible = false;
+        //     this.popupVisible = false;
+        //     this.popupYearVisible = false;
+        //     this.popupModelVisible = false;
+        //     for (let k of Object.keys(this.selectCatStyleCacheData)) {
+        //         this.selectCatStyleCacheData[k] = '';
+        //     }
+        // },
+        checkedCarType() { // 选择车款
             this.selectCatStyleData = R.merge({}, this.selectCatStyleCacheData);
             this.cancelSelectCarType();
         },
@@ -901,16 +900,39 @@ export default {
             this.popupColorVisible = false;
             console.log(color);
         },
-        handleOpenSelectService(i) {
-            // 打开可选服务项目列表
+        handleOpenSelectService(i) { // 打开可选服务项目列表
             this.popupServiceVisible = true;
             this.serviceValue.serviceIndex = i;
             this.serviceValue.title = i !== null ? this.serviceData[i].projectName : '';
             console.log(this.serviceValue.title);
         },
-        async handleSelectService(v) {
+        async saveServiceProject () { // 保存服务项目
+            try {
+                const { data } = await comprehensiveApi.seproject.r(this.serviceData);
+                console.log('保存服务项目后', data);
+                // this.serviceData = res;
+                R.last(this.serviceData).serviceProjectId = R.last(data).serviceProjectId;
+                // this.serviceData = res.map((v, i) => {
+                //     return {
+                //         title: v.projectName,
+                //         constructorId: '',
+                //         constructorName: '',
+                //         description: v.description,
+                //         value: v.projectType,
+                //         projectName: v.projectName,
+                //         projectType: v.projectType,
+                //         serviceProjectId: v.serviceProjectId,
+                //         status: v.status,
+                //         children: v.children
+                //     };
+                // });
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            }
+        },
+        handleSelectService(v) { // 确定选择服务项目
             console.log(v);
-            // 确定选择服务项目
             const index = this.serviceValue.serviceIndex;
             console.log(index);
             if (index !== null) {
@@ -926,29 +948,8 @@ export default {
                     serviceProjectId: ''
                 });
             }
-            console.log(this.serviceData);
-            // try {
-            //     const res = await comprehensiveApi.seproject.r(this.serviceData);
-            //     console.log('新增服务项目后', res);
-            //     this.serviceData = res.map((v, i) => {
-            //         return {
-            //             title: v.projectName,
-            //             constructorId: '',
-            //             constructorName: '',
-            //             description: v.description,
-            //             value: v.projectType,
-            //             projectName: v.projectName,
-            //             projectType: v.projectType,
-            //             serviceProjectId: v.serviceProjectId,
-            //             status: v.status,
-            //             children: v.children
-            //         };
-            //     });
-            // } catch (err) {
-            //     console.error(err);
-            //     catchError(err);
-            // }
-            // this.popupServiceVisible = false;
+            this.saveServiceProject();
+            this.popupServiceVisible = false;
         },
         // inputFunc (v) {
         //     this.serviceData[this.serviceValue.serviceIndex].describe = v;
@@ -1061,7 +1062,7 @@ export default {
             // }
             this.comprehensiveSubmit();
         },
-        async workStateMethods(i, status) {
+        async workStateMethods(i, status) { // 操作服务项目
             console.log('status', status);
             const that = this;
             const project = that.serviceData[i];
@@ -1105,7 +1106,7 @@ export default {
                 catchError(err);
             }
         },
-        async getFittingindex() {
+        async getFittingindex() { // 获取物料列表
             const that = this;
             that.selectServicePopupListVisible = true;
             if (that.fittingsData[that.selected].length === 0) {
@@ -1168,19 +1169,33 @@ export default {
             this.pickerVisible = false;
         },
         async deleteServiceProject(i, v) {
-            const status = this.serviceData[i].status;
+            const that = this;
+            const status = that.serviceData[i].status;
             try {
-                const result = await this.$message({
+                const result = await that.$message({
                     title: '提示',
                     message: '是否删除该项目？',
                     showCancelButton: true
                 });
                 if (result === 'confirm') {
                     if (status <= 3) {
-                        this.serviceData = R.remove(i, i + 1, this.serviceData);
-                        // this.handleSelectService(v.title);
+                        console.log(that.serviceData);
+                        console.log(that.serviceData);
+                        const res = await comprehensiveApi.deleteProject.r({
+                            params: '',
+                            serviceProjectId: that.serviceData[i].serviceProjectId
+                        });
+                        console.log(res);
+                        if (res.status === 200) {
+                        }
+                        that.serviceData = [...(R.remove(i, 1, that.serviceData))];
+                        that.$toast({
+                            message: `已删除`,
+                            iconClass: 'icon icon-success',
+                            duration: 2000
+                        });
                     } else {
-                        this.$toast({
+                        that.$toast({
                             message: `该项目已${status !== 6 ? '施工' : '完工'}，无法删除。`,
                             iconClass: 'icon icon-success',
                             duration: 2000
@@ -1194,10 +1209,10 @@ export default {
         }
     },
     watch: {
-        selectCarPopupVisible(v) {
-            console.log(v);
-            if (v) this.$refs.list.$el.querySelector('.mint-indexlist-content').style.height = null;
-        }
+        // selectCarPopupVisible(v) {
+        //     console.log(v);
+        //     if (v) this.$refs.list.$el.querySelector('.mint-indexlist-content').style.height = null;
+        // }
     },
     created() {
         this.getServiceType();
@@ -1225,6 +1240,11 @@ export default {
 }
 .page-part {
     padding-bottom: 15px;
+    &.car-info {
+        .mint-cell {
+            min-height: 20px;
+        }
+    }
     .mint-field {
         .mint-cell-title {
             width: 115px;

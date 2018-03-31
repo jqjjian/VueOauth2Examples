@@ -55,32 +55,32 @@ export default [
                                     hide: true
                                 }
                             },
-                            {
-                                path: '/mobile/business-manage/construction',
-                                name: 'construction',
-                                component: () => import('../views/business-manage/construction.vue'),
-                                meta: {
-                                    name: '待施工'
-                                }
-                            },
-                            {
-                                path: '/mobile/business-manage/constructionEdit',
-                                name: 'constructionOperation',
-                                component: () => import('../views/business-manage/construction-operation.vue'),
-                                meta: {
-                                    name: '待施工',
-                                    allow: true,
-                                    hide: true
-                                }
-                            },
-                            {
-                                path: '/mobile/business-manage/quality-inspection',
-                                name: 'quality-inspection',
-                                component: () => import('../views/business-manage/quality-inspection.vue'),
-                                meta: {
-                                    name: '待质检'
-                                }
-                            },
+                            // {
+                            //     path: '/mobile/business-manage/construction',
+                            //     name: 'construction',
+                            //     component: () => import('../views/business-manage/construction.vue'),
+                            //     meta: {
+                            //         name: '待施工'
+                            //     }
+                            // },
+                            // {
+                            //     path: '/mobile/business-manage/constructionEdit',
+                            //     name: 'constructionOperation',
+                            //     component: () => import('../views/business-manage/construction-operation.vue'),
+                            //     meta: {
+                            //         name: '待施工',
+                            //         allow: true,
+                            //         hide: true
+                            //     }
+                            // },
+                            // {
+                            //     path: '/mobile/business-manage/quality-inspection',
+                            //     name: 'quality-inspection',
+                            //     component: () => import('../views/business-manage/quality-inspection.vue'),
+                            //     meta: {
+                            //         name: '待质检'
+                            //     }
+                            // },
                             {
                                 path: '/mobile/business-manage/finance-manage',
                                 name: 'finance-manage',
