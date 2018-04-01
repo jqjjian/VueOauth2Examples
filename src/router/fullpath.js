@@ -2,13 +2,15 @@ export default [
     {
         path: '/',
         name: '首页',
-        component: () => import('../views/index.vue'),
+        // component: () => import('../views/index.vue'),
+        component: () => import('../components/Container.vue'),
         redirect: '/mobile/business-manage',
         children: [
             {
                 path: '/mobile',
                 name: 'mobile',
-                component: () => import('../components/Container.vue'),
+                // component: () => import('../components/Container.vue'),
+                component: () => import('../views/index.vue'),
                 meta: {
                     name: '养车易移动端系统'
                     // icon: 'fa fa-usersetting'
@@ -34,7 +36,9 @@ export default [
                                 name: 'order-price',
                                 component: () => import('../views/business-manage/order-price.vue'),
                                 meta: {
-                                    name: '开单报价'
+                                    name: '开单报价',
+                                    allow: true,
+                                    hide: true
                                 }
                             },
                             {
@@ -42,7 +46,7 @@ export default [
                                 name: 'pending',
                                 component: () => import('../views/business-manage/pending.vue'),
                                 meta: {
-                                    name: '工单列表'
+                                    name: '工单'
                                 }
                             },
                             {

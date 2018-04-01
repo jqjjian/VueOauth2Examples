@@ -2,7 +2,7 @@
     <div style="height: 100%">
         <mt-header fixed :title="title">
             <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
-            <mt-button icon="back" v-if="count" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            <!-- <mt-button icon="back" v-if="count" slot="left" @click.native="$router.back(-1)">返回</mt-button> -->
             <!-- </router-link> -->
             <mt-button icon="more" slot="right"></mt-button>
         </mt-header>
@@ -37,16 +37,17 @@ export default {
     },
     created () {
         this.menus = this.$parent.menuData;
+        console.log('tab', this.menus);
         this.selected = this.menus[1].name;
         this.title = this.menus[1].meta.name;
     },
     watch: {
         $route () {
-            if (this.$route.path === '/mobile/business-manage' || this.$route.path === '/mobile') {
-                this.count = 0;
-            } else {
-                this.count++;
-            }
+            // if (this.$route.path === '/mobile/business-manage' || this.$route.path === '/mobile') {
+            //     this.count = 0;
+            // } else {
+            //     this.count++;
+            // }
             this.title = this.$route.meta.name;
         }
     }

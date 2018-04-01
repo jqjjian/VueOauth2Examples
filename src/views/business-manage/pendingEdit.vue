@@ -235,7 +235,7 @@
 </template>
 
 <script>
-import { carApi, dictionaryApi, comprehensiveApi, fittingApi } from '@/api';
+import { dictionaryApi, comprehensiveApi, fittingApi } from '@/api';
 import { catchError } from '@/util';
 import * as R from 'ramda';
 export default {
@@ -357,25 +357,25 @@ export default {
                 }
             ],
             comprehensiveStatus: 0, // 综合服务单进度状态
-            actions: [
-                // 车外观情况
-                {
-                    name: '不正常',
-                    method: () => {
-                        console.log(this);
-                        this.form.seCarInfo.appearance = 0;
-                        this.cacheData.appearance = '不正常';
-                    }
-                },
-                {
-                    name: '良好',
-                    method: () => {
-                        console.log(this);
-                        this.form.seCarInfo.appearance = 1;
-                        this.cacheData.appearance = '良好';
-                    }
-                }
-            ],
+            // actions: [
+            //     // 车外观情况
+            //     {
+            //         name: '不正常',
+            //         method: () => {
+            //             console.log(this);
+            //             this.form.seCarInfo.appearance = 0;
+            //             this.cacheData.appearance = '不正常';
+            //         }
+            //     },
+            //     {
+            //         name: '良好',
+            //         method: () => {
+            //             console.log(this);
+            //             this.form.seCarInfo.appearance = 1;
+            //             this.cacheData.appearance = '良好';
+            //         }
+            //     }
+            // ],
             swipeData: [
                 // 服务项目左滑删除样式
                 {
@@ -642,10 +642,10 @@ export default {
         };
     },
     computed: {
-        btnText() {
-            // return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
-            return this.comprehensiveStatus === 0 ? '确定开单' : '更新资料';
-        },
+        // btnText() {
+        //     // return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
+        //     return this.comprehensiveStatus === 0 ? '确定开单' : '更新资料';
+        // },
         currentParts() {
             const arr = [
                 {
@@ -708,99 +708,99 @@ export default {
         //     }
         //     // this.popupVisible = true;
         // },
-        async handleSelectCarBrand(brandId, name) {
-            console.log(brandId);
-            const vm = this;
-            vm.popupVisible = true;
-            vm.selectCatStyleCacheData.brand = name;
-            vm.selectCatStyleCacheData.brandCode = brandId;
-            try {
-                const res = await carApi.requestStyle.r({ brandId });
-                console.log(res);
-                vm.selectCarListindex = [...new Set(R.map(R.prop('factoryName'))(res.data))];
-                vm.selectCarListObj = {};
-                console.log('selectCarListindex', vm.selectCarListindex);
-                for (let v of res.data) {
-                    if (vm.selectCarListObj[v.factoryName]) {
-                        vm.selectCarListObj[v.factoryName].children.push(v);
-                    } else {
-                        vm.selectCarListObj[v.factoryName] = {
-                            children: [v]
-                        };
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-        },
-        async handleSelectCarTrain(styleId, name) { // 选择车系
-            const vm = this;
-            vm.yearValue = '';
-            vm.selectCatStyleCacheData.carTrain = name;
-            vm.selectCatStyleCacheData.carTrainCode = styleId;
-            console.log(styleId);
-            try {
-                const res = await carApi.requestYear.r({ styleId });
-                console.log(res);
-                if (res.data.length) {
-                    vm.popupYearVisible = true;
-                    vm.selectCarYearindex = res.data.map(v => {
-                        v.value = v.year;
-                        v.label = v.year + '年';
-                        return v;
-                    });
-                } else {
-                }
-                // console.log(vm.selectCarYearindex);
-                // for (let v of res.data) {
-                //     if (vm.selectCarYearObj[v.year]) {
-                //         vm.selectCarYearObj[v.year].children.push(v);
-                //     } else {
-                //         vm.selectCarYearObj[v.year] = {
-                //             children: [v]
-                //         };
-                //     }
-                // }
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-        },
-        async handleSelectCarModelYear(year) {
-            // 选择年款
-            const vm = this;
-            const styleId = vm.selectCatStyleCacheData.carTrainCode;
-            vm.selectCatStyleCacheData.carModelYear = year;
-            try {
-                const res = await carApi.requestModel.r({ styleId, year });
-                console.log(res);
-                if (res.data.length) {
-                    vm.popupModelVisible = true;
-                    vm.selectCarStyle = res.data;
-                    // vm.selectCarYearindex = res.data.map(v => {
-                    //     v.value = v.year;
-                    //     v.label = v.year + '年';
-                    //     return v;
-                    // });
-                } else {
-                }
-                // console.log(vm.selectCarYearindex);
-                // for (let v of res.data) {
-                //     if (vm.selectCarYearObj[v.year]) {
-                //         vm.selectCarYearObj[v.year].children.push(v);
-                //     } else {
-                //         vm.selectCarYearObj[v.year] = {
-                //             children: [v]
-                //         };
-                //     }
-                // }
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-        },
-        async getServiceType() {
+        // async handleSelectCarBrand(brandId, name) {
+        //     console.log(brandId);
+        //     const vm = this;
+        //     vm.popupVisible = true;
+        //     vm.selectCatStyleCacheData.brand = name;
+        //     vm.selectCatStyleCacheData.brandCode = brandId;
+        //     try {
+        //         const res = await carApi.requestStyle.r({ brandId });
+        //         console.log(res);
+        //         vm.selectCarListindex = [...new Set(R.map(R.prop('factoryName'))(res.data))];
+        //         vm.selectCarListObj = {};
+        //         console.log('selectCarListindex', vm.selectCarListindex);
+        //         for (let v of res.data) {
+        //             if (vm.selectCarListObj[v.factoryName]) {
+        //                 vm.selectCarListObj[v.factoryName].children.push(v);
+        //             } else {
+        //                 vm.selectCarListObj[v.factoryName] = {
+        //                     children: [v]
+        //                 };
+        //             }
+        //         }
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        // },
+        // async handleSelectCarTrain(styleId, name) { // 选择车系
+        //     const vm = this;
+        //     vm.yearValue = '';
+        //     vm.selectCatStyleCacheData.carTrain = name;
+        //     vm.selectCatStyleCacheData.carTrainCode = styleId;
+        //     console.log(styleId);
+        //     try {
+        //         const res = await carApi.requestYear.r({ styleId });
+        //         console.log(res);
+        //         if (res.data.length) {
+        //             vm.popupYearVisible = true;
+        //             vm.selectCarYearindex = res.data.map(v => {
+        //                 v.value = v.year;
+        //                 v.label = v.year + '年';
+        //                 return v;
+        //             });
+        //         } else {
+        //         }
+        //         // console.log(vm.selectCarYearindex);
+        //         // for (let v of res.data) {
+        //         //     if (vm.selectCarYearObj[v.year]) {
+        //         //         vm.selectCarYearObj[v.year].children.push(v);
+        //         //     } else {
+        //         //         vm.selectCarYearObj[v.year] = {
+        //         //             children: [v]
+        //         //         };
+        //         //     }
+        //         // }
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        // },
+        // async handleSelectCarModelYear(year) {
+        //     // 选择年款
+        //     const vm = this;
+        //     const styleId = vm.selectCatStyleCacheData.carTrainCode;
+        //     vm.selectCatStyleCacheData.carModelYear = year;
+        //     try {
+        //         const res = await carApi.requestModel.r({ styleId, year });
+        //         console.log(res);
+        //         if (res.data.length) {
+        //             vm.popupModelVisible = true;
+        //             vm.selectCarStyle = res.data;
+        //             // vm.selectCarYearindex = res.data.map(v => {
+        //             //     v.value = v.year;
+        //             //     v.label = v.year + '年';
+        //             //     return v;
+        //             // });
+        //         } else {
+        //         }
+        //         // console.log(vm.selectCarYearindex);
+        //         // for (let v of res.data) {
+        //         //     if (vm.selectCarYearObj[v.year]) {
+        //         //         vm.selectCarYearObj[v.year].children.push(v);
+        //         //     } else {
+        //         //         vm.selectCarYearObj[v.year] = {
+        //         //             children: [v]
+        //         //         };
+        //         //     }
+        //         // }
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        // },
+        async getServiceType() { // 获取服务项目列表
             try {
                 const { data } = await dictionaryApi.request.r({
                     code: 'TYPE_SERVICE'
@@ -817,44 +817,43 @@ export default {
                 catchError(err);
             }
         },
-        async saveSubmit() { // 保存更新服务单信息
-            // const serviceData = this.serviceData;
-            // if (serviceData.length > 1) {
-            //     const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
-            //     this.form.seProjectList = [];
-            //     for (let v of Object.values(_seProjectList)) {
-            //         this.form.seProjectList.push({
-            //             projectName: v.title,
-            //             projectType: v.value,
-            //             status: v.status,
-            //             description: v.description,
-            //             children: []
-            //         });
-            //     }
-            // }
-            // this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
-            // this.form.seCarInfo.carTrainCode = this.selectCatStyleData.carTrain;
-            // this.form.seCarInfo.brandCode = this.selectCatStyleData.brand;
-            // console.log(this.form);
-            try {
-                const { data } = await comprehensiveApi.save.r(this.form);
-                console.log(data);
-                this.form.comprehensiveCd = data.comprehensiveCd;
-                this.form.comprehensiveId = data.comprehensiveId;
-                this.form.createDate = data.createDate;
-                this.form.updateDate = data.updateDate;
-                this.$toast({
-                    message: '保存成功!',
-                    iconClass: 'icon icon-success',
-                    duration: 2000
-                });
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-        },
-        async saveServiceParts() {
-            // 保存服务项目报价
+        // async saveSubmit() { // 保存更新服务单信息
+        //     // const serviceData = this.serviceData;
+        //     // if (serviceData.length > 1) {
+        //     //     const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
+        //     //     this.form.seProjectList = [];
+        //     //     for (let v of Object.values(_seProjectList)) {
+        //     //         this.form.seProjectList.push({
+        //     //             projectName: v.title,
+        //     //             projectType: v.value,
+        //     //             status: v.status,
+        //     //             description: v.description,
+        //     //             children: []
+        //     //         });
+        //     //     }
+        //     // }
+        //     // this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
+        //     // this.form.seCarInfo.carTrainCode = this.selectCatStyleData.carTrain;
+        //     // this.form.seCarInfo.brandCode = this.selectCatStyleData.brand;
+        //     // console.log(this.form);
+        //     try {
+        //         const { data } = await comprehensiveApi.save.r(this.form);
+        //         console.log(data);
+        //         this.form.comprehensiveCd = data.comprehensiveCd;
+        //         this.form.comprehensiveId = data.comprehensiveId;
+        //         this.form.createDate = data.createDate;
+        //         this.form.updateDate = data.updateDate;
+        //         this.$toast({
+        //             message: '保存成功!',
+        //             iconClass: 'icon icon-success',
+        //             duration: 2000
+        //         });
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        // },
+        async saveServiceParts() { // 保存服务项目报价
             const that = this;
             try {
                 const result = await this.$message({
@@ -878,9 +877,9 @@ export default {
                 catchError(err);
             }
         },
-        handleSelectCarType(name) {
-            this.selectCatStyleCacheData.carType = name;
-        },
+        // handleSelectCarType(name) {
+        //     this.selectCatStyleCacheData.carType = name;
+        // },
         // cancelSelectCarType() {
         //     this.selectCarPopupVisible = false;
         //     this.popupVisible = false;
@@ -890,28 +889,29 @@ export default {
         //         this.selectCatStyleCacheData[k] = '';
         //     }
         // },
-        checkedCarType() { // 选择车款
-            this.selectCatStyleData = R.merge({}, this.selectCatStyleCacheData);
-            this.cancelSelectCarType();
-        },
-        handleSelectCarColor(color) { // 打开选择车辆颜色
-            this.cacheData.carColor = color;
-            this.form.seCarInfo.carColor = color;
-            this.popupColorVisible = false;
-            console.log(color);
-        },
+        // checkedCarType() { // 选择车款
+        //     this.selectCatStyleData = R.merge({}, this.selectCatStyleCacheData);
+        //     this.cancelSelectCarType();
+        // },
+        // handleSelectCarColor(color) { // 打开选择车辆颜色
+        //     this.cacheData.carColor = color;
+        //     this.form.seCarInfo.carColor = color;
+        //     this.popupColorVisible = false;
+        //     console.log(color);
+        // },
         handleOpenSelectService(i) { // 打开可选服务项目列表
             this.popupServiceVisible = true;
             this.serviceValue.serviceIndex = i;
             this.serviceValue.title = i !== null ? this.serviceData[i].projectName : '';
             console.log(this.serviceValue.title);
         },
-        async saveServiceProject () { // 保存服务项目
+        async saveServiceProject () { // 保存选择服务项目
             try {
                 const { data } = await comprehensiveApi.seproject.r(this.serviceData);
-                console.log('保存服务项目后', data);
+                console.log('保存服务项目后', this.serviceData);
                 // this.serviceData = res;
-                R.last(this.serviceData).serviceProjectId = R.last(data).serviceProjectId;
+                const last = R.last(this.serviceData);
+                last.serviceProjectId = R.last(data).serviceProjectId;
                 // this.serviceData = res.map((v, i) => {
                 //     return {
                 //         title: v.projectName,
@@ -939,13 +939,15 @@ export default {
                 this.serviceData[index].projectName = v;
             } else {
                 this.serviceData.push({
+                    children: [],
                     comprehensiveId: this.form.comprehensiveId,
                     constructorId: '',
                     constructorName: '',
                     description: '',
                     projectName: v,
                     projectType: 0,
-                    serviceProjectId: ''
+                    status: 1
+
                 });
             }
             this.saveServiceProject();
@@ -958,69 +960,69 @@ export default {
         //     console.log(i);
         //     this.serviceValue.serviceIndex = i;
         // },
-        async comprehensiveSubmit() {
-            console.log('submit');
-            this.comprehensiveStatus++;
-            const serviceData = this.serviceData;
-            if (serviceData.length > 1) {
-                const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
-                this.form.seProjectList = [];
-                for (let v of Object.values(_seProjectList)) {
-                    this.form.seProjectList.push({
-                        projectName: v.title,
-                        projectType: v.value,
-                        status: v.status,
-                        children: []
-                    });
-                }
-            }
-            this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
-            console.log(this.form);
-            try {
-                const { data } = await comprehensiveApi.save.r(this.form);
-                console.log(data);
-                this.form.comprehensiveCd = data.comprehensiveCd;
-                this.form.comprehensiveId = data.comprehensiveId;
-                this.form.createDate = data.createDate;
-                this.form.updateDate = data.updateDate;
-                this.$toast({
-                    message: '开单成功!',
-                    iconClass: 'icon icon-success',
-                    duration: 2000
-                });
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-        },
-        async changeComprehensiveStatus() {
-            this.comprehensiveStatus++;
-            if (this.comprehensiveStatus === 2) {
-                this.comprehensiveStatus++;
-            }
-            try {
-                const result = await this.$message({
-                    title: '提示',
-                    message: '确定执行此操作？',
-                    showCancelButton: true
-                });
-                if (result === 'confirm') {
-                    const res = await comprehensiveApi.updateSchedule.r({
-                        billId: this.form.comprehensiveId,
-                        status: this.comprehensiveStatus
-                    });
-                    console.log(res);
-                    this.$toast({
-                        message: `已${this.btnText}!`,
-                        iconClass: 'icon icon-success',
-                        duration: 2000
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
-        },
+        // async comprehensiveSubmit() {
+        //     console.log('submit');
+        //     this.comprehensiveStatus++;
+        //     const serviceData = this.serviceData;
+        //     if (serviceData.length > 1) {
+        //         const _seProjectList = R.slice(0, serviceData.length - 1)(serviceData);
+        //         this.form.seProjectList = [];
+        //         for (let v of Object.values(_seProjectList)) {
+        //             this.form.seProjectList.push({
+        //                 projectName: v.title,
+        //                 projectType: v.value,
+        //                 status: v.status,
+        //                 children: []
+        //             });
+        //         }
+        //     }
+        //     this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
+        //     console.log(this.form);
+        //     try {
+        //         const { data } = await comprehensiveApi.save.r(this.form);
+        //         console.log(data);
+        //         this.form.comprehensiveCd = data.comprehensiveCd;
+        //         this.form.comprehensiveId = data.comprehensiveId;
+        //         this.form.createDate = data.createDate;
+        //         this.form.updateDate = data.updateDate;
+        //         this.$toast({
+        //             message: '开单成功!',
+        //             iconClass: 'icon icon-success',
+        //             duration: 2000
+        //         });
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        // },
+        // async changeComprehensiveStatus() {
+        //     this.comprehensiveStatus++;
+        //     if (this.comprehensiveStatus === 2) {
+        //         this.comprehensiveStatus++;
+        //     }
+        //     try {
+        //         const result = await this.$message({
+        //             title: '提示',
+        //             message: '确定执行此操作？',
+        //             showCancelButton: true
+        //         });
+        //         if (result === 'confirm') {
+        //             const res = await comprehensiveApi.updateSchedule.r({
+        //                 billId: this.form.comprehensiveId,
+        //                 status: this.comprehensiveStatus
+        //             });
+        //             console.log(res);
+        //             this.$toast({
+        //                 message: `已${this.btnText}!`,
+        //                 iconClass: 'icon icon-success',
+        //                 duration: 2000
+        //             });
+        //         }
+        //     } catch (err) {
+        //         console.error(err);
+        //         catchError(err);
+        //     }
+        // },
         async handleQuery(id) { // 查询服务单详情
             try {
                 const { data } = await comprehensiveApi.request.r({
@@ -1032,36 +1034,36 @@ export default {
                     endDate: '',
                     orderType: 0,
                     orderStyle: 0,
-                    status: 1,
+                    // status: 1,
                     param: '',
                     page: 1,
                     pageSize: 9999
                 });
                 console.log(data[0]);
                 this.form = R.merge(this.form, data[0]);
-                this.comprehensiveStatus = this.form.status;
+                // this.comprehensiveStatus = this.form.status;
                 // this.selectCatStyleData.carType = this.form.seCarInfo.carType;
                 // this.selectCatStyleData.carTrain = this.form.seCarInfo.carTrainCode;
-                this.selectCatStyleData = R.merge({}, this.form.seCarInfo);
-                this.selectCatStyleData.carTrain = this.form.seCarInfo.carTrainCode;
-                if (this.form.seCarInfo.carColor !== '') {
-                    this.cacheData.carColor = this.form.seCarInfo.carColor;
-                }
-                this.cacheData.appearance = this.actions[this.form.seCarInfo.appearance].name;
+                // this.selectCatStyleData = R.merge({}, this.form.seCarInfo);
+                // this.selectCatStyleData.carTrain = this.form.seCarInfo.carTrainCode;
+                // if (this.form.seCarInfo.carColor !== '') {
+                //     this.cacheData.carColor = this.form.seCarInfo.carColor;
+                // }
+                // this.cacheData.appearance = this.actions[this.form.seCarInfo.appearance].name;
                 this.serviceData = this.form.seProjectList;
             } catch (err) {
                 console.error(err);
                 catchError(err);
             }
         },
-        handleSubmit() {
-            // if (this.comprehensiveStatus === 1) {
-            //     this.comprehensiveSubmit();
-            // } else {
-            //     this.changeComprehensiveStatus();
-            // }
-            this.comprehensiveSubmit();
-        },
+        // handleSubmit() {
+        //     if (this.comprehensiveStatus === 1) {
+        //         this.comprehensiveSubmit();
+        //     } else {
+        //         this.changeComprehensiveStatus();
+        //     }
+        //     this.comprehensiveSubmit();
+        // },
         async workStateMethods(i, status) { // 操作服务项目
             console.log('status', status);
             const that = this;
@@ -1141,7 +1143,7 @@ export default {
             this.numberSlots[0].defaultIndex = 0;
             this.selectNum = '1';
         },
-        onNumberChange(picker, values) {
+        onNumberChange(picker, values) { // 修改配件数量
             console.log(values[0]);
             this.selectNum = values[0];
             if (this.picker === null) {
@@ -1216,10 +1218,10 @@ export default {
     },
     created() {
         this.getServiceType();
-        const id = this.$route.query.id;
-        if (id) {
-            this.handleQuery(id);
-        }
+        // const id = this.$route.query.id;
+        // if (id) {
+        this.handleQuery(this.$route.query.id);
+        // }
     },
     mounted() {}
 };

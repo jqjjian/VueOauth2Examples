@@ -5,9 +5,11 @@
 <script>
 export default {
     name: 'Container',
-    menus: [],
+    // menus: [],
+    menuData: [],
     created () {
-        this.menus = this.$parent.menus;
+        // this.menus = this.$parent.menus;
+        this.menuData = this.$parent.menuData;
     }
 };
 </script>

@@ -39,23 +39,52 @@ export default {
         extendRoutes (allowedRouter) {
             const vm = this;
             const originPath = R.clone(userPath);
-            const newRoute = R.clone(allowedRouter);
+            console.log('新路由', originPath);
+            const newRoute = [...R.clone(allowedRouter), ...R.clone(allowedRouter)];
+            console.log('所有路由', newRoute);
+            newRoute[1].meta.show = false;
+            newRoute[1].component = () => import('./components/Container.vue');
+            // newRoute[1].name = newRoute[1].name + '-sub';
+            // newRoute[1].path = newRoute[1].path + '-sub';
+            // newRoute[1].children = [];
             // const originPath = userPath;
-            for (let v of newRoute[0].children) {
-                const clone = R.merge({}, v);
-                clone.meta.show = false;
-                clone.path = v.path + '-sub';
-                clone.name = v.name + '-sub';
-                clone.component = () => import('./components/Container.vue');
-                if (clone.children && clone.children.length) {
-                    for (let j of clone.children) {
-                        j.path = `${clone.path}/${j.name}`;
+            // for (let v of newRoute[1].children) {
+            //     const clone = R.merge({}, v);
+            //     clone.meta.show = false;
+            //     clone.path = v.path + '-sub';
+            //     clone.name = v.name + '-sub';
+            //     clone.component = () => import('./components/Container.vue');
+            //     if (clone.children && clone.children.length) {
+            //         for (let j of clone.children) {
+            //             j.path = `${clone.path}/${j.name}`;
+            //             j.name = `${j.name}-item`;
+            //         }
+            //     }
+            //     allowedRouter[0].children.push(clone);
+            // }
+            // originPath[0].children = allowedRouter;
+            const rex = new RegExp(newRoute[1].path, 'g');
+            for (let v of newRoute[1].children) {
+                // const clone = R.merge({}, v);
+                v.meta.show = false;
+                v.path = v.path.replace(rex, `${newRoute[1].path}-sub`);
+                console.log(v.path.replace(rex, `${newRoute[1].path}-sub`));
+                v.meta.show = false;
+                v.name = v.name + '-sub';
+                v.component = () => import('./components/Container.vue');
+                if (v.children && v.children.length) {
+                    for (let j of v.children) {
+                        j.path = j.path.replace(rex, `${newRoute[1].path}-sub`);
                         j.name = `${j.name}-item`;
                     }
                 }
-                allowedRouter[0].children.push(clone);
+                // newRoute[1].children.push(clone);
+                // allowedRouter[0].children.push(clone);
             }
-            originPath[0].children = allowedRouter;
+            newRoute[1].name = newRoute[1].name + '-sub';
+            newRoute[1].path = newRoute[1].path + '-sub';
+            originPath[0].children = newRoute;
+            console.log(originPath);
             vm.$router.addRoutes(
                 originPath.concat([
                     {
@@ -159,9 +188,9 @@ export default {
                 console.log('ARRRRR', array);
                 const replyResult = [];
                 array.forEach(function(route) {
-                    console.log('routeeeeee', route);
+                    // console.log('routeeeeee', route);
                     const pathKey = (base ? base + '/' : '') + route.path;
-                    console.log('pathKey', pathKey);
+                    // console.log('pathKey', pathKey);
                     if (hashMenus[pathKey] || route.meta.allow) {
                         console.log(Array.isArray(route.children));
                         if (Array.isArray(route.children)) {
@@ -215,6 +244,7 @@ export default {
                 vm.setInterceptor(resourcePermission);
                 const allowedRouter = vm.getRoutes(userInfo);
                 console.log(allowedRouter);
+
                 // 注入动态路由
                 vm.extendRoutes(allowedRouter);
                 // 保存菜单数据

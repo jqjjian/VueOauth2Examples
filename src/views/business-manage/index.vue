@@ -20,7 +20,6 @@ export default {
         };
     },
     created () {
-        console.log(this.$route);
         this.menus = this.$route.meta.children;
     }
 };
