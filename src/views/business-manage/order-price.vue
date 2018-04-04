@@ -1,227 +1,235 @@
 <template>
-    <div class="container-box">
-        <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
-            <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
-            <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
-        </div>
-        <div class="page-part">
-            <mt-cell title="送修人信息"></mt-cell>
-            <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" placeholder="请输入送修人名称"></mt-field>
-            <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" placeholder="请输入联系手机号码" type="tel"></mt-field>
-            <mt-field label="车牌号码：" v-model="form.seCustomerInfo.carNumber" placeholder="请输入车牌号码"></mt-field>
-            <mt-field label="住址：" v-model="form.seCustomerInfo.customerAddress" placeholder="请输入住址" ></mt-field>
-        </div>
-        <div class="page-part">
-            <mt-cell title="车辆信息"></mt-cell>
-            <mt-cell title="品牌车型"
-            :label="selectCatStyleData.carType"
-            is-link :value="selectCatStyleData.carTrain === '' ? '选择车型' : selectCatStyleData.carTrain"
-            @click.native="handleSelectBrandCode"
-            ></mt-cell>
-            <mt-field label="排量：" v-model="form.seCarInfo.displacement" placeholder="请输入排量"></mt-field>
-            <mt-field label="VIN码：" v-model="form.seCarInfo.vin" placeholder="请输入VIN码" type="tel"></mt-field>
-            <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" placeholder="请输入发动机号"></mt-field>
-            <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" placeholder="请输入行驶里程" ></mt-field>
-            <mt-cell title="车辆颜色：" is-link :value="cacheData.carColor" @click.native="popupColorVisible = true"></mt-cell>
-            <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" placeholder="请输入建议保养里程" ></mt-field>
-            <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" placeholder="请输入建议保养时间" ></mt-field>
-            <mt-cell title="剩余油量：" is-link v-model="cacheData.innage"  @click.native="popupInnageVisible = true"></mt-cell>
-            <mt-cell title="车辆外观状况：" is-link :value="cacheData.appearance" @click.native="sheetVisible = true"></mt-cell>
-        </div>
-        <!-- <div class="page-part service">
-            <mt-cell title="需求信息"></mt-cell>
-            <template v-for="(v, i) in serviceData">
-                <mt-cell-swipe :title="v.title !== '' ? `${i + 1}. ${v.title}` : ''" is-link :right="swipeData" :key="i" @click.native="handleOpenSelectService(i)">
-                    {{v.name}}
-                </mt-cell-swipe>
-                <mt-field v-if="v.title !== ''" v-model="v.describe" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
-            </template>
-            <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
-        </div>
-        <div class="page-part">
-            <mt-cell title="服务报价信息"></mt-cell>
-            <template v-for="(v, i) in serviceData">
-                <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.describe})`" :key="i + 'index'">
-                    <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">进入仓库</mt-button>
-                    <mt-button type="primary" size="small">添加工时</mt-button>
-                </mt-cell>
-            </template>
-        </div> -->
-        <div class="page-part">
-            <!-- <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
-            <br> -->
-            <mt-button type="primary" size="large" @click.native="comprehensiveSubmit">{{btnText}}</mt-button>
-        </div>
-        <mt-popup
-        :modal="false"
-        v-model="selectCarPopupVisible"
-        position="right"
-        class="mint-popup-select-car"
-        popup-transition="popup-fade">
-            <mt-search
-            v-model="searchValue"
-            :show="showSelectCarList"
-            cancel-text="取消"
-            placeholder="搜索">
-                <mt-index-list class="car-list" ref="list">
-                    <template v-for="(v, i) in selectCarindex">
-                        <mt-index-section v-if="selectCarindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarObj[v].children">
-                                <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brand === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list>
-            </mt-search>
-        </mt-popup>
-        <mt-popup
-        v-model="popupVisible"
-        popup-transition="popup-fade"
-        class="mint-popup-select-list"
-        >
-            <div class="select-list-wrap" :class="[popupVisible ? 'active' : '', popupYearVisible ? 'checked' : '']">
-                <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
-                <mt-index-list>
-                    <template v-for="(v, i) in selectCarListindex">
-                        <mt-index-section v-if="selectCarListindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarListObj[v].children">
-                                <mt-cell :title="j.styleName" :class="[selectCatStyleCacheData.carTrain === j.styleName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarTrain(j.id, j.styleName)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list>
+    <div>
+        <mt-header fixed :title="title">
+            <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            <!-- <router-link :to="{name: 'order-price-item'}" slot="right">
+                <mt-button >开单</mt-button>
+            </router-link> -->
+        </mt-header>
+        <div class="container-box">
+            <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
+                <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
+                <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
             </div>
-        </mt-popup>
-        <mt-popup
-        v-model="popupYearVisible"
-        popup-transition="popup-fade"
-        class="mint-popup-select-list"
-        >
-            <div class="select-list-wrap" :class="[popupYearVisible ? 'active' : '']">
-                <mt-radio
-                title="选择年份："
-                v-model="yearValue"
-                :options="selectCarYearindex"
-                @change="handleSelectCarModelYear"
-                >
-                </mt-radio>
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
+            <div class="page-part">
+                <mt-cell title="送修人信息"></mt-cell>
+                <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" placeholder="请输入送修人名称"></mt-field>
+                <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" placeholder="请输入联系手机号码" type="tel"></mt-field>
+                <mt-field label="车牌号码：" v-model="form.seCustomerInfo.carNumber" placeholder="请输入车牌号码"></mt-field>
+                <mt-field label="住址：" v-model="form.seCustomerInfo.customerAddress" placeholder="请输入住址" ></mt-field>
             </div>
-        </mt-popup>
-        <mt-popup
-        v-model="popupServiceVisible"
-        popup-transition="popup-fade"
-        class="mint-popup-select-list"
-        >
-            <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
-                <mt-radio
-                title="选择服务项目："
-                v-model="serviceValue.title"
-                :options="selectServiceindex"
-                @change="handleSelectService"
-                >
-                </mt-radio>
-                <!-- <mt-button type="primary" size="large">确定</mt-button> -->
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
+            <div class="page-part">
+                <mt-cell title="车辆信息"></mt-cell>
+                <mt-cell title="品牌车型"
+                :label="selectCatStyleData.carType"
+                is-link :value="selectCatStyleData.carTrain === '' ? '选择车型' : selectCatStyleData.carTrain"
+                @click.native="handleSelectBrandCode"
+                ></mt-cell>
+                <mt-field label="排量：" v-model="form.seCarInfo.displacement" placeholder="请输入排量"></mt-field>
+                <mt-field label="VIN码：" v-model="form.seCarInfo.vin" placeholder="请输入VIN码" type="tel"></mt-field>
+                <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" placeholder="请输入发动机号"></mt-field>
+                <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" placeholder="请输入行驶里程" ></mt-field>
+                <mt-cell title="车辆颜色：" is-link :value="cacheData.carColor" @click.native="popupColorVisible = true"></mt-cell>
+                <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" placeholder="请输入建议保养里程" ></mt-field>
+                <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" placeholder="请输入建议保养时间" ></mt-field>
+                <mt-cell title="剩余油量：" is-link v-model="cacheData.innage"  @click.native="popupInnageVisible = true"></mt-cell>
+                <mt-cell title="车辆外观状况：" is-link :value="cacheData.appearance" @click.native="sheetVisible = true"></mt-cell>
             </div>
-        </mt-popup>
-        <mt-popup
-        v-model="popupModelVisible"
-        position="bottom"
-        popup-transition="popup-fade"
-        class="popup-model">
-            <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择款式：</p>
-            <template v-for="(v, i) in selectCarStyle">
-                <mt-cell
-                :title="`${1 + i}. ` + v.modelName"
-                :class="[selectCatStyleCacheData.carType === v.modelName ? 'active' : '']"
-                :key="i"
-                is-link
-                @click.native="handleSelectCarType(v.modelName)">
-                </mt-cell>
-            </template>
-        </mt-popup>
-        <mt-popup
-        v-model="popupColorVisible"
-        popup-transition="popup-fade"
-        class="mint-popup-select-list"
-        >
-            <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
-                <mt-radio
-                title="选择车辆颜色："
-                v-model="cacheData.carColor"
-                :options="carColors"
-                @change="handleSelectCarColor"
-                >
-                </mt-radio>
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
+            <!-- <div class="page-part service">
+                <mt-cell title="需求信息"></mt-cell>
+                <template v-for="(v, i) in serviceData">
+                    <mt-cell-swipe :title="v.title !== '' ? `${i + 1}. ${v.title}` : ''" is-link :right="swipeData" :key="i" @click.native="handleOpenSelectService(i)">
+                        {{v.name}}
+                    </mt-cell-swipe>
+                    <mt-field v-if="v.title !== ''" v-model="v.describe" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
+                </template>
+                <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
             </div>
-        </mt-popup>
-        <mt-popup
-        v-model="popupInnageVisible"
-        popup-transition="popup-fade"
-        class="mint-popup-select-list"
-        >
-            <div class="select-list-wrap" :class="[popupInnageVisible ? 'active' : '']">
-                <mt-radio
-                title="选择剩余油量："
-                v-model="cacheData._innage"
-                :options="innageData"
-                @change="handleSelectInnager"
-                >
-                </mt-radio>
-                <!-- <mt-index-list>
-                    <template v-for="(v, i) in selectCarYearindex">
-                        <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
-                            <template v-for="(j, k) in selectCarYearObj[v].children">
-                                <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list> -->
+            <div class="page-part">
+                <mt-cell title="服务报价信息"></mt-cell>
+                <template v-for="(v, i) in serviceData">
+                    <mt-cell v-if="v.title !== ''" :title="v.title" :label="`描述：(${v.describe})`" :key="i + 'index'">
+                        <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">进入仓库</mt-button>
+                        <mt-button type="primary" size="small">添加工时</mt-button>
+                    </mt-cell>
+                </template>
+            </div> -->
+            <div class="page-part">
+                <!-- <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
+                <br> -->
+                <mt-button type="primary" size="large" @click.native="comprehensiveSubmit">{{btnText}}</mt-button>
             </div>
-        </mt-popup>
-        <mt-actionsheet
-        :actions="actions"
-        v-model="sheetVisible">
-        </mt-actionsheet>
-        <mt-popup
-        :modal="false"
-        v-model="selectServicePopupVisible"
-        position="right"
-        class="mint-popup-select-car"
-        popup-transition="popup-fade">
-            <mt-header fixed title="选择配件">
-                <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
-                <mt-button icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
-                <!-- </router-link> -->
-                <!-- <mt-button icon="more" slot="right"></mt-button> -->
-            </mt-header>
-        </mt-popup>
+            <mt-popup
+            :modal="false"
+            v-model="selectCarPopupVisible"
+            position="right"
+            class="mint-popup-select-car"
+            popup-transition="popup-fade">
+                <mt-search
+                v-model="searchValue"
+                :show="showSelectCarList"
+                cancel-text="取消"
+                placeholder="搜索">
+                    <mt-index-list class="car-list" ref="list">
+                        <template v-for="(v, i) in selectCarindex">
+                            <mt-index-section v-if="selectCarindex.length" :index="v" :key="i">
+                                <template v-for="(j, k) in selectCarObj[v].children">
+                                    <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brand === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list>
+                </mt-search>
+            </mt-popup>
+            <mt-popup
+            v-model="popupVisible"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="[popupVisible ? 'active' : '', popupYearVisible ? 'checked' : '']">
+                    <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
+                    <mt-index-list>
+                        <template v-for="(v, i) in selectCarListindex">
+                            <mt-index-section v-if="selectCarListindex.length" :index="v" :key="i">
+                                <template v-for="(j, k) in selectCarListObj[v].children">
+                                    <mt-cell :title="j.styleName" :class="[selectCatStyleCacheData.carTrain === j.styleName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarTrain(j.id, j.styleName)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list>
+                </div>
+            </mt-popup>
+            <mt-popup
+            v-model="popupYearVisible"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="[popupYearVisible ? 'active' : '']">
+                    <mt-radio
+                    title="选择年份："
+                    v-model="yearValue"
+                    :options="selectCarYearindex"
+                    @change="handleSelectCarModelYear"
+                    >
+                    </mt-radio>
+                    <!-- <mt-index-list>
+                        <template v-for="(v, i) in selectCarYearindex">
+                            <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
+                                <template v-for="(j, k) in selectCarYearObj[v].children">
+                                    <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list> -->
+                </div>
+            </mt-popup>
+            <mt-popup
+            v-model="popupServiceVisible"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
+                    <mt-radio
+                    title="选择服务项目："
+                    v-model="serviceValue.title"
+                    :options="selectServiceindex"
+                    @change="handleSelectService"
+                    >
+                    </mt-radio>
+                    <!-- <mt-button type="primary" size="large">确定</mt-button> -->
+                    <!-- <mt-index-list>
+                        <template v-for="(v, i) in selectCarYearindex">
+                            <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
+                                <template v-for="(j, k) in selectCarYearObj[v].children">
+                                    <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list> -->
+                </div>
+            </mt-popup>
+            <mt-popup
+            v-model="popupModelVisible"
+            position="bottom"
+            popup-transition="popup-fade"
+            class="popup-model">
+                <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择款式：</p>
+                <template v-for="(v, i) in selectCarStyle">
+                    <mt-cell
+                    :title="`${1 + i}. ` + v.modelName"
+                    :class="[selectCatStyleCacheData.carType === v.modelName ? 'active' : '']"
+                    :key="i"
+                    is-link
+                    @click.native="handleSelectCarType(v.modelName)">
+                    </mt-cell>
+                </template>
+            </mt-popup>
+            <mt-popup
+            v-model="popupColorVisible"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
+                    <mt-radio
+                    title="选择车辆颜色："
+                    v-model="cacheData.carColor"
+                    :options="carColors"
+                    @change="handleSelectCarColor"
+                    >
+                    </mt-radio>
+                    <!-- <mt-index-list>
+                        <template v-for="(v, i) in selectCarYearindex">
+                            <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
+                                <template v-for="(j, k) in selectCarYearObj[v].children">
+                                    <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list> -->
+                </div>
+            </mt-popup>
+            <mt-popup
+            v-model="popupInnageVisible"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="[popupInnageVisible ? 'active' : '']">
+                    <mt-radio
+                    title="选择剩余油量："
+                    v-model="cacheData._innage"
+                    :options="innageData"
+                    @change="handleSelectInnager"
+                    >
+                    </mt-radio>
+                    <!-- <mt-index-list>
+                        <template v-for="(v, i) in selectCarYearindex">
+                            <mt-index-section v-if="selectCarYearindex.length" :index="v" :key="i">
+                                <template v-for="(j, k) in selectCarYearObj[v].children">
+                                    <mt-cell :title="j.year" :key="k" is-link @click.native="handleSelectCarList(j.id)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list> -->
+                </div>
+            </mt-popup>
+            <mt-actionsheet
+            :actions="actions"
+            v-model="sheetVisible">
+            </mt-actionsheet>
+            <mt-popup
+            :modal="false"
+            v-model="selectServicePopupVisible"
+            position="right"
+            class="mint-popup-select-car"
+            popup-transition="popup-fade">
+                <mt-header fixed title="选择配件">
+                    <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
+                    <mt-button icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
+                    <!-- </router-link> -->
+                    <!-- <mt-button icon="more" slot="right"></mt-button> -->
+                </mt-header>
+            </mt-popup>
+        </div>
     </div>
 </template>
 
@@ -232,6 +240,7 @@ import * as R from 'ramda';
 export default {
     data() {
         return {
+            title: '',
             selectCarPopupVisible: false, // 车品牌
             popupVisible: false, // 车系
             popupYearVisible: false, // 车年款
@@ -795,6 +804,7 @@ export default {
         if (id) {
             this.handleQuery(id);
         }
+        this.title = this.$route.meta.name;
     },
     mounted () {
     }

@@ -1,236 +1,267 @@
 <template>
-    <div class="container-box">
-        <!-- <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
-            <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
-            <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
-        </div> -->
-        <div class="page-part car-info">
-            <mt-cell title="送修人信息"></mt-cell>
-            <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" readonly disableClear></mt-field>
-            <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" readonly disableClear ></mt-field>
-            <mt-field label="车牌号码：" v-model="form.seCustomerInfo.carNumber" readonly disableClear ></mt-field>
-            <mt-field label="住址：" v-model="form.seCustomerInfo.customerAddress" readonly disableClear></mt-field>
-        </div>
-        <div class="page-part car-info">
-            <mt-cell title="车辆信息"></mt-cell>
-            <mt-field label="品牌车型:" readonly disableClear></mt-field>
-            <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
-            <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
-            <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
-            <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage"  readonly disableClear></mt-field>
-            <mt-field label="车辆颜色：" v-model="cacheData.carColor" readonly disableClear></mt-field>
-            <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance"  readonly disableClear></mt-field>
-            <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime"  readonly disableClear></mt-field>
-            <mt-field label="剩余油量：" v-model="form.seCarInfo.innage"  readonly disableClear></mt-field>
-            <mt-field label="车辆外观状况：" v-model="cacheData.appearance" readonly disableClear></mt-field>
-        </div>
-        <div class="page-part service">
-            <mt-cell title="需求信息"></mt-cell>
-            <template v-for="(v, i) in serviceData">
-                <mt-cell-swipe v-if="serviceData.length !== 0" :title="`${i + 1}. ${v.projectName}`"
-                    is-link
-                    :right="[ // 服务项目左滑删除样式
-                        {
-                            content: '取消',
-                            style: {
-                                background: '#ddd',
-                                color: '#fff'
+    <div>
+        <mt-header fixed :title="title">
+            <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            <!-- <router-link :to="{name: 'order-price-item'}" slot="right">
+                <mt-button >开单</mt-button>
+            </router-link> -->
+        </mt-header>
+        <div class="container-box">
+            <!-- <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
+                <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
+                <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
+            </div> -->
+            <div class="page-part car-info">
+                <mt-cell title="送修人信息"></mt-cell>
+                <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" readonly disableClear></mt-field>
+                <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" readonly disableClear></mt-field>
+                <mt-field label="车牌号码：" v-model="form.seCustomerInfo.carNumber" readonly disableClear></mt-field>
+                <mt-field label="住址：" v-model="form.seCustomerInfo.customerAddress" readonly disableClear></mt-field>
+            </div>
+            <div class="page-part car-info">
+                <mt-cell title="车辆信息"></mt-cell>
+                <mt-field label="品牌车型:" readonly disableClear></mt-field>
+                <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
+                <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
+                <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
+                <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" readonly disableClear></mt-field>
+                <mt-field label="车辆颜色：" v-model="cacheData.carColor" readonly disableClear></mt-field>
+                <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" readonly disableClear></mt-field>
+                <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" readonly disableClear></mt-field>
+                <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" readonly disableClear></mt-field>
+                <mt-field label="车辆外观状况：" v-model="cacheData.appearance" readonly disableClear></mt-field>
+            </div>
+            <div class="page-part service">
+                <mt-cell title="需求信息"></mt-cell>
+                <template v-for="(v, i) in serviceData">
+                    <mt-cell-swipe v-if="serviceData.length !== 0" :title="`${i + 1}. ${v.projectName}`" is-link :right="[ // 服务项目左滑删除样式
+                            {
+                                content: '取消',
+                                style: {
+                                    background: '#ddd',
+                                    color: '#fff'
+                                },
+                                handler: () => {
+                                }
                             },
-                            handler: () => {
+                            {
+                                content: '删除',
+                                style: {
+                                    background: 'red',
+                                    color: '#fff'
+                                },
+                                handler() {
+                                    deleteServiceProject(i, v);
+                                }
                             }
-                        },
-                        {
-                            content: '删除',
-                            style: {
-                                background: 'red',
-                                color: '#fff'
-                            },
-                            handler() {
-                                deleteServiceProject(i, v);
-                            }
-                        }
-                    ]"
-                    :key="v.projectName + i + '-index'" @click.native="handleOpenSelectService(i)">
-                </mt-cell-swipe>
-                <mt-field v-model="v.description" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
-            </template>
-            <mt-cell is-link @click.native="handleOpenSelectService(null)">新增服务项目</mt-cell>
-            <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
-            <!-- <mt-cell is-link>备注</mt-cell> -->
-        </div>
-        <div class="page-part">
-            <mt-cell title="服务报价信息"></mt-cell>
-            <template v-for="(v, i) in serviceData">
-                <mt-cell :title="v.projectName" :label="`描述：(${v.description})`" :key="i + 'index'">
-                    <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
-                        <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
-                        <span v-else :key="k.name + j">{{k.name}}</span>
-                    </template>
-                    <!-- <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">报价</mt-button>
-                    <mt-button type="primary" size="small">审批</mt-button> -->
-                </mt-cell>
-            </template>
-        </div>
-        <!-- <div class="page-part">
-            <mt-button type="primary" size="large" @click.native="saveSubmit">{{btnText}}</mt-button>
-            <br>
-            <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button>
-        </div> -->
-        <!-- <mt-popup :modal="false" v-model="selectCarPopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
-            <mt-search v-model="searchValue" :show="showSelectCarList" cancel-text="取消" placeholder="搜索">
-                <mt-index-list class="car-list" ref="list">
-                    <template v-for="(v, i) in selectCarindex">
-                        <mt-index-section v-if="selectCarindex.length" :index="v" :key="i + 'carindex'">
-                            <template v-for="(j, k) in selectCarObj[v].children">
-                                <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brand === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list>
-            </mt-search>
-        </mt-popup> -->
-        <!-- <mt-popup v-model="popupVisible" popup-transition="popup-fade" class="mint-popup-select-list">
-            <div class="select-list-wrap" :class="[popupVisible ? 'active' : '', popupYearVisible ? 'checked' : '']">
-                <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
-                <mt-index-list>
-                    <template v-for="(v, i) in selectCarListindex">
-                        <mt-index-section v-if="selectCarListindex.length" :index="v" :key="i + 'cartitle'">
-                            <template v-for="(j, k) in selectCarListObj[v].children">
-                                <mt-cell :title="j.styleName" :class="[selectCatStyleCacheData.carTrain === j.styleName ? 'active' : '']" :key="k + 'carlist'" is-link @click.native="handleSelectCarTrain(j.id, j.styleName)"></mt-cell>
-                            </template>
-                        </mt-index-section>
-                    </template>
-                </mt-index-list>
+                        ]" :key="v.projectName + i + '-index'" @click.native="handleOpenSelectService(i)">
+                    </mt-cell-swipe>
+                    <mt-field v-model="v.description" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
+                </template>
+                <mt-cell is-link @click.native="handleOpenSelectService(null)">新增服务项目</mt-cell>
+                <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
+                <!-- <mt-cell is-link>备注</mt-cell> -->
             </div>
-        </mt-popup> -->
-        <!-- <mt-popup v-model="popupYearVisible" popup-transition="popup-fade" class="mint-popup-select-list">
-            <div class="select-list-wrap" :class="[popupYearVisible ? 'active' : '']">
-                <mt-radio title="选择年份：" v-model="yearValue" :options="selectCarYearindex" @change="handleSelectCarModelYear">
-                </mt-radio>
-            </div>
-        </mt-popup> -->
-        <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
-            <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
-                <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
-                </mt-radio>
-            </div>
-        </mt-popup>
-        <!-- <mt-popup v-model="popupModelVisible" position="bottom" popup-transition="popup-fade" class="popup-model">
-            <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择款式：</p>
-            <template v-for="(v, i) in selectCarStyle">
-                <mt-cell :title="`${1 + i}. ` + v.modelName" :class="[selectCatStyleCacheData.carType === v.modelName ? 'active' : '']" :key="i" is-link @click.native="handleSelectCarType(v.modelName)">
-                </mt-cell>
-            </template>
-        </mt-popup> -->
-        <!-- <mt-popup v-model="popupColorVisible" popup-transition="popup-fade" class="mint-popup-select-list">
-            <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
-                <mt-radio title="选择车辆颜色：" v-model="cacheData.carColor" :options="carColors" @change="handleSelectCarColor">
-                </mt-radio>
-            </div>
-        </mt-popup> -->
-        <!-- <mt-actionsheet :actions="actions" v-model="sheetVisible">
-        </mt-actionsheet> -->
-        <mt-popup :modal="false" v-model="selectServicePopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
-            <mt-header fixed title="选择配件">
-                <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
-                <mt-button icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
-                <mt-button slot="right" @click.native="saveServiceParts">保存</mt-button>
-                <!-- </router-link> -->
-                <!-- <mt-button icon="more" slot="right"></mt-button> -->
-            </mt-header>
-            <div class="container-box scroll">
-                <div class="page-part info">
-                    <mt-cell title="车辆信息"></mt-cell>
-                    <!-- <mt-cell title="品牌车型"
-                    :label="selectCatStyleData.carType"
-                    is-link :value="selectCatStyleData.carTrain === '' ? '选择车型' : selectCatStyleData.carTrain"
-                    @click.native="handleSelectBrandCode"
-                    ></mt-cell> -->
-                    <mt-field label="车牌号：" v-model="form.seCustomerInfo.carNumber" readonly disableClear></mt-field>
-                    <mt-cell is-link :title="`车型：${form.seCarInfo.brandCode}`" :label="form.seCarInfo.carType">{{form.seCarInfo.carTrainCode}}</mt-cell>
-                    <!-- <mt-field label="车型：" v-model="form.seCarInfo.carType" readonly disableClear></mt-field> -->
-                    <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
-                    <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
-                    <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
-                    <!-- <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" readonly disableClear></mt-field>
-                    <mt-field label="车辆颜色：" v-model="form.carColor" readonly disableClear></mt-field>
-                    <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" readonly disableClear></mt-field>
-                    <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" readonly disableClear></mt-field>
-                    <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" readonly disableClear></mt-field>
-                    <mt-field label="车辆外观状况：" v-model="form.seCarInfo.appearance" readonly disableClear></mt-field> -->
-                </div>
-                <div class="page-part">
-                    <mt-cell title="服务项目"></mt-cell>
-                    <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" :title="serviceData[serviceActive].title">
-                        <mt-button size="small" type="primary" icon="" class="cell-btn">添加工时</mt-button>
-                        <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
+            <div class="page-part">
+                <mt-cell title="服务报价信息"></mt-cell>
+                <template v-for="(v, i) in serviceData">
+                    <mt-cell :title="v.projectName" :label="`描述：(${v.description})`" :key="i + 'index'">
+                        <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
+                            <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                            <span v-else :key="k.name + j">{{k.name}}</span>
+                        </template>
+                        <!-- <mt-button type="primary" size="small" class="cell-btn" @click.native="selectServicePopupVisible = true">报价</mt-button>
+                        <mt-button type="primary" size="small">审批</mt-button> -->
                     </mt-cell>
-                    <template v-for="(v, i) in currentParts">
-                        <div class="accessories-title" :key="v.name + i">{{v.name}}：</div>
-                        <template v-for="(k, j) in v.children">
-                            <mt-cell-swipe :key="'swipe' + j" v-if="v.children.length" class="accessories-item" :right="del" :title="`${j + 1}.${k.materialName}`" :label="`编码：${k.materialId}`">{{`数量：${k.number}`}}</mt-cell-swipe>
-                        </template>
-                    </template>
-                    <mt-palette-button class="addPart" content="+" mainButtonStyle="color:#fff;background-color:#26a2ff;" @click.native="getFittingindex">
-                        <div class="my-icon-button"></div>
-                    </mt-palette-button>
-                </div>
+                </template>
             </div>
-        </mt-popup>
-        <mt-popup :modal="false" v-model="selectServicePopupListVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
-            <mt-header fixed title="选择配件">
-                <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
-                <mt-button icon="back" slot="left" @click.native="selectServicePopupListVisible = false">返回</mt-button>
-                <!-- </router-link> -->
-                <!-- <mt-button icon="more" slot="right"></mt-button> -->
-            </mt-header>
-            <div class="parts-list container-box">
-                <div class="page-part">
-                    <mt-navbar v-model="selected">
-                        <template v-for="(v, i) in ['配件', '材料', '设备']">
-                            <mt-tab-item :id="`${i}`" :key="v + i + 'material'">{{v}}</mt-tab-item>
+            <!-- <div class="page-part">
+                <mt-button type="primary" size="large" @click.native="saveSubmit">{{btnText}}</mt-button>
+                <br>
+                <mt-button type="primary" size="large" @click.native="handleSubmit">{{btnText}}</mt-button>
+            </div> -->
+            <!-- <mt-popup :modal="false" v-model="selectCarPopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
+                <mt-search v-model="searchValue" :show="showSelectCarList" cancel-text="取消" placeholder="搜索">
+                    <mt-index-list class="car-list" ref="list">
+                        <template v-for="(v, i) in selectCarindex">
+                            <mt-index-section v-if="selectCarindex.length" :index="v" :key="i + 'carindex'">
+                                <template v-for="(j, k) in selectCarObj[v].children">
+                                    <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brand === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
+                                </template>
+                            </mt-index-section>
                         </template>
-                    </mt-navbar>
+                    </mt-index-list>
+                </mt-search>
+            </mt-popup> -->
+            <!-- <mt-popup v-model="popupVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+                <div class="select-list-wrap" :class="[popupVisible ? 'active' : '', popupYearVisible ? 'checked' : '']">
+                    <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
+                    <mt-index-list>
+                        <template v-for="(v, i) in selectCarListindex">
+                            <mt-index-section v-if="selectCarListindex.length" :index="v" :key="i + 'cartitle'">
+                                <template v-for="(j, k) in selectCarListObj[v].children">
+                                    <mt-cell :title="j.styleName" :class="[selectCatStyleCacheData.carTrain === j.styleName ? 'active' : '']" :key="k + 'carlist'" is-link @click.native="handleSelectCarTrain(j.id, j.styleName)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list>
                 </div>
-                <mt-tab-container v-model="selected">
-                    <template v-for="(n, j) in 3">
-                        <mt-tab-container-item :id="`${j}`" :key="'index' + j + 'part'">
+            </mt-popup> -->
+            <!-- <mt-popup v-model="popupYearVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+                <div class="select-list-wrap" :class="[popupYearVisible ? 'active' : '']">
+                    <mt-radio title="选择年份：" v-model="yearValue" :options="selectCarYearindex" @change="handleSelectCarModelYear">
+                    </mt-radio>
+                </div>
+            </mt-popup> -->
+            <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+                <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
+                    <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
+                    </mt-radio>
+                </div>
+            </mt-popup>
+            <!-- <mt-popup v-model="popupModelVisible" position="bottom" popup-transition="popup-fade" class="popup-model">
+                <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择款式：</p>
+                <template v-for="(v, i) in selectCarStyle">
+                    <mt-cell :title="`${1 + i}. ` + v.modelName" :class="[selectCatStyleCacheData.carType === v.modelName ? 'active' : '']" :key="i" is-link @click.native="handleSelectCarType(v.modelName)">
+                    </mt-cell>
+                </template>
+            </mt-popup> -->
+            <!-- <mt-popup v-model="popupColorVisible" popup-transition="popup-fade" class="mint-popup-select-list">
+                <div class="select-list-wrap" :class="[popupColorVisible ? 'active' : '']">
+                    <mt-radio title="选择车辆颜色：" v-model="cacheData.carColor" :options="carColors" @change="handleSelectCarColor">
+                    </mt-radio>
+                </div>
+            </mt-popup> -->
+            <!-- <mt-actionsheet :actions="actions" v-model="sheetVisible">
+            </mt-actionsheet> -->
+            <mt-popup :modal="false" v-model="selectServicePopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
+                <mt-header fixed title="选择配件">
+                    <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
+                    <mt-button icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
+                    <mt-button slot="right" @click.native="saveServiceParts">保存</mt-button>
+                    <!-- </router-link> -->
+                    <!-- <mt-button icon="more" slot="right"></mt-button> -->
+                </mt-header>
+                <div class="container-box scroll">
+                    <div class="page-part info">
+                        <mt-cell title="车辆信息"></mt-cell>
+                        <!-- <mt-cell title="品牌车型"
+                        :label="selectCatStyleData.carType"
+                        is-link :value="selectCatStyleData.carTrain === '' ? '选择车型' : selectCatStyleData.carTrain"
+                        @click.native="handleSelectBrandCode"
+                        ></mt-cell> -->
+                        <mt-field label="车牌号：" v-model="form.seCustomerInfo.carNumber" readonly disableClear></mt-field>
+                        <mt-cell is-link :title="`车型：${form.seCarInfo.brandCode}`" :label="form.seCarInfo.carType">{{form.seCarInfo.carTrainCode}}</mt-cell>
+                        <!-- <mt-field label="车型：" v-model="form.seCarInfo.carType" readonly disableClear></mt-field> -->
+                        <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
+                        <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
+                        <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
+                        <!-- <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" readonly disableClear></mt-field>
+                        <mt-field label="车辆颜色：" v-model="form.carColor" readonly disableClear></mt-field>
+                        <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" readonly disableClear></mt-field>
+                        <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" readonly disableClear></mt-field>
+                        <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" readonly disableClear></mt-field>
+                        <mt-field label="车辆外观状况：" v-model="form.seCarInfo.appearance" readonly disableClear></mt-field> -->
+                    </div>
+                    <div class="page-part">
+                        <mt-cell title="服务项目"></mt-cell>
+                        <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" :title="serviceData[serviceActive].projectName">
+                            <mt-button size="small" type="primary" icon="" class="cell-btn">添加工时</mt-button>
+                            <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
+                        </mt-cell>
+                        <template v-for="(v, i) in currentParts">
+                            <div class="accessories-title" :key="v.name + i">{{v.name}}：</div>
+                            <template v-for="(k, j) in v.children">
+                                <mt-cell-swipe :key="'swipe' + j" v-if="v.children.length" class="accessories-item" :right="[ // 配件左滑删除样式
+                                    {
+                                        content: '取消',
+                                        style: {
+                                            background: '#ddd',
+                                            color: '#fff'
+                                        },
+                                        handler: () => {
+                                        }
+                                    },
+                                    {
+                                        content: '删除',
+                                        style: {
+                                            background: 'red',
+                                            color: '#fff'
+                                        },
+                                        handler() {
+                                            deleteParts(j, k);
+                                        }
+                                    }
+                                ]" :title="`${j + 1}.${k.materialName}`" :label="`编码：${k.code}`">{{`数量：${k.number}`}}</mt-cell-swipe>
+                            </template>
+                        </template>
+                        <mt-palette-button class="addPart" content="+" mainButtonStyle="color:#fff;background-color:#26a2ff;" @click.native="getFittingindex">
+                            <div class="my-icon-button"></div>
+                        </mt-palette-button>
+                    </div>
+                </div>
+            </mt-popup>
+            <mt-popup :modal="false" v-model="selectServicePopupListVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
+                <mt-header fixed title="选择配件">
+                    <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
+                    <mt-button icon="back" slot="left" @click.native="selectServicePopupListVisible = false">返回</mt-button>
+                    <!-- </router-link> -->
+                    <!-- <mt-button icon="more" slot="right"></mt-button> -->
+                </mt-header>
+                <div class="parts-list container-box">
+                    <div class="page-part">
+                        <mt-navbar v-model="selected">
+                            <template v-for="(v, i) in ['配件', '材料', '设备']">
+                                <mt-tab-item :id="`${i}`" :key="v + i + 'material'">{{v}}</mt-tab-item>
+                            </template>
+                        </mt-navbar>
+                    </div>
+                    <mt-tab-container v-model="selected">
+                        <template v-for="(n, j) in 3">
+                            <mt-tab-container-item :id="`${j}`" :key="'index' + j + 'part'">
+                                <template v-for="(v, i) in fittingsData[selected]">
+                                    <mt-cell :title="`${i + 1}.${v.materialName}`" :label="`库存：${v.num} `" :key="v.materialName + i + 'part'">
+                                        <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="openSelectNum(v)">添加</mt-button>
+                                    </mt-cell>
+                                </template>
+                            </mt-tab-container-item>
+                        </template>
+                        <!-- <mt-tab-container-item id="0">
                             <template v-for="(v, i) in fittingsData[selected]">
-                                <mt-cell :title="`${i + 1}.${v.materialName}`" :label="`库存：${v.num} `" :key="v.materialName + i + 'part'">
-                                    <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="openSelectNum(v)">添加</mt-button>
-                                </mt-cell>
+                                <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
                             </template>
                         </mt-tab-container-item>
-                    </template>
-                    <!-- <mt-tab-container-item id="0">
-                        <template v-for="(v, i) in fittingsData[selected]">
-                            <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
-                        </template>
-                    </mt-tab-container-item>
-                    <mt-tab-container-item id="1">
-                        <template v-for="(v, i) in fittingsData[selected]">
-                            <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
-                        </template>
-                    </mt-tab-container-item>
-                    <mt-tab-container-item id="2">
-                        <template v-for="(v, i) in fittingsData[selected]">
-                            <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
-                        </template>
-                    </mt-tab-container-item> -->
-                </mt-tab-container>
-            </div>
-        </mt-popup>
-        <mt-popup v-model="pickerVisible" position="bottom" class="pickerVisible">
-            <mt-cell :title="`选择数量：${selectNum}`">
-                <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="submitAddParts">确定</mt-button>
-            </mt-cell>
-            <mt-picker :slots="numberSlots" @change="onNumberChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
-        </mt-popup>
-        <!-- <mt-actionsheet
-            :actions="actions"
-            v-model="pickerVisible">
-            <div>333</div>
-        </mt-actionsheet> -->
+                        <mt-tab-container-item id="1">
+                            <template v-for="(v, i) in fittingsData[selected]">
+                                <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
+                            </template>
+                        </mt-tab-container-item>
+                        <mt-tab-container-item id="2">
+                            <template v-for="(v, i) in fittingsData[selected]">
+                                <mt-cell :title="`${i + 1}.${v.fittingName}`" :key="v.fittingName + i"></mt-cell>
+                            </template>
+                        </mt-tab-container-item> -->
+                    </mt-tab-container>
+                </div>
+            </mt-popup>
+            <mt-popup v-model="pickerVisible" position="bottom" class="pickerVisible">
+                <mt-cell :title="`金额：${selectNum.replace(/\D/g, '')}`">
+                    <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="submitAddParts">确定</mt-button>
+                </mt-cell>
+                <mt-picker :slots="numberSlots" @change="onNumberChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
+                <mt-cell :title="`数量：${number}`" class="my-range">
+                    <mt-range v-model="number" :min="1" :max="20" :step="1" :bar-height="2" >
+                        <div slot="start">1</div>
+                        <div slot="end">20</div>
+                    </mt-range>
+                </mt-cell>
+            </mt-popup>
+            <!-- <mt-actionsheet
+                :actions="actions"
+                v-model="pickerVisible">
+                <div>333</div>
+            </mt-actionsheet> -->
+        </div>
     </div>
 </template>
 
@@ -241,6 +272,7 @@ import * as R from 'ramda';
 export default {
     data() {
         return {
+            title: '',
             selected: '0',
             // popupVisible: false, // 车系
             // popupYearVisible: false, // 车年款
@@ -634,7 +666,8 @@ export default {
                     textAlign: 'center'
                 }
             ],
-            selectNum: 1, // 配件数量
+            selectNum: '', // 配件数量
+            number: 1,
             picker: null, // 配件数量选择器
             serviceProjectId: 0, // 当前操作服务项目ID
             selectedPart: null,
@@ -667,11 +700,11 @@ export default {
             ];
             this.parts.map((v, i) => {
                 v.index = i;
-                if (v.feeType === 1) {
+                if (v.classifyId === 1) {
                     arr[0].children.push(v);
-                } else if (v.feeType === 2) {
+                } else if (v.classifyId === 2) {
                     arr[1].children.push(v);
-                } else if (v.feeType === 3) {
+                } else if (v.classifyId === 3) {
                     arr[3].children.push(v);
                 } else {
                     arr[2].children.push(v);
@@ -800,7 +833,8 @@ export default {
         //         catchError(err);
         //     }
         // },
-        async getServiceType() { // 获取服务项目列表
+        async getServiceType() {
+            // 获取服务项目列表
             try {
                 const { data } = await dictionaryApi.request.r({
                     code: 'TYPE_SERVICE'
@@ -853,7 +887,8 @@ export default {
         //         catchError(err);
         //     }
         // },
-        async saveServiceParts() { // 保存服务项目报价
+        async saveServiceParts() {
+            // 保存服务项目报价
             const that = this;
             try {
                 const result = await this.$message({
@@ -863,6 +898,7 @@ export default {
                 });
                 if (result === 'confirm') {
                     that.currentService.children = this.parts;
+                    console.log(JSON.stringify(that.currentService));
                     const res = await comprehensiveApi.seproject.r([that.currentService]);
                     console.log(res);
                     this.$toast({
@@ -899,13 +935,15 @@ export default {
         //     this.popupColorVisible = false;
         //     console.log(color);
         // },
-        handleOpenSelectService(i) { // 打开可选服务项目列表
+        handleOpenSelectService(i) {
+            // 打开可选服务项目列表
             this.popupServiceVisible = true;
             this.serviceValue.serviceIndex = i;
             this.serviceValue.title = i !== null ? this.serviceData[i].projectName : '';
             console.log(this.serviceValue.title);
         },
-        async saveServiceProject () { // 保存选择服务项目
+        async saveServiceProject() {
+            // 保存选择服务项目
             try {
                 const { data } = await comprehensiveApi.seproject.r(this.serviceData);
                 console.log('保存服务项目后', this.serviceData);
@@ -931,7 +969,8 @@ export default {
                 catchError(err);
             }
         },
-        handleSelectService(v) { // 确定选择服务项目
+        handleSelectService(v) {
+            // 确定选择服务项目
             console.log(v);
             const index = this.serviceValue.serviceIndex;
             console.log(index);
@@ -947,7 +986,6 @@ export default {
                     projectName: v,
                     projectType: 0,
                     status: 1
-
                 });
             }
             this.saveServiceProject();
@@ -1023,7 +1061,8 @@ export default {
         //         catchError(err);
         //     }
         // },
-        async handleQuery(id) { // 查询服务单详情
+        async handleQuery(id) {
+            // 查询服务单详情
             try {
                 const { data } = await comprehensiveApi.request.r({
                     accountSquared: '',
@@ -1064,7 +1103,8 @@ export default {
         //     }
         //     this.comprehensiveSubmit();
         // },
-        async workStateMethods(i, status) { // 操作服务项目
+        async workStateMethods(i, status) {
+            // 操作服务项目
             console.log('status', status);
             const that = this;
             const project = that.serviceData[i];
@@ -1108,7 +1148,8 @@ export default {
                 catchError(err);
             }
         },
-        async getFittingindex() { // 获取物料列表
+        async getFittingindex() {
+            // 获取物料列表
             const that = this;
             that.selectServicePopupListVisible = true;
             if (that.fittingsData[that.selected].length === 0) {
@@ -1136,6 +1177,7 @@ export default {
             // 配件数量选择
             console.log('配件', part);
             this.selectedPart = part;
+            this.numberSlots[0].values = part.prices.map(v => `${v.priceName}: ￥${v.price}`);
             this.pickerVisible = true;
             if (this.pciker !== null) {
                 this.picker.setSlotValue(0, '1');
@@ -1143,7 +1185,8 @@ export default {
             this.numberSlots[0].defaultIndex = 0;
             this.selectNum = '1';
         },
-        onNumberChange(picker, values) { // 修改配件数量
+        onNumberChange(picker, values) {
+            // 修改配件数量
             console.log(values[0]);
             this.selectNum = values[0];
             if (this.picker === null) {
@@ -1152,17 +1195,26 @@ export default {
         },
         submitAddParts() {
             // 确定添加配件
-            const partsName = R.map(R.prop('projectName'))(this.parts);
-            const index = partsName.indexOf(this.selectedPart.projectName);
-            console.log(partsName);
-            console.log(index);
+            // const partsName = R.map(R.prop('projectName'))(this.parts);
+            // const index = partsName.indexOf(this.selectedPart.projectName);
+            // console.log(partsName);
+            // console.log(index);
             console.log(this.selectedPart);
-            this.selectedPart.number = this.selectNum;
-            this.selectedPart.feeType = this.selectedPart.classifyId;
-            this.selectedPart.materialId = this.selectedPart.classifyId;
-            this.selectedPart.serviceProjectId = this.currentService.serviceProjectId;
-            this.selectedPart.totalAccount = 0;
-            this.parts.push(this.selectedPart);
+            const part = {
+                barCode: '',
+                feeType: 1,
+                materialId: this.selectedPart.id,
+                materialName: this.selectedPart.materialName,
+                number: this.number,
+                price: this.selectNum,
+                serviceProjectId: this.currentService.serviceProjectId
+            };
+            // this.selectedPart.number = this.selectNum;
+            // this.selectedPart.feeType = 1;
+            // this.selectedPart.materialId = this.selectedPart.id;
+            // this.selectedPart.serviceProjectId = this.currentService.serviceProjectId;
+            // this.selectedPart.totalAccount = 0;
+            this.parts.push(part);
             // if (index !== -1) {
             //     this.parts[index].number += this.selectNum;
             // } else {
@@ -1190,7 +1242,7 @@ export default {
                         console.log(res);
                         if (res.status === 200) {
                         }
-                        that.serviceData = [...(R.remove(i, 1, that.serviceData))];
+                        that.serviceData = [...R.remove(i, 1, that.serviceData)];
                         that.$toast({
                             message: `已删除`,
                             iconClass: 'icon icon-success',
@@ -1208,6 +1260,11 @@ export default {
                 console.error(err);
                 catchError(err);
             }
+        },
+        async deleteParts(i, v) {
+            console.log(i);
+            console.log(v);
+            this.parts = [...R.remove(v.index, 1, this.parts)];
         }
     },
     watch: {
@@ -1221,6 +1278,7 @@ export default {
         // const id = this.$route.query.id;
         // if (id) {
         this.handleQuery(this.$route.query.id);
+        this.title = this.$route.meta.name;
         // }
     },
     mounted() {}
@@ -1238,6 +1296,7 @@ export default {
         width: 100%;
         height: 100%;
         overflow-y: scroll;
+        padding-top: 0;
     }
 }
 .page-part {
@@ -1437,5 +1496,15 @@ export default {
     position: fixed;
     bottom: 15px;
     right: 15px;
+}
+
+.my-range .mint-cell-value {
+    flex: 2.5;
+    position: relative;
+    .mt-range{
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+    }
 }
 </style>

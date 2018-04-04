@@ -1,11 +1,11 @@
 <template>
     <div style="height: 100%">
-        <mt-header fixed :title="title">
-            <!-- <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left"> -->
-            <!-- <mt-button icon="back" v-if="count" slot="left" @click.native="$router.back(-1)">返回</mt-button> -->
-            <!-- </router-link> -->
+        <!-- <mt-header fixed :title="title">
+            <router-link v-if="prevPath !== '/mobile'" :to="prevPath" slot="left">
+                <mt-button icon="back" v-if="count" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            </router-link>
             <mt-button icon="more" slot="right"></mt-button>
-        </mt-header>
+        </mt-header> -->
         <div class="main-content">
             <router-view />
         </div>
