@@ -74,7 +74,7 @@
                         <template v-for="(v, i) in selectCarindex">
                             <mt-index-section v-if="selectCarindex.length" :index="v" :key="i">
                                 <template v-for="(j, k) in selectCarObj[v].children">
-                                    <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brand === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
+                                    <mt-cell :title="j.brandName" :class="[selectCatStyleCacheData.brandCode === j.brandName ? 'active' : '']" :key="k" is-link @click.native="handleSelectCarBrand(j.id, j.brandName)"></mt-cell>
                                 </template>
                             </mt-index-section>
                         </template>
@@ -510,7 +510,7 @@ export default {
             const vm = this;
             vm.popupVisible = true;
             vm.selectCatStyleCacheData.brand = name;
-            vm.selectCatStyleCacheData.brandCode = brandId;
+            vm.selectCatStyleCacheData.brandCode = name;
             try {
                 const res = await carApi.requestStyle.r({brandId});
                 console.log(res);
@@ -622,22 +622,23 @@ export default {
             this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
             this.form.seCarInfo.carTrainCode = this.selectCatStyleDat.carTrain;
             console.log(this.form);
-            try {
-                const { data } = await comprehensiveApi.save.r(this.form);
-                console.log(data);
-                this.form.comprehensiveCd = data.comprehensiveCd;
-                this.form.comprehensiveId = data.comprehensiveId;
-                this.form.createDate = data.createDate;
-                this.form.updateDate = data.updateDate;
-                this.$toast({
-                    message: '保存成功!',
-                    iconClass: 'icon icon-success',
-                    duration: 2000
-                });
-            } catch (err) {
-                console.error(err);
-                catchError(err);
-            }
+            console.log(this.selectCatStyleDat);
+            // try {
+            //     const { data } = await comprehensiveApi.save.r(this.form);
+            //     console.log(data);
+            //     this.form.comprehensiveCd = data.comprehensiveCd;
+            //     this.form.comprehensiveId = data.comprehensiveId;
+            //     this.form.createDate = data.createDate;
+            //     this.form.updateDate = data.updateDate;
+            //     this.$toast({
+            //         message: '保存成功!',
+            //         iconClass: 'icon icon-success',
+            //         duration: 2000
+            //     });
+            // } catch (err) {
+            //     console.error(err);
+            //     catchError(err);
+            // }
         },
         handleSelectCarType (name) {
             this.selectCatStyleCacheData.carType = name;
@@ -713,6 +714,7 @@ export default {
             //     }
             // }
             this.form.seCarInfo = R.merge(this.form.seCarInfo, this.selectCatStyleData);
+            this.form.seCarInfo.carTrainCode = this.selectCatStyleData.carTrain;
             // this.form.seCarInfo.innage -= 0;
             console.log(this.form);
             try {

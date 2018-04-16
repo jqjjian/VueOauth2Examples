@@ -20,16 +20,16 @@
             </div>
             <div class="page-part car-info">
                 <mt-cell title="车辆信息"></mt-cell>
-                <mt-field label="品牌车型:" readonly disableClear></mt-field>
+                <mt-field label="品牌车型:" v-model="brandCode" readonly disableClear></mt-field>
                 <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
                 <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
                 <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
                 <mt-field label="行驶里程：" v-model="form.seCarInfo.mileage" readonly disableClear></mt-field>
-                <mt-field label="车辆颜色：" v-model="cacheData.carColor" readonly disableClear></mt-field>
+                <mt-field label="车辆颜色：" v-model="form.seCarInfo.carColor" readonly disableClear></mt-field>
                 <mt-field label="建议保养里程：" v-model="form.seCarInfo.adviseMileageMaintenance" readonly disableClear></mt-field>
                 <mt-field label="建议保养时间：" v-model="form.seCarInfo.adviseMileageTime" readonly disableClear></mt-field>
-                <mt-field label="剩余油量：" v-model="form.seCarInfo.innage" readonly disableClear></mt-field>
-                <mt-field label="车辆外观状况：" v-model="cacheData.appearance" readonly disableClear></mt-field>
+                <mt-field label="剩余油量：" v-model="innage" readonly disableClear></mt-field>
+                <mt-field label="车辆外观状况：" v-model="appearance" readonly disableClear></mt-field>
             </div>
             <div class="page-part service">
                 <mt-cell title="需求信息"></mt-cell>
@@ -165,14 +165,14 @@
                     </div>
                     <div class="page-part">
                         <mt-cell title="服务项目"></mt-cell>
-                        <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" :title="serviceData[serviceActive].projectName">
-                            <mt-button size="small" type="primary" icon="" class="cell-btn">添加工时</mt-button>
+                        <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" :title="`${serviceData[serviceActive].projectName}(总金额：￥${total})`">
+                            <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="handleAddmanHour">添加工时</mt-button>
                             <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
                         </mt-cell>
                         <template v-for="(v, i) in currentParts">
                             <div class="accessories-title" :key="v.name + i">{{v.name}}：</div>
                             <template v-for="(k, j) in v.children">
-                                <mt-cell-swipe :key="'swipe' + j" v-if="v.children.length" class="accessories-item" :right="[ // 配件左滑删除样式
+                                <mt-cell-swipe :key="'swipe' + j + i" v-if="v.children.length" class="accessories-item" :right="[ // 配件左滑删除样式
                                     {
                                         content: '取消',
                                         style: {
@@ -212,7 +212,7 @@
                     <div class="page-part">
                         <mt-navbar v-model="selected">
                             <template v-for="(v, i) in ['配件', '材料', '设备']">
-                                <mt-tab-item :id="`${i}`" :key="v + i + 'material'">{{v}}</mt-tab-item>
+                                <mt-tab-item :id="`${i}`" :key="v + i + 'material'" @click.native="getFittingindex">{{v}}</mt-tab-item>
                             </template>
                         </mt-navbar>
                     </div>
@@ -245,7 +245,7 @@
                 </div>
             </mt-popup>
             <mt-popup v-model="pickerVisible" position="bottom" class="pickerVisible">
-                <mt-cell :title="`金额：${selectNum.replace(/\D/g, '')}`">
+                <mt-cell :title="`金额：${selectNum.replace(/[^0-9\.]/ig, '')}`">
                     <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="submitAddParts">确定</mt-button>
                 </mt-cell>
                 <mt-picker :slots="numberSlots" @change="onNumberChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
@@ -485,9 +485,9 @@ export default {
                 reservationId: 0, // 预约单ID
                 seCarInfo: {
                     // 车辆信息
-                    adviseMileageMaintenance: null, // 建议保养里程
+                    adviseMileageMaintenance: '', // 建议保养里程
                     adviseMileageTime: '', // 建议保养时间
-                    appearance: null, // 车身外观 1 良好 0不正常
+                    appearance: 1, // 车身外观 1 良好 0不正常
                     brandCode: '', // 品牌编码
                     carTrainCode: '', // 车系
                     carModelYear: '', // 车型年款
@@ -495,10 +495,10 @@ export default {
                     displacement: '', // 排量
                     // buyTime: '2016-05-20 15:50:10',
                     engineNumber: '', // 发动机号
-                    innage: null, // 剩余油量
+                    innage: 1, // 剩余油量
                     // insuranceCompany: '', // 投保公司
                     // insuranceEndTime: '2017-06-20 18:00:00', //
-                    mileage: null, // 行驶里程
+                    mileage: '', // 行驶里程
                     // verificationEndTime: '2017-06-20 18:00:00', //
                     vin: '', // VIN
                     carColor: '' // 车辆颜色
@@ -671,13 +671,32 @@ export default {
             picker: null, // 配件数量选择器
             serviceProjectId: 0, // 当前操作服务项目ID
             selectedPart: null,
-            currentService: null
+            currentService: null,
+            brandCode: '',
+            appearance: '',
+            innage: ''
         };
     },
     computed: {
         // btnText() {
         //     // return ['确认开单', '确认审批', '用户确认', '确认施工', '请求质检', '完成质检'][this.comprehensiveStatus];
         //     return this.comprehensiveStatus === 0 ? '确定开单' : '更新资料';
+        // },
+        // brandCode () {
+        //     return `${this.form.seCarInfo.brandCode} ${this.form.seCarInfo.carType}`;
+        // },
+        // appearance() {
+        //     return ['不正常', '良好'][this.form.seCarInfo.appearance];
+        // },
+        // innage() {
+        //     const innageData = [
+        //         { value: '1', label: '空' },
+        //         { value: '2', label: '1/4' },
+        //         { value: '3', label: '1/2' },
+        //         { value: '4', label: '3/4' },
+        //         { value: '5', label: '满' }
+        //     ];
+        //     return `${innageData[this.form.seCarInfo.innage].label}`;
         // },
         currentParts() {
             const arr = [
@@ -696,6 +715,10 @@ export default {
                 {
                     name: '设备',
                     children: []
+                },
+                {
+                    name: '其他',
+                    children: []
                 }
             ];
             this.parts.map((v, i) => {
@@ -706,11 +729,21 @@ export default {
                     arr[1].children.push(v);
                 } else if (v.classifyId === 3) {
                     arr[3].children.push(v);
-                } else {
+                } else if (v.classifyId === 0) {
                     arr[2].children.push(v);
+                } else {
+                    arr[4].children.push(v);
                 }
             });
             return arr;
+        },
+        total() {
+            let _total = 0;
+            for (let v of Object.values(this.parts)) {
+                console.log(v.price);
+                _total += (v.price - 0);
+            }
+            return _total;
         }
     },
     methods: {
@@ -850,6 +883,30 @@ export default {
                 console.error(err);
                 catchError(err);
             }
+        },
+        async handleAddmanHour() {
+            const that = this;
+            try {
+                const result = await that.$prompt(' ', '请输入工时费');
+                console.log(result);
+                if (result.action === 'confirm') {
+                    const part = {
+                        barCode: '',
+                        feeType: 1,
+                        classifyId: 0,
+                        code: '',
+                        materialId: '',
+                        materialName: `￥${result.value}`,
+                        number: 1,
+                        price: result.value,
+                        serviceProjectId: that.currentService.serviceProjectId
+                    };
+                    this.parts.push(part);
+                }
+            } catch (err) {
+                console.error(err);
+                catchError(err);
+            };
         },
         // async saveSubmit() { // 保存更新服务单信息
         //     // const serviceData = this.serviceData;
@@ -1080,6 +1137,16 @@ export default {
                 });
                 console.log(data[0]);
                 this.form = R.merge(this.form, data[0]);
+                this.brandCode = `${this.form.seCarInfo.brandCode}/${this.form.seCarInfo.carTrainCode}/${this.form.seCarInfo.carType}`;
+                this.appearance = ['不正常', '良好'][this.form.seCarInfo.appearance];
+                const innageData = [
+                    { value: '1', label: '空' },
+                    { value: '2', label: '1/4' },
+                    { value: '3', label: '1/2' },
+                    { value: '4', label: '3/4' },
+                    { value: '5', label: '满' }
+                ];
+                this.innage = `${innageData[this.form.seCarInfo.innage - 1].label}`;
                 // this.comprehensiveStatus = this.form.status;
                 // this.selectCatStyleData.carType = this.form.seCarInfo.carType;
                 // this.selectCatStyleData.carTrain = this.form.seCarInfo.carTrainCode;
@@ -1187,7 +1254,6 @@ export default {
         },
         onNumberChange(picker, values) {
             // 修改配件数量
-            console.log(values[0]);
             this.selectNum = values[0];
             if (this.picker === null) {
                 this.picker = picker;
@@ -1200,13 +1266,16 @@ export default {
             // console.log(partsName);
             // console.log(index);
             console.log(this.selectedPart);
+            console.log('金额', this.selectNum);
             const part = {
                 barCode: '',
-                feeType: 1,
+                feeType: 2,
+                classifyId: this.selectedPart.classifyId,
+                code: this.selectedPart.code,
                 materialId: this.selectedPart.id,
                 materialName: this.selectedPart.materialName,
                 number: this.number,
-                price: this.selectNum,
+                price: this.selectNum.replace(/[^0-9.]/ig, '') - 0,
                 serviceProjectId: this.currentService.serviceProjectId
             };
             // this.selectedPart.number = this.selectNum;
@@ -1287,6 +1356,7 @@ export default {
 
 <style lang="postcss">
 .container-box {
+    padding-top: 44px;
     background: #eee;
     &.scroll {
         position: absolute;
@@ -1479,6 +1549,12 @@ export default {
 .parts-list {
     padding-top: 40px;
     .mint-tab-container {
+        position: fixed;
+        width: 100%;
+        left: 0;
+        top: 101px;
+        bottom: 0;
+        overflow-y: scroll;
         background: #fff;
     }
 }
