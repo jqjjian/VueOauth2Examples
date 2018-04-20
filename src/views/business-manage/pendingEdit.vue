@@ -59,7 +59,6 @@
                     <mt-field v-model="v.description" label="描述：" placeholder="服务描述" :key="i + 'index'"></mt-field>
                 </template>
                 <mt-cell is-link @click.native="handleOpenSelectService(null)">新增服务项目</mt-cell>
-                <mt-field label="备注：" v-model="form.remark" placeholder=""></mt-field>
                 <!-- <mt-cell is-link>备注</mt-cell> -->
             </div>
             <div class="page-part">
@@ -166,6 +165,7 @@
                     <div class="page-part">
                         <mt-cell title="服务项目"></mt-cell>
                         <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" :title="`${serviceData[serviceActive].projectName}(总金额：￥${total})`">
+                            <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="getFittingindex">添加物料</mt-button>
                             <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="handleAddmanHour">添加工时</mt-button>
                             <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
                         </mt-cell>
@@ -192,12 +192,12 @@
                                             deleteParts(j, k);
                                         }
                                     }
-                                ]" :title="`${j + 1}.${k.materialName}`" :label="`编码：${k.code}`">{{`数量：${k.number}`}}</mt-cell-swipe>
+                                ]" :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} (单价：￥${k.price})`" :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell-swipe>
                             </template>
                         </template>
-                        <mt-palette-button class="addPart" content="+" mainButtonStyle="color:#fff;background-color:#26a2ff;" @click.native="getFittingindex">
+                        <!-- <mt-palette-button class="addPart" content="+" mainButtonStyle="color:#fff;background-color:#26a2ff;" @click.native="getFittingindex">
                             <div class="my-icon-button"></div>
-                        </mt-palette-button>
+                        </mt-palette-button> -->
                     </div>
                 </div>
             </mt-popup>
@@ -741,7 +741,7 @@ export default {
             let _total = 0;
             for (let v of Object.values(this.parts)) {
                 console.log(v.price);
-                _total += (v.price - 0);
+                _total += (v.price - 0) * v.number;
             }
             return _total;
         }

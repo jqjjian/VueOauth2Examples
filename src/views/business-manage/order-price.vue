@@ -35,6 +35,9 @@
                 <mt-cell title="剩余油量：" is-link v-model="cacheData.innage"  @click.native="popupInnageVisible = true"></mt-cell>
                 <mt-cell title="车辆外观状况：" is-link :value="cacheData.appearance" @click.native="sheetVisible = true"></mt-cell>
             </div>
+            <div class="page-part">
+                <mt-field label="备注：" v-model="form.seCustomerInfo.remark" placeholder="请输入备注信息" ></mt-field>
+            </div>
             <!-- <div class="page-part service">
                 <mt-cell title="需求信息"></mt-cell>
                 <template v-for="(v, i) in serviceData">
@@ -821,7 +824,7 @@ export default {
         padding-bottom: 15px;
         .mint-field {
             .mint-cell-title {
-                width: 115px;
+                width: auto;
                 // text-align: right;
                 span {
                     display: inline-block;
