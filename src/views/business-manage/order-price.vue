@@ -35,6 +35,7 @@
                 <mt-cell title="剩余油量：" is-link v-model="cacheData.innage"  @click.native="popupInnageVisible = true"></mt-cell>
                 <mt-cell title="车辆外观状况：" is-link :value="cacheData.appearance" @click.native="sheetVisible = true"></mt-cell>
             </div>
+            
             <!-- <div class="page-part service">
                 <mt-cell title="需求信息"></mt-cell>
                 <template v-for="(v, i) in serviceData">
