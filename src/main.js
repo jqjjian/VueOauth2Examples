@@ -3,11 +3,11 @@
 import Vue from 'vue';
 import App from './App';
 import 'normalize.css/normalize.css';
-import './assets/css/app.css';
 import MintUI from 'mint-ui';
 import 'mint-ui/lib/style.css';
 import router from './router';
 import store from './store';
+import './assets/css/app.css';
 Vue.use(MintUI);
 Vue.prototype.$toast = MintUI.Toast;
 Vue.prototype.$message = MintUI.MessageBox;

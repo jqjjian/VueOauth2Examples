@@ -1,7 +1,7 @@
 <template>
     <div>
         <mt-header fixed :title="title">
-            <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            <mt-button icon="back" slot="left" @click.native="$router.push({name: 'business-manage'})">返回</mt-button>
             <router-link :to="{name: 'order-price-item'}" slot="right">
                 <mt-button >开单</mt-button>
             </router-link>

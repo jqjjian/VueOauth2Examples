@@ -36,7 +36,7 @@ export default [
                                 name: 'order-price',
                                 component: () => import('../views/business-manage/order-price.vue'),
                                 meta: {
-                                    name: '开单报价',
+                                    name: '编辑工单',
                                     allow: true,
                                     hide: true
                                 }

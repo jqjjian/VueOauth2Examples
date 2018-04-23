@@ -699,6 +699,7 @@ export default {
             console.log(v);
             this.cacheData.innage = this.innageData[v - 1].label;
             this.form.seCarInfo.innage = v - 0;
+            this.popupInnageVisible = false;
         },
         async comprehensiveSubmit () { // 开单 | 保存服务单信息
             console.log('submit');
@@ -732,6 +733,12 @@ export default {
                     message: `${this.form.comprehensiveId !== '' ? '保存' : '开单'}成功!`,
                     iconClass: 'icon icon-success',
                     duration: 2000
+                });
+                this.$router.push({
+                    name: 'pendingEdit-item',
+                    query: {
+                        id: data.comprehensiveId
+                    }
                 });
             } catch (err) {
                 console.error(err);
