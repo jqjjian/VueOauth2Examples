@@ -38,7 +38,7 @@
             <div class="page-part service">
                 <mt-cell :title="`服务项目信息 （总费用：￥${allTotal}）`" class="bold"><mt-button type="primary" size="small" @click.native="handleOpenSelectService(null)">添加</mt-button></mt-cell>
                 <template v-for="(v, i) in serviceData">
-                    <mt-cell-swipe :label="v.description" v-if="serviceData.length !== 0" :title="`${i + 1}. ${v.projectName}`" :right="[ // 服务项目左滑删除样式
+                    <mt-cell-swipe :label="`备注：${v.description}`" v-if="serviceData.length !== 0" :title="`${i + 1}. ${v.projectName}`" :right="[ // 服务项目左滑删除样式
                             {
                                 content: '取消',
                                 style: {
@@ -187,7 +187,7 @@
                     </div>
                     <div class="page-part">
                         <!-- <mt-cell title="服务项目"></mt-cell> -->
-                        <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" class="bold" :title="`${serviceData[serviceActive].projectName}(总金额：￥${total})`">
+                        <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" class="bold" :label="`备注：${serviceData[serviceActive].description}`" :title="`${serviceData[serviceActive].projectName}(￥${total})`">
                             <mt-button v-if="selectServiceEdit" size="small" type="primary" icon="" class="cell-btn" @click.native="getFittingindex">添加物料</mt-button>
                             <mt-button v-if="selectServiceEdit" size="small" type="primary" icon="" class="cell-btn" @click.native="handleAddmanHour">添加工时</mt-button>
                             <!-- <mt-button size="small" type="primary" icon="" @click.native="getFittingindex">添加配件</mt-button> -->
@@ -218,7 +218,7 @@
                                         }
                                     ]"
                                     :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} (单价：￥${k.price})`"
-                                    :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell-swipe>
+                                    :label=" i !== 2 ? `编码：${k.code}` : ''"><button class="my-input-button" @click.stop="handleChangeNumber(i, j, -1)">－</button>{{k.number}}<button class="my-input-button" @click.stop="handleChangeNumber(i, j, 1)">＋</button></mt-cell-swipe>
                                     <mt-cell :key="'swipe' + j + i" v-else
                                     :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} (单价：￥${k.price})`"
                                     :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell>
@@ -276,15 +276,16 @@
             </mt-popup>
             <mt-popup v-model="pickerVisible" position="bottom" class="pickerVisible">
                 <mt-cell :title="`金额：${selectNum.replace(/[^0-9\.]/ig, '')}`">
+                    <button class="my-input-button" @click.stop="changeNumber(-1)">－</button>{{number}}<button class="my-input-button" @click.stop="changeNumber(1)">＋</button>
                     <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="submitAddParts">确定</mt-button>
                 </mt-cell>
                 <mt-picker :slots="numberSlots" @change="onNumberChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
-                <mt-cell :title="`数量：${number}`" class="my-range">
+                <!-- <mt-cell :title="`数量：${number}`" class="my-range">
                     <mt-range v-model="number" :min="1" :max="20" :step="1" :bar-height="2" >
                         <div slot="start">1</div>
                         <div slot="end">20</div>
                     </mt-range>
-                </mt-cell>
+                </mt-cell> -->
             </mt-popup>
             <!-- <mt-actionsheet
                 :actions="actions"
@@ -788,6 +789,12 @@ export default {
         }
     },
     methods: {
+        changeNumber(num) {
+            this.number += num;
+            if (this.number === 0) {
+                this.number = 1;
+            }
+        },
         showServiceInfo(i) { // 单个项目信息
             console.log(i);
             const project = this.serviceData[i];
@@ -1336,6 +1343,15 @@ export default {
             this.selectNum = values[0];
             if (this.picker === null) {
                 this.picker = picker;
+            }
+        },
+        handleChangeNumber(i, j, num) {
+            // this.parts[i].number += num;
+            console.log(this.currentParts);
+            const arr = this.currentParts;
+            arr[i].children[j].number += num;
+            if (arr[i].children[j].number === 0) {
+                arr[i].children[j].number = 1;
             }
         },
         submitAddParts() {
