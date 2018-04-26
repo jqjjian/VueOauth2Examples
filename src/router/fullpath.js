@@ -95,6 +95,7 @@ export default [
                             {
                                 path: '/mobile/business-manage/warehouse-manage',
                                 name: 'warehouse-manage',
+                                component: () => import('../views/warehouse-manage/index.vue'),
                                 meta: {
                                     name: '仓库管理'
                                 }
