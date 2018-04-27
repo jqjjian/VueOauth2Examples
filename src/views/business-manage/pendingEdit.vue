@@ -198,12 +198,17 @@
                                 <template v-for="(k, j) in v.children">
                                     <mt-cell-swipe :key="'swipe' + j + i" v-if="selectServiceEdit" class="accessories-item" :right="[ // 配件左滑删除样式
                                         {
-                                            content: '取消',
+                                            content: '修改',
                                             style: {
-                                                background: '#ddd',
+                                                background: '#26a2ff',
                                                 color: '#fff'
                                             },
-                                            handler: () => {
+                                            handler() {
+                                                editParts({
+                                                    pIndex: i,
+                                                    cIndex: j,
+                                                    part: k
+                                                });
                                             }
                                         },
                                         {
@@ -217,10 +222,10 @@
                                             }
                                         }
                                     ]"
-                                    :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} (单价：￥${k.price})`"
+                                    :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} `"
                                     :label=" i !== 2 ? `编码：${k.code}` : ''"><button class="my-input-button" @click.stop="handleChangeNumber(i, j, -1)">－</button>{{k.number}}<button class="my-input-button" @click.stop="handleChangeNumber(i, j, 1)">＋</button></mt-cell-swipe>
                                     <mt-cell :key="'swipe' + j + i" v-else
-                                    :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} (单价：￥${k.price})`"
+                                    :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} `"
                                     :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell>
                                 </template>
                             </div>
@@ -279,7 +284,7 @@
                     <button class="my-input-button" @click.stop="changeNumber(-1)">－</button>{{number}}<button class="my-input-button" @click.stop="changeNumber(1)">＋</button>
                     <mt-button size="small" type="primary" icon="" class="cell-btn" @click.native="submitAddParts">确定</mt-button>
                 </mt-cell>
-                <mt-picker :slots="numberSlots" @change="onNumberChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
+                <mt-picker :slots="numberSlots" @change="onPriceChange" :visible-item-count="3" :show-toolbar="false"></mt-picker>
                 <!-- <mt-cell :title="`数量：${number}`" class="my-range">
                     <mt-range v-model="number" :min="1" :max="20" :step="1" :bar-height="2" >
                         <div slot="start">1</div>
@@ -316,6 +321,7 @@ export default {
             selectServiceEdit: true,
             selectServicePopupListVisible: false, // 配件列表
             pickerVisible: false, // 配件计数器
+            editPartsPrice: false, // 是否在修改价格
             selectCarindex: [], // 车品牌列表
             selectCarObj: {}, // 排序后车品牌列表
             // brandName: '',
@@ -333,46 +339,6 @@ export default {
             selectCarYearindex: [], // 车年款
             selectServiceindex: [
                 // 服务项目列表
-                // {
-                //     label: '机修',
-                //     value: '机修'
-                // },
-                // {
-                //     label: '保养',
-                //     value: '保养'
-                // },
-                // {
-                //     label: '电子',
-                //     value: '电子'
-                // },
-                // {
-                //     label: '美容',
-                //     value: '美容'
-                // },
-                // {
-                //     label: '钣金',
-                //     value: '钣金'
-                // },
-                // {
-                //     label: '喷漆',
-                //     value: '喷漆'
-                // },
-                // {
-                //     label: '精品',
-                //     value: '精品'
-                // },
-                // {
-                //     label: '内饰翻新',
-                //     value: '内饰翻新'
-                // },
-                // {
-                //     label: '轮胎',
-                //     value: '轮胎'
-                // },
-                // {
-                //     label: '其他',
-                //     value: '其他'
-                // }
             ],
             // selectCarYearObj: {},
             selectCarStyle: [], // 车款式
@@ -572,32 +538,7 @@ export default {
                 //     totalAccount: 50 //
                 //   }
                 // ],
-                seProjectList: [
-                    // {
-                    //     children: [
-                    //         // Array[服务单服务子项目
-                    //         // {
-                    //         //     barCode: 'barCode', // 配件条形码
-                    //         //     discount: 50, // 折扣率
-                    //         //     feeType: 1, // 收费类型 1工时费 2配件费
-                    //         //     number: 5, // 数量
-                    //         //     originalPrice: 10, // 仓库原单价
-                    //         //     price: 10, // 单价
-                    //         //     projectName: 'test', // 名称
-                    //         //     serviceProjectId: 4, // 对应的服务单元项目ID
-                    //         //     totalAccount: 100.6, //金额
-                    //         //     wareDiscount: 50, // 仓库折扣率
-                    //         //     workProjectId: 4 //服务工时项目ID
-                    //         // }
-                    //     ],
-                    //     // constructorId: '4', // 施工员ID
-                    //     // constructorName: 'xxx', // 施工员名称
-                    //     projectName: '', // 服务项目名称
-                    //     projectType: 0 // 项目类型 1：保养 2：钣喷 3：美容 4：洗车 5：机修 6：精品 7：改装 8：轮胎 9：其他 ,
-                    //     // status: 1, // 状态
-                    //     // workProjectId: 4 // 服务工时项目ID
-                    // }
-                ]
+                seProjectList: []
                 // totalAccessoryFee: 120.5, //
                 // totalExtraFee: 120.5, //
                 // totalFee: 220.5, //
@@ -699,6 +640,7 @@ export default {
                     textAlign: 'center'
                 }
             ],
+            price: '',
             selectNum: '', // 配件数量
             number: 1,
             picker: null, // 配件数量选择器
@@ -789,6 +731,20 @@ export default {
         }
     },
     methods: {
+        async editParts(part) {
+            console.log(part);
+            try {
+                const { data } = await fittingApi.getPrice.r({
+                    fittingId: part.part.materialId
+                });
+                console.log(data);
+                // const values = data.map(v => `${v.priceName}: ￥${v.price}`);
+                // this.editPartsPrice = true;
+                this.openSelectNum(part, data);
+            } catch (err) {
+                console.error(err);
+            }
+        },
         changeNumber(num) {
             this.number += num;
             if (this.number === 0) {
@@ -1326,21 +1282,33 @@ export default {
                 }
             }
         },
-        openSelectNum(part) {
+        openSelectNum(part, values) {
             // 配件数量选择
             console.log('配件', part);
             this.selectedPart = part;
-            this.numberSlots[0].values = part.prices.map(v => `${v.priceName}: ￥${v.price}`);
+            const _values = values || part.prices;
+            console.log(_values);
+            this.numberSlots[0].values = _values.map(v => `${v.priceName}: ￥${v.price}`);
+            let selectIndex = 0;
+            this.editPartsPrice = values ? 1 : 0;
+            if (values) {
+                const prices = R.map(R.prop('price'))(_values);
+                const _part = part.part;
+                selectIndex = prices.indexOf(_part.price);
+                this.number = _part.number;
+            }
+            console.log(selectIndex);
             this.pickerVisible = true;
             if (this.pciker !== null) {
                 this.picker.setSlotValue(0, '1');
             }
-            this.numberSlots[0].defaultIndex = 0;
-            this.selectNum = '1';
+            this.numberSlots[0].defaultIndex = selectIndex;
+            this.price = '1';
         },
-        onNumberChange(picker, values) {
-            // 修改配件数量
-            this.selectNum = values[0];
+        onPriceChange(picker, values) {
+            console.log(values);
+            // 修改配件价格
+            this.price = values[0];
             if (this.picker === null) {
                 this.picker = picker;
             }
@@ -1362,28 +1330,27 @@ export default {
             // console.log(index);
             console.log(this.selectedPart);
             console.log('金额', this.selectNum);
-            const part = {
-                barCode: '',
-                feeType: 2,
-                classifyId: this.selectedPart.classifyId,
-                code: this.selectedPart.code,
-                materialId: this.selectedPart.id,
-                materialName: this.selectedPart.materialName,
-                number: this.number,
-                price: this.selectNum.replace(/[^0-9.]/ig, '') - 0,
-                serviceProjectId: this.currentService.serviceProjectId
-            };
-            // this.selectedPart.number = this.selectNum;
-            // this.selectedPart.feeType = 1;
-            // this.selectedPart.materialId = this.selectedPart.id;
-            // this.selectedPart.serviceProjectId = this.currentService.serviceProjectId;
-            // this.selectedPart.totalAccount = 0;
-            this.parts.push(part);
-            // if (index !== -1) {
-            //     this.parts[index].number += this.selectNum;
-            // } else {
-            //     this.parts.push(this.selectedPart);
-            // }
+            if (this.editPartsPrice) {
+                console.log(this.selectedPart.part);
+                console.log(this.parts);
+                const ids = R.map(R.prop('id'))(this.parts);
+                const index = ids.indexOf(this.selectedPart.part.id);
+                this.parts[index].number = this.number;
+                this.parts[index].price = this.price.replace(/[^0-9.]/ig, '') - 0;
+            } else {
+                const part = {
+                    barCode: '',
+                    feeType: 2,
+                    classifyId: this.selectedPart.classifyId,
+                    code: this.selectedPart.code,
+                    materialId: this.selectedPart.id,
+                    materialName: this.selectedPart.materialName,
+                    number: this.number,
+                    price: this.price.replace(/[^0-9.]/ig, '') - 0,
+                    serviceProjectId: this.currentService.serviceProjectId
+                };
+                this.parts.push(part);
+            }
             this.pickerVisible = false;
         },
         async deleteServiceProject(i, v) {

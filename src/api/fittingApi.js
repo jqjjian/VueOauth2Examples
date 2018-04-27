@@ -1,12 +1,12 @@
 import config from './config';
 
-let indexFittingUrl = '/fitting/index';
-let saveFittingUrl = '/fitting/save';
-let deleteFittingUrl = '/fitting/delete';
-let inventoryUrl = '/fitting/index/inventory';
-let indexClassifyUrl = '/fittingclassify/index';
-let saveClassifyUrl = '/fittingclassify/save';
-
+const indexFittingUrl = '/fitting/index';
+const saveFittingUrl = '/fitting/save';
+const deleteFittingUrl = '/fitting/delete';
+const inventoryUrl = '/fitting/index/inventory';
+const indexClassifyUrl = '/fittingclassify/index';
+const saveClassifyUrl = '/fittingclassify/save';
+const getpriceUrl = '/fitting/price';
 const indexFitting = {
     p: ['get,/fitting/index'],
     r: params => {
@@ -43,11 +43,18 @@ const saveClassify = {
         return config.postJson(saveClassifyUrl, params);
     }
 };
+const getPrice = {
+    p: [`get,${getpriceUrl}`],
+    r: params => {
+        return config.get(getpriceUrl, params);
+    }
+};
 export default {
     indexFitting,
     saveFitting,
     deleteFitting,
     inventoryFitting,
     indexClassify,
-    saveClassify
+    saveClassify,
+    getPrice
 };
