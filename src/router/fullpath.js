@@ -32,6 +32,44 @@ export default [
                         },
                         children: [
                             {
+                                path: '/mobile/business-manage/work',
+                                name: 'work',
+                                component: () => import('../views/business-manage/work/WorkList.vue'),
+                                meta: {
+                                    name: '新工单'
+                                }
+                            },
+                            {
+                                path: '/mobile/business-manage/create-service',
+                                name: 'CreateService',
+                                component: () => import('../views/business-manage/work/CreateService.vue'),
+                                meta: {
+                                    name: '服务开单',
+                                    allow: true,
+                                    hide: true
+                                }
+                            },
+                            {
+                                path: '/mobile/business-manage/edit-customer-info',
+                                name: 'EditCustomerInfo',
+                                component: () => import('../views/business-manage/work/EditCustomerInfo.vue'),
+                                meta: {
+                                    name: '编辑送修人信息',
+                                    allow: true,
+                                    hide: true
+                                }
+                            },
+                            {
+                                path: '/mobile/business-manage/edit-car-info',
+                                name: 'EditCarInfo',
+                                component: () => import('../views/business-manage/work/EditCarInfo.vue'),
+                                meta: {
+                                    name: '编辑车辆信息',
+                                    allow: true,
+                                    hide: true
+                                }
+                            },
+                            {
                                 path: '/mobile/business-manage/order-price',
                                 name: 'order-price',
                                 component: () => import('../views/business-manage/order-price.vue'),

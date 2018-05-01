@@ -18,22 +18,38 @@ const checkStatus = response => {
         // 如果不需要除了data之外的数据，可以直接 return response.data
     }
 };
-const post = function(url, data) {
-    // const _data = data.aa ? qs.stringify(data, { arrayFormat: 'repeat' }) : qs.stringify(data);
-    return instance({
-        method: 'post',
-        // baseURL: "http://localhost:8089/",
-        url,
-        data: qs.stringify(data), // 请求时带的参数
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        timeout: 10000
-    }).then(response => {
-        return checkStatus(response);
-    });
-};
+// const post = async (url, data) => {
+//     // const _data = data.aa ? qs.stringify(data, { arrayFormat: 'repeat' }) : qs.stringify(data);
+//     try {
+//         const res = await instance({
+//             method: 'post',
+//             // baseURL: "http://localhost:8089/",
+//             url,
+//             data: qs.stringify(data), // 请求时带的参数
+//             headers: {
+//                 'X-Requested-With': 'XMLHttpRequest',
+//                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//             },
+//             timeout: 10000
+//         });
+//         return checkStatus(res);
+//     } catch (err) {
+//         console.error(err);
+//     }
+    // return instance({
+    //     method: 'post',
+    //     // baseURL: "http://localhost:8089/",
+    //     url,
+    //     data: qs.stringify(data), // 请求时带的参数
+    //     headers: {
+    //         'X-Requested-With': 'XMLHttpRequest',
+    //         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    //     },
+    //     timeout: 10000
+    // }).then(response => {
+    //     return checkStatus(response);
+    // });
+// };
 // 设置请求等待
 instance.interceptors.request.use(
     config => {
@@ -51,7 +67,7 @@ instance.interceptors.response.use(
     response => {
         // NProgress.done();
         Indicator.close();
-        return response;
+        return checkStatus(response);
     },
     error => {
         Indicator.close();
@@ -92,48 +108,94 @@ instance.interceptors.response.use(
 );
 
 export default {
-    post,
-    postJson(url, data) {
-        return instance({
-            method: 'post',
-            url,
-            data, // 请求时带的参数
-            timeout: 10000
-        }).then(response => {
-            return checkStatus(response);
-        });
+    async post(url, data) {
+        try {
+            const res = await instance({
+                method: 'post',
+                // baseURL: "http://localhost:8089/",
+                url,
+                data: qs.stringify(data), // 请求时带的参数
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                timeout: 10000
+            });
+            return res;
+        } catch (err) {
+            console.error(err);
+        }
     },
-    get(url, params) {
-        return instance({
-            method: 'get',
-            url,
-            params, // 请求时带的参数
-            timeout: 10000,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).then(response => {
-            return checkStatus(response);
-        });
+    async postJson(url, data) {
+        try {
+            return await instance({
+                method: 'post',
+                url,
+                data, // 请求时带的参数
+                timeout: 10000
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    },
+    async get(url, params) {
+        try {
+            return await instance({
+                method: 'get',
+                url,
+                params, // 请求时带的参数
+                timeout: 10000,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        } catch (err) {
+            console.error(err);
+        }
+        // return instance({
+        //     method: 'get',
+        //     url,
+        //     params, // 请求时带的参数
+        //     timeout: 10000,
+        //     headers: {
+        //         'X-Requested-With': 'XMLHttpRequest'
+        //     }
+        // }).then(response => {
+        //     return checkStatus(response);
+        // });
         // .then(
         //   (res) => {
         //     return checkCode(res)
         //   }
         // )
     },
-    del (url, params) {
-        return instance({
-            method: 'delete',
-            // baseURL: "http://localhost:8089/",
-            url,
-            params, // 请求时带的参数
-            timeout: 10000
-            // headers: {
-            //     'X-Requested-With': 'XMLHttpRequest'
-            // }
-        }).then(response => {
-            return checkStatus(response);
-        });
+    async del (url, params) {
+        try {
+            return instance({
+                method: 'delete',
+                // baseURL: "http://localhost:8089/",
+                url,
+                params, // 请求时带的参数
+                timeout: 10000
+                // headers: {
+                //     'X-Requested-With': 'XMLHttpRequest'
+                // }
+            });
+        } catch (err) {
+            console.error(err);
+        }
+        // return instance({
+        //     method: 'delete',
+        //     // baseURL: "http://localhost:8089/",
+        //     url,
+        //     params, // 请求时带的参数
+        //     timeout: 10000
+        //     // headers: {
+        //     //     'X-Requested-With': 'XMLHttpRequest'
+        //     // }
+        // }).then(response => {
+        //     return checkStatus(response);
+        // });
     },
     instance
 };
