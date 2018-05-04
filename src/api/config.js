@@ -110,7 +110,7 @@ instance.interceptors.response.use(
 export default {
     async post(url, data) {
         try {
-            const res = await instance({
+            return await instance({
                 method: 'post',
                 // baseURL: "http://localhost:8089/",
                 url,
@@ -121,7 +121,6 @@ export default {
                 },
                 timeout: 10000
             });
-            return res;
         } catch (err) {
             console.error(err);
         }

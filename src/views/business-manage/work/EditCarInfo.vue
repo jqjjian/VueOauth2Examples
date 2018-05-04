@@ -26,13 +26,12 @@
                 <br> -->
                 <mt-button type="default" size="large" disabled @click.native="handleNext">下一步</mt-button>
             </div>
-            <mt-popup
-            :modal="false"
-            v-model="selectCarPopupVisible"
-            position="right"
-            class="mint-popup-select-car"
-            popup-transition="popup-fade">
-                <mt-index-list v-if="brandCodeData.selectCarindex.length !== 0" class="car-list" ref="list">
+            <mt-popup :modal="false"
+                v-model="selectCarPopupVisible"
+                position="right"
+                class="mint-popup-select-car"
+                popup-transition="popup-fade">
+                <mt-index-list v-if="brandCodeData.selectCarindex.length !== 0" ref="list">
                     <template v-for="(v, i) in brandCodeData.selectCarindex">
                         <mt-index-section :index="v" :key="i">
                             <template v-for="(j, k) in brandCodeData.selectCarObj[v].children">
@@ -48,6 +47,24 @@
                     </template>
                 </mt-index-list>
             </mt-popup>
+            <mt-popup
+            v-model="selectCarTrainPopupVisible"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="[]">
+                    <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
+                    <mt-index-list v-if="CarTrainData.CarTrainIndex.length !== 0">
+                        <template v-for="(v, i) in CarTrainData.CarTrainIndex">
+                            <mt-index-section :index="v" :key="i">
+                                <template v-for="(j, k) in CarTrainData.CarTrainObj[v].children">
+                                    <mt-cell :title="j.styleName" :class="[]" :key="k" is-link @click.native="handleSelectCarTrain(j)"></mt-cell>
+                                </template>
+                            </mt-index-section>
+                        </template>
+                    </mt-index-list>
+                </div>
+            </mt-popup>
             <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
                 <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
                 <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
@@ -57,11 +74,18 @@
 </template>
 
 <script>
+import { carApi } from '@/api';
 import { mapGetters, mapActions } from 'vuex';
+import * as R from 'ramda';
 export default {
     data() {
         return {
             selectCarPopupVisible: false, // 车品牌列表
+            selectCarTrainPopupVisible: false, // 车品牌列表
+            CarTrainData: {
+                CarTrainIndex: [],
+                CarTrainObj: {}
+            },
             field: [
                 'carType', // 车型
                 'carColor', // 车辆颜色
@@ -221,6 +245,22 @@ export default {
         },
         async handleSelectCarBrand (item) {
             console.log(item);
+            const { data } = await carApi.requestStyle.r({brandId: item.id});
+            console.log(data);
+            this.selectCarTrainPopupVisible = true;
+            this.CarTrainData.CarTrainIndex = [...new Set(R.map(R.prop('factoryName'))(data))];
+            for (let v of data) {
+                if (this.CarTrainData.CarTrainObj[v.factoryName]) {
+                    this.CarTrainData.CarTrainObj[v.factoryName].children.push(v);
+                } else {
+                    this.CarTrainData.CarTrainObj[v.factoryName] = {
+                        children: [v]
+                    };
+                }
+            }
+        },
+        async handleSelectCarTrain(item) {
+            console.log(item);
         }
     },
     created() {
@@ -242,6 +282,17 @@ export default {
     text-align: center;
     .mint-button {
         margin: 4px 10px 0;
+    }
+}
+.mint-popup-select-list {
+    width: 100%;
+    height: 100%;
+    -webkit-transform: translate3d(-12%,-50%,0);
+    transform: translate3d(0,-50%,0);
+    .mint-indexlist-content {
+        > li:last-child {
+            margin-bottom: 50px;
+        }
     }
 }
 </style>
