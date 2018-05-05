@@ -1,14 +1,25 @@
 <template>
     <div>
-        <mt-cell-swipe class="ycy-cell-swipe" :right="rightButton" v-for="(item,index) in fittinglist" :key="index">
+        <mt-cell-swipe v-for="(item,index) in materialist" :key="index" class="ycy-cell-swipe" :right="[
+                {
+                    content: '编辑',
+                    style: { background: 'lightgray', color: '#fff' },
+                    handler: () => editFn(item)
+                },
+                {
+                    content: '删除',
+                    style: { background: 'red', color: '#fff' },
+                    handler: () => deleteFn(item.id)
+                }
+            ]">
             <slot name="value">
                 <div class="tcth-cell">
                     <div style="width: 80px;margin-right:10px;">
                         <img src="../../assets/car.jpeg" alt="汽车图片" style="width: 100%">
                     </div>
-                    <div class="fitting-info">
+                    <div class="materia-info">
                         <div>
-                            <span class="fitting-name" style="">{{item.materialName}}</span>
+                            <span class="materia-name" style="">{{item.materialName}}</span>
                             <span>{{item.code}}</span>
                         </div>
                         <div>
@@ -16,39 +27,22 @@
                         </div>
                         <div>
                             <span>售价</span>
-                            <span class="fitting-price">￥{{item.prices[0].price}}</span>
+                            <span class="materia-price">￥{{item.prices[0].price}}</span>
                             <span>库存</span>
-                            <span class="fitting-num">{{item.num}}</span>
+                            <span class="materia-num">{{item.num}}</span>
                         </div>
                     </div>
                 </div>
             </slot>
         </mt-cell-swipe>
-        <!-- <div class="tcth-cell" v-for="i in 10" :key="i">
-            <div style="width: 80px;margin-right:10px;">
-                <img src="../../assets/car.jpeg" alt="汽车图片" style="width: 100%">
-            </div>
-            <div class="fitting-info">
-                <div>
-                    <span class="fitting-name" style="">配件名</span>
-                    <span>配件编码</span>
-                </div>
-                <div>
-                    <span>属性</span>
-                    <span>属性</span>
-                    <span>属性</span>
-                </div>
-                <div>
-                    <span>售价</span>
-                    <span class="fitting-price">100.00</span>
-                    <span>库存</span>
-                    <span class="fitting-num">10</span>
-                </div>
-            </div>
-        </div> -->
+
+        <div class="cart">
+            <mt-button size="small" @click="addNewFitting()">新增配件</mt-button>
+        </div>
     </div>
 </template>
 <script>
+import { MessageBox, Toast } from 'mint-ui';
 import { fittingApi } from '@/api';
 export default {
     data() {
@@ -57,8 +51,9 @@ export default {
             rightButton: [
                 {
                     content: '编辑',
-                    style: { background: '#eee' },
-                    handler: () => this.$messagebox('delete')
+                    style: { background: 'lightgray', color: '#fff' },
+                    handler: event => console.log(event)
+                    // handler: () => this.edit()
                 },
                 {
                     content: '删除',
@@ -66,14 +61,46 @@ export default {
                     handler: () => this.$messagebox('delete')
                 }
             ],
-            fittinglist: []
+            materialist: []
         };
     },
     created() {
         fittingApi.inventoryFitting.r({ classifyId: 1 }).then(resp => {
             console.log(resp);
-            this.fittinglist = resp.data;
+            this.materialist = resp.data;
         });
+    },
+    methods: {
+        editFn(val) {
+            console.log(val);
+        },
+        deleteFn(id) {
+            MessageBox.confirm('确认删除?')
+                .then(action => {
+                    fittingApi.deleteFitting.r({ id: id }).then(response => {
+                        if (response.status === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        } else {
+                            Toast({
+                                message: '删除失败',
+                                duration: 1000
+                            });
+                        }
+                    });
+                })
+                .catch(() => {
+                    alert('取消');
+                });
+        },
+        addNewFitting() {
+            this.$router.push({
+                name: 'fitting-info',
+                params: { workInfo: 'scope.row' }
+            });
+        }
     }
 };
 </script>
@@ -96,7 +123,7 @@ export default {
     padding: 10px;
     display: flex;
     width: 100%;
-    .fitting-info {
+    .materia-info {
         font-size: 0.8rem;
         color: #999;
         div + div {
@@ -104,18 +131,18 @@ export default {
         }
     }
 }
-.fitting-info {
-    .fitting-name {
+.materia-info {
+    .materia-name {
         color: #000;
         font-size: 1rem;
     }
-    .fitting-price,
-    .fitting-num {
+    .materia-price,
+    .materia-num {
         color: orange;
         font-size: 1rem;
     }
-    .fitting-price{
-        margin-right: 20px
+    .materia-price {
+        margin-right: 20px;
     }
 }
 </style>

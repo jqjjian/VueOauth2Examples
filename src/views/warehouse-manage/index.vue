@@ -26,9 +26,6 @@
                 </mt-tab-container-item>
             </mt-tab-container>
         </div>
-        <div class="cart">
-            <mt-button size="small">新增配件</mt-button>
-        </div>
     </div>
 </template>
 <script>
