@@ -105,7 +105,9 @@ export default [
                                 name: 'fitting-info',
                                 component: () => import('../views/warehouse-manage/fitting-info.vue'),
                                 meta: {
-                                    name: '配件新增/修改'
+                                    name: '配件新增/修改',
+                                    allow: true,
+                                    hide: true
                                 }
                             },
                             {

@@ -97,7 +97,7 @@ export default {
         },
         addNewFitting() {
             this.$router.push({
-                name: 'fitting-info',
+                name: 'fitting-info-item',
                 params: { workInfo: 'scope.row' }
             });
         }
