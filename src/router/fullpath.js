@@ -131,10 +131,21 @@ export default [
                                 }
                             },
                             {
-                                path: '/mobile/business-manage/warehouse-manage',
+                                path: '/mobile/warehouse-manage',
                                 name: 'warehouse-manage',
+                                component: () => import('../views/warehouse-manage/index.vue'),
                                 meta: {
                                     name: '仓库管理'
+                                }
+                            },
+                            {
+                                path: '/mobile/warehouse-manage/fitting-info',
+                                name: 'fitting-info',
+                                component: () => import('../views/warehouse-manage/fitting-info.vue'),
+                                meta: {
+                                    name: '配件新增/修改',
+                                    allow: true,
+                                    hide: true
                                 }
                             },
                             {

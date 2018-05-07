@@ -2,7 +2,7 @@ import config from './config';
 
 const indexFittingUrl = '/fitting/index';
 const saveFittingUrl = '/fitting/save';
-const deleteFittingUrl = '/fitting/delete';
+const deleteFittingUrl = '/fitting';
 const inventoryUrl = '/fitting/index/inventory';
 const indexClassifyUrl = '/fittingclassify/index';
 const saveClassifyUrl = '/fittingclassify/save';
@@ -20,9 +20,9 @@ const saveFitting = {
     }
 };
 const deleteFitting = {
-    p: ['post,/fitting/delete'],
+    p: ['delete,/fitting'],
     r: params => {
-        return config.postJson(deleteFittingUrl, params);
+        return config.del(deleteFittingUrl, params);
     }
 };
 const inventoryFitting = {

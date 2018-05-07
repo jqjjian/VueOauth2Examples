@@ -71,6 +71,7 @@ export default {
                 console.log(v.path.replace(rex, `${newRoute[1].path}-sub`));
                 v.meta.show = false;
                 v.name = v.name + '-sub';
+                console.log(v.name);
                 v.component = () => import('./components/Container.vue');
                 if (v.children && v.children.length) {
                     for (let j of v.children) {
