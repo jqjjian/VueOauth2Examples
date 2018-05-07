@@ -27,7 +27,7 @@
                 <mt-button type="default" size="large" disabled @click.native="handleNext">下一步</mt-button>
             </div>
             <mt-popup :modal="false"
-                v-model="selectCarPopupVisible"
+                v-model="PopupVisible.selectCar"
                 position="right"
                 class="mint-popup-select-car"
                 popup-transition="popup-fade">
@@ -48,7 +48,7 @@
                 </mt-index-list>
             </mt-popup>
             <mt-popup
-            v-model="selectCarTrainPopupVisible"
+            v-model="PopupVisible.selectCarTrain"
             popup-transition="popup-fade"
             class="mint-popup-select-list"
             >
@@ -65,8 +65,23 @@
                     </mt-index-list>
                 </div>
             </mt-popup>
-            <div class="selectCarTypeBox" v-if="selectCarPopupVisible" style="z-index: 3000;">
-                <mt-button type="default" size="normal" @click="selectCarPopupVisible = false">取消</mt-button>
+            <mt-popup
+            v-model="PopupVisible.selectCarYear"
+            popup-transition="popup-fade"
+            class="mint-popup-select-list"
+            >
+                <div class="select-list-wrap" :class="['']">
+                    <mt-radio
+                    title="选择年份："
+                    v-model="seCustomerInfo.carModelYear"
+                    :options="CarYeaIndex"
+                    @change="handleSelectCarModelYear"
+                    >
+                    </mt-radio>
+                </div>
+            </mt-popup>
+            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="PopupVisible.selectCar">
+                <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button>
                 <mt-button type="primary" size="normal" @click="checkedCarType">确定</mt-button>
             </div>
         </div>
@@ -80,14 +95,22 @@ import * as R from 'ramda';
 export default {
     data() {
         return {
-            selectCarPopupVisible: false, // 车品牌列表
-            selectCarTrainPopupVisible: false, // 车品牌列表
+            tag: false,
+            PopupVisible: {
+                selectCar: false, // 车品牌列表
+                selectCarTrain: false, // 车品牌列表
+                selectCarYear: false, // 车年款
+                selectCarType: false // 车型
+            },
             CarTrainData: {
                 CarTrainIndex: [],
-                CarTrainObj: {}
+                CarTrainObj: {},
+                carTrainCode: ''
             },
+            CarYeaIndex: [],
+            carTypeIndex: [],
             field: [
-                'carType', // 车型
+                // 'carType', // 车型
                 'carColor', // 车辆颜色
                 'appearance', // 车身外观 1 良好 0不正常
                 'displacement', // 排量
@@ -153,7 +176,7 @@ export default {
                 },
                 carType: {
                     label: '品牌车型',
-                    required: true,
+                    required: false,
                     message: '车品牌车型不能为空',
                     state: ''
                 },
@@ -228,13 +251,18 @@ export default {
         checkedCarType() {
             console.log(111);
         },
+        hidePopup() {
+            for (let k of Object.keys(this.PopupVisible)) {
+                this.PopupVisible[k] = false;
+            }
+        },
         rules(v) { // 验证
             console.log(v);
         },
         event(v) {
             console.log(v);
             if (v === 'carType') {
-                this.selectCarPopupVisible = true;
+                this.PopupVisible.selectCar = true;
                 if (this.brandCodeData.selectCarindex.length === 0) {
                     this.getBrandCode();
                 }
@@ -243,11 +271,12 @@ export default {
         handleNext() {
             console.log('下一步');
         },
-        async handleSelectCarBrand (item) {
+        async handleSelectCarBrand (item) { // 选择车品牌后
             console.log(item);
             const { data } = await carApi.requestStyle.r({brandId: item.id});
+            this.seCustomerInfo.brandCode = item.brandName;
             console.log(data);
-            this.selectCarTrainPopupVisible = true;
+            this.PopupVisible.selectCarTrain = true;
             this.CarTrainData.CarTrainIndex = [...new Set(R.map(R.prop('factoryName'))(data))];
             for (let v of data) {
                 if (this.CarTrainData.CarTrainObj[v.factoryName]) {
@@ -261,6 +290,34 @@ export default {
         },
         async handleSelectCarTrain(item) {
             console.log(item);
+            const vm = this;
+            const { data } = await carApi.requestYear.r({styleId: item.id});
+            this.seCustomerInfo.carTrainCode = item.styleName;
+            this.CarTrainData.carTrainCode = item.id;
+            if (data.length) {
+                vm.PopupVisible.selectCarYear = true;
+                vm.CarYeaIndex = data.map(v => {
+                    v.value = v.year;
+                    v.label = v.year + '年';
+                    return v;
+                });
+            }
+        },
+        async handleSelectCarModelYear (year) { // 通过年款值获取该年款车型
+            const vm = this;
+            // const styleId = vm.selectCatStyleCacheData.carTrainCode;
+            // vm.selectCatStyleCacheData.carModelYear = year;
+            const { data } = await carApi.requestModel.r({styleId: this.CarTrainData.carTrainCode, year});
+            console.log(data);
+            if (data.length) {
+                vm.PopupVisible.selectCarType = true;
+                vm.carTypeIndex = data;
+                // vm.selectCarYearindex = res.data.map(v => {
+                //     v.value = v.year;
+                //     v.label = v.year + '年';
+                //     return v;
+                // });
+            }
         }
     },
     created() {
@@ -287,8 +344,6 @@ export default {
 .mint-popup-select-list {
     width: 100%;
     height: 100%;
-    -webkit-transform: translate3d(-12%,-50%,0);
-    transform: translate3d(0,-50%,0);
     .mint-indexlist-content {
         > li:last-child {
             margin-bottom: 50px;

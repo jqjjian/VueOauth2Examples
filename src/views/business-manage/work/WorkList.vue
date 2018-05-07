@@ -2,7 +2,7 @@
     <div>
         <mt-header fixed :title="title">
             <mt-button icon="back" slot="left" @click.native="$router.push({name: 'business-manage'})">返回</mt-button>
-            <router-link :to="{name: 'CreateService-item'}" slot="right">
+            <router-link :to="{name: 'EditCustomerInfo-item'}" slot="right">
                 <mt-button >开单</mt-button>
             </router-link>
         </mt-header>

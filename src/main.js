@@ -26,18 +26,12 @@ Vue.directive('blur', {
     bind(el, binding) {
         const input = el.querySelector('input');
         input.onblur = () => binding.value.rules(binding.value.label);
-        // if (!Vue.prototype.$_has(binding.value)) {
-        //     el.parentNode.removeChild(el);
-        // }
     }
 });
 Vue.directive('focus', {
     bind(el, binding) {
         const input = el.querySelector('input');
         input.onfocus = () => binding.value.event(binding.value.label);
-        // if (!Vue.prototype.$_has(binding.value)) {
-        //     el.parentNode.removeChild(el);
-        // }
     }
 });
 Vue.directive('input', {
@@ -50,9 +44,6 @@ Vue.directive('input', {
             }
             time = setTimeout(() => binding.value.rules(binding.value.label), 1000);
         };
-        // if (!Vue.prototype.$_has(binding.value)) {
-        //     el.parentNode.removeChild(el);
-        // }
     }
 });
 Vue.config.productionTip = false;
