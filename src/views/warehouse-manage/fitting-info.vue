@@ -11,7 +11,7 @@
                 <mt-field label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
                 <mt-field class="tcth-field" label="材料名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
                 <!-- <mt-field label="规格" placeholder="请输入规格" v-model="fittingInfo.barCode"></mt-field> -->
-                <mt-field class="tcth-field" label="适用车型" placeholder="请选择适用车型" v-model="fittingInfo.barCode" :readonly="true">
+                <mt-field class="tcth-field" label="适用车型" placeholder="请选择适用车型" :value="fittingInfo.brand + ' ' + fittingInfo.carSeries" :readonly="true">
                     <mt-button size="small" @click="popupVisibleBrand=true">选择</mt-button>
                 </mt-field>
                 <mt-field label="单位" placeholder="请输入单位" v-model="fittingInfo.unit"></mt-field>
@@ -27,7 +27,7 @@
                 <mt-field class="tcth-field" label="数量" placeholder="请输入数量" type="number" v-model="fittingInfo.num"></mt-field>
                 <mt-field label="运费" placeholder="请输入运费" type="number" v-model="fittingInfo.freight"></mt-field>
                 <mt-field class="tcth-field" v-for="(item,index) in fittingInfo.prices" :key="index" :label="item.priceName" placeholder="请输入售价" type="number" v-model="item.price">
-                    <mt-button size="small" v-if="index == 0" @click="addNewPrice()">新增</mt-button>
+                    <mt-button size="small" v-if="index == 0" @click="showprices()">新增</mt-button>
                     <mt-button size="small" v-else @click="deletePrice()">删除</mt-button>
                 </mt-field>
             </div>
@@ -54,6 +54,24 @@
                 </mt-index-section>
             </mt-index-list>
         </mt-popup>
+        <mt-popup v-model="popupVisiblePrices" position="right" class="mint-popup-car" :modal="false" popup-transition="popup-fade" style="background:#fafafa">
+            <div style="height: 100%;overflow-y: scroll;">
+                <mt-header title="新增价格" style="position: fixed;width: 100%;z-index: 100;top: 0;">
+                    <mt-button slot="left" @click="popupVisiblePrices = false">取消</mt-button>
+                    <mt-button slot="right" @click="addNewPrice()">添加</mt-button>
+                </mt-header>
+                <div style="height:40px"></div>
+                <div v-for="(item,index) in newPrices" :key="index" style="margin-bottom:10px">
+                    <mt-field label="价格名称" placeholder="请输入价格名称" v-model="item.priceName">
+                        <mt-button v-if="index!=0" size="small" @click="removePrice(index)">删除</mt-button>
+                    </mt-field>
+                    <mt-field label="金额" placeholder="请输入金额" type="number" v-model="item.price"></mt-field>
+                </div>
+                <div style="text-align: center;padding:20px 0;">
+                    <mt-button type="danger" style="width:80%" @click="savePrices()">保存</mt-button>
+                </div>
+            </div>
+        </mt-popup>
     </div>
 </template>
 <script>
@@ -66,6 +84,7 @@ export default {
         return {
             popupVisibleBrand: false,
             popupVisibleStyle: false,
+            popupVisiblePrices: false,
             value: '通用',
             selected: '1',
             fittingInfo: {
@@ -108,7 +127,8 @@ export default {
                 }
             ],
             brandlist: [],
-            stylelist: []
+            stylelist: [],
+            newPrices: []
         };
     },
     components: {
@@ -139,12 +159,19 @@ export default {
                 console.log(response);
             });
         },
-        addNewPrice() {},
+        addNewPrice() {
+            // this.newPrices = this.fittingInfo.prices;
+            let newprice = {
+                priceName: '',
+                price: null
+            };
+            this.newPrices.push(newprice);
+        },
         deletePrice() {},
         refresh() {
             this.fittingInfo = {
                 barCode: '', // 条形码
-                brand: '', // 品牌
+                brand: '11', // 品牌
                 buyingPrice: null, // 采购价
                 carSeries: '', // 车型系列
                 classifyId: 1, // 所属配件分类
@@ -169,6 +196,7 @@ export default {
             };
         },
         showStyle(brandinfo) {
+            this.stylelist = [];
             let getData = {
                 brandId: brandinfo.id
             };
@@ -193,8 +221,31 @@ export default {
         },
         selectStyle(item) {
             this.fittingInfo.carSeries = item.styleName;
+            console.log(this.fittingInfo);
             this.popupVisibleStyle = false;
             this.popupVisibleBrand = false;
+        },
+        showprices() {
+            this.newPrices = [
+                {
+                    priceName: '',
+                    price: null
+                }
+            ];
+            this.popupVisiblePrices = true;
+        },
+        // 删除指定价格
+        removePrice(index) {
+            this.newPrices.splice(index, 1);
+        },
+        savePrices() {
+            this.newPrices.forEach(element => {
+                let price = {
+                    price: element,price, // 售价
+                    priceName: element.priceName // 价格名称
+                };
+                this.fittingInfo.prices.push(price);
+            });
         }
     }
 };
