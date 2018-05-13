@@ -1,4 +1,7 @@
 export default {
-    CustomerInfo: state => state.seCustomerInfo,
-    brandCodeData: state => state.brandCodeData
+    CustomerInfo: state => state.workOrder.seCustomerInfo,
+    CarInfo: state => state.workOrder.seCarInfo,
+    WorkOrder: state => state.workOrder,
+    brandCodeData: state => state.brandCodeData,
+    isEdited: state => state.isEdited
 };

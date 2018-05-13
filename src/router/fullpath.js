@@ -40,6 +40,16 @@ export default [
                                 }
                             },
                             {
+                                path: '/mobile/business-manage/work-services',
+                                name: 'work-services',
+                                component: () => import('../views/business-manage/work/WorkEdit.vue'),
+                                meta: {
+                                    allow: true,
+                                    hide: true,
+                                    name: '工单服务项'
+                                }
+                            },
+                            {
                                 path: '/mobile/business-manage/create-service',
                                 name: 'CreateService',
                                 component: () => import('../views/business-manage/work/CreateService.vue'),

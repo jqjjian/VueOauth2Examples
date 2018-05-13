@@ -2,9 +2,9 @@
     <div>
         <mt-header fixed :title="title">
             <mt-button icon="back" slot="left" @click.native="$router.push({name: 'business-manage'})">返回</mt-button>
-            <router-link :to="{name: 'EditCustomerInfo-item'}" slot="right">
-                <mt-button >开单</mt-button>
-            </router-link>
+            <!-- <router-link :to="{name: 'EditCustomerInfo-item'}" slot="right"> -->
+                <mt-button @click.native="handleCreate" slot="right">开单</mt-button>
+            <!-- </router-link> -->
         </mt-header>
         <div class="container-box">
             <template v-for="(v, i) in comprehensiveList">
@@ -23,6 +23,7 @@
 <script>
 import { comprehensiveApi } from '@/api';
 import { catchError } from '@/util';
+import { mapMutations } from 'vuex';
 export default {
     data () {
         return {
@@ -31,13 +32,21 @@ export default {
         };
     },
     methods: {
+        ...mapMutations('work', ['SET_CUSTOMER_INFO', 'SET_CAR_INFO', 'CHANGE_EDIT_STATE']),
         handleEditComprehensive (id) {
+            this.CHANGE_EDIT_STATE(false);
             this.$router.push({
-                name: 'pendingEdit-item',
+                name: 'work-services-item',
                 query: {
                     id
                 }
             });
+        },
+        handleCreate() {
+            this.CHANGE_EDIT_STATE(false);
+            this.SET_CUSTOMER_INFO(null);
+            this.SET_CAR_INFO(null);
+            this.$router.push({name: 'EditCustomerInfo-item'});
         },
         async handleQuery () {
             try {
