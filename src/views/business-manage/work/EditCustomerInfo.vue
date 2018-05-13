@@ -20,7 +20,7 @@
                 </template>
             </div>
             <div class="page-part subBtn">
-                <mt-button type="default" size="large" :disabled="!finish" @click.native="handleNext">下一步</mt-button>
+                <mt-button type="primary" size="large" :disabled="!finish" @click.native="handleNext">下一步</mt-button>
             </div>
         </div>
     </div>
@@ -68,7 +68,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters('work', ['CustomerInfo']),
+        ...mapGetters('work', ['CustomerInfo', 'isEdited']),
         finish() {
             let b = true;
             for (let v of Object.values(this.popFormRules)) {
@@ -80,7 +80,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('work', ['SET_CUSTOMER_INFO']),
+        ...mapMutations('work', ['SET_CUSTOMER_INFO', 'CHANGE_EDIT_STATE']),
         ...mapActions('work', ['getComprehensive']),
         rules(e) { // 验证
             const popFormRules = this.popFormRules;
@@ -99,12 +99,15 @@ export default {
         },
         handleNext() {
             console.log('下一步');
-            const tag = false;
-            if (tag) {
-                this.$router.back(-1);
-            } else {
-                this.$router.push({name: 'EditCarInfo-item'});
-            }
+            this.SET_CUSTOMER_INFO(this.seCustomerInfo);
+            this.$router.push({name: 'EditCarInfo-item'});
+            // this.CHANGE_EDIT_STATE(true);
+            // const tag = false;
+            // if (tag) {
+            //     this.$router.back(-1);
+            // } else {
+            //     this.$router.push({name: 'EditCarInfo-item'});
+            // }
         }
     },
     watch: {
@@ -117,7 +120,14 @@ export default {
     },
     created() {
         if (this.CustomerInfo !== null) {
-            this.seCustomerInfo = R.clone(this.CustomerInfo);
+            this.seCustomerInfo = R.merge(this.seCustomerInfo, this.CustomerInfo);
+        }
+        if (this.isEdited) {
+            for (let k of Object.keys(this.seCustomerInfo)) {
+                if (this.popFormRules[k].required) {
+                    this.popFormRules[k].state = 'success';
+                }
+            }
         }
     }
 };

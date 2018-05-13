@@ -1,7 +1,7 @@
 <template>
     <div>
         <mt-header fixed :title="title">
-            <mt-button icon="back" slot="left" @click.native="$router.push({name: 'pending-item'})">返回</mt-button>
+            <mt-button icon="back" slot="left" @click.native="$router.push({name: 'work-item'})">返回</mt-button>
             <mt-button slot="right" @click.native="handleEdit">修改</mt-button>
         </mt-header>
         <div class="container-box scroll">
@@ -30,44 +30,46 @@
             </div>
             <div class="page-part service">
                 <mt-cell :title="`服务项目信息 （总费用：￥${allTotal}）`" class="bold"><mt-button type="primary" v-if="this.form.status < 5" size="small" @click.native="handleOpenSelectService(null)">添加</mt-button></mt-cell>
-                <template v-for="(v, i) in serviceData">
-                    <mt-cell-swipe :label="`备注：${v.description}`" v-if="serviceData.length !== 0" :title="`${i + 1}. ${v.projectName}`" :right="[ // 服务项目左滑删除样式
-                            {
-                                content: '取消',
-                                style: {
-                                    background: '#ddd',
-                                    color: '#fff'
+                <div v-if="serviceData && serviceData.length !== 0">
+                    <template v-for="(v, i) in serviceData">
+                        <mt-cell-swipe :label="`备注：${v.description}`"  :title="`${i + 1}. ${v.projectName}`" :right="[ // 服务项目左滑删除样式
+                                {
+                                    content: '取消',
+                                    style: {
+                                        background: '#ddd',
+                                        color: '#fff'
+                                    },
+                                    handler: () => {
+                                    }
                                 },
-                                handler: () => {
-                                }
-                            },
-                            {
-                                content: '修改',
-                                style: {
-                                    background: '#26a2ff',
-                                    color: '#fff'
+                                {
+                                    content: '修改',
+                                    style: {
+                                        background: '#26a2ff',
+                                        color: '#fff'
+                                    },
+                                    handler() {
+                                        handleOpenSelectService(i);
+                                    }
                                 },
-                                handler() {
-                                    handleOpenSelectService(i);
+                                {
+                                    content: '删除',
+                                    style: {
+                                        background: 'red',
+                                        color: '#fff'
+                                    },
+                                    handler() {
+                                        deleteServiceProject(i, v);
+                                    }
                                 }
-                            },
-                            {
-                                content: '删除',
-                                style: {
-                                    background: 'red',
-                                    color: '#fff'
-                                },
-                                handler() {
-                                    deleteServiceProject(i, v);
-                                }
-                            }
-                        ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
-                        <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
-                            <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
-                            <span v-else :key="k.name + j">{{k.name}}</span>
-                        </template>
-                    </mt-cell-swipe>
-                </template>
+                            ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
+                            <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
+                                <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                                <span v-else :key="k.name + j">{{k.name}}</span>
+                            </template>
+                        </mt-cell-swipe>
+                    </template>
+                </div>
             </div>
             <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
                 <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
@@ -97,7 +99,7 @@
                         <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
                     </div>
                     <div class="page-part">
-                        <mt-cell v-if="selectServicePopupVisible && serviceData.length !== 0" class="bold" :label="`备注：${serviceData[serviceActive].description}`" :title="`${serviceData[serviceActive].projectName}(￥${total})`">
+                        <mt-cell v-if="selectServicePopupVisible && serviceData && serviceData.length !== 0" class="bold" :label="`备注：${serviceData[serviceActive].description}`" :title="`${serviceData[serviceActive].projectName}(￥${total})`">
                             <mt-button v-if="selectServiceEdit" size="small" type="primary" icon="" class="cell-btn" @click.native="getFittingindex">添加物料</mt-button>
                             <mt-button v-if="selectServiceEdit" size="small" type="primary" icon="" class="cell-btn" @click.native="handleAddmanHour">添加工时</mt-button>
                         </mt-cell>
@@ -180,12 +182,13 @@
 
 <script>
 import { dictionaryApi, comprehensiveApi, fittingApi } from '@/api';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import { catchError } from '@/util';
 import * as R from 'ramda';
 export default {
     data() {
         return {
+            test: {},
             title: '',
             selected: '0',
             // popupVisible: false, // 车系
@@ -522,9 +525,11 @@ export default {
         ...mapGetters('work', ['WorkOrder', 'isEdited']),
         allTotal() { // 服务单总金额
             let _total = 0;
-            for (let v of Object.values(this.form.seProjectList)) {
-                for (let j of Object.values(v.children)) {
-                    _total += (j.price - 0);
+            if (this.form.seProjectList) {
+                for (let v of Object.values(this.form.seProjectList)) {
+                    for (let j of Object.values(v.children)) {
+                        _total += (j.price - 0);
+                    }
                 }
             }
             return _total;
@@ -578,6 +583,7 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('work', ['SET_WORK_ORDER']),
         async editParts(part) {
             console.log(part);
             try {
@@ -699,6 +705,9 @@ export default {
                 this.serviceData[index].projectName = title;
                 this.serviceData[index].description = description;
             } else {
+                if (this.serviceData === null) {
+                    this.serviceData = [];
+                }
                 this.serviceData.push({
                     children: [],
                     comprehensiveId: this.form.comprehensiveId,
@@ -745,11 +754,12 @@ export default {
                     pageSize: 9999
                 });
                 console.log(data[0]);
-                this.form = R.merge(this.form, data[0]);
+                this.SET_WORK_ORDER(data[0]);
+                this.form = this.WorkOrder;
                 this.brandCode = `${this.form.seCarInfo.brandCode}/${this.form.seCarInfo.carTrainCode}/${this.form.seCarInfo.carType}`;
                 this.appearance = ['不正常', '良好'][this.form.seCarInfo.appearance];
                 this.innage = `${this.innageData[this.form.seCarInfo.innage - 1].label}`;
-                this.serviceData = this.form.seProjectList;
+                this.serviceData = this.form.seProjectList || [];
             } catch (err) {
                 console.error(err);
                 catchError(err);
@@ -947,14 +957,20 @@ export default {
         this.getServiceType();
         // const id = this.$route.query.id;
         // if (id) {
+        console.log('abcabc', this.WorkOrder);
         if (this.isEdited) {
+            console.log('A');
             this.form = R.clone(this.WorkOrder);
             this.brandCode = `${this.form.seCarInfo.brandCode}/${this.form.seCarInfo.carTrainCode}/${this.form.seCarInfo.carType}`;
             this.appearance = ['不正常', '良好'][this.form.seCarInfo.appearance];
             this.innage = `${this.innageData[this.form.seCarInfo.innage - 1].label}`;
+            if (this.form.seProjectList === null) {
+                this.form.seProjectList = [];
+            }
             this.serviceData = this.form.seProjectList;
         } else {
             this.handleQuery(this.$route.query.id);
+            console.log('B');
         }
         this.title = this.$route.meta.name;
         // }

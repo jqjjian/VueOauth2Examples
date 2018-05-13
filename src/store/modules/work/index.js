@@ -4,7 +4,14 @@ import mutations from './mutations';
 export default {
     namespaced: true,
     state: {
-        seCustomerInfo: null,
+        workOrder: {
+            comprehensiveId: '',
+            orderType: 1,
+            remark: '',
+            seCustomerInfo: null,
+            seCarInfo: null
+        },
+        isEdited: false,
         brandCodeData: {
             selectCarindex: [],
             selectCarObj: {}

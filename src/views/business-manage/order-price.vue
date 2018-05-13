@@ -435,7 +435,7 @@ export default {
                 // maintenanceSuggestion: '', // 维修建议
                 orderType: 1, // 单据类型 1.综合服务单 2 工时快速单 ,
                 remark: '', // 备注
-                reservationId: 0, // 预约单ID
+                // reservationId: 0, // 预约单ID
                 seCarInfo: { // 车辆信息
                     adviseMileageMaintenance: null, // 建议保养里程
                     adviseMileageTime: '', // 建议保养时间
