@@ -65,24 +65,30 @@ export default {
         };
     },
     created() {
-        fittingApi.inventoryFitting.r({ classifyId: 1 }).then(resp => {
-            console.log(resp);
-            this.materialist = resp.data;
-        });
+        this.getFittingList();
     },
     methods: {
+        getFittingList() {
+            fittingApi.inventoryFitting.r({ classifyId: 1 }).then(resp => {
+                this.materialist = resp.data;
+            });
+        },
         editFn(val) {
-            console.log(val);
+            this.$router.push({
+                name: 'fitting-info-item',
+                params: { fittingInfo: val }
+            });
         },
         deleteFn(id) {
             MessageBox.confirm('确认删除?')
                 .then(action => {
                     fittingApi.deleteFitting.r({ id: id }).then(response => {
                         if (response.status === 200) {
-                            this.$message({
-                                type: 'success',
-                                message: '删除成功!'
+                            Toast({
+                                message: '删除成功',
+                                duration: 1000
                             });
+                            this.getFittingList();
                         } else {
                             Toast({
                                 message: '删除失败',
@@ -97,17 +103,14 @@ export default {
         },
         addNewFitting() {
             this.$router.push({
-                name: 'fitting-info-item',
-                params: { workInfo: 'scope.row' }
+                name: 'fitting-info-item'
             });
         }
     }
 };
 </script>
 <style lang="postcss">
-.ycy-cell-swipe,
-.mint-cell-value {
-    // display: block !import;
+.ycy-cell-swipe .mint-cell-value {
     width: 100%;
 }
 .tcth-cell {
