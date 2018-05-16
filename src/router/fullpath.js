@@ -136,8 +136,19 @@ export default [
                             {
                                 path: '/mobile/business-manage/finance-manage',
                                 name: 'finance-manage',
+                                component: () => import('../views/finance-manage/index.vue'),
                                 meta: {
                                     name: '财务管理'
+                                }
+                            },
+                            {
+                                path: '/mobile/business-manage/billing-detail',
+                                name: 'billing-detail',
+                                component: () => import('../views/finance-manage/billing-detail.vue'),
+                                meta: {
+                                    name: '订单详情',
+                                    allow: true,
+                                    hide: true
                                 }
                             },
                             {
