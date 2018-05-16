@@ -124,7 +124,7 @@ export default {
         }
         if (this.isEdited) {
             for (let k of Object.keys(this.seCustomerInfo)) {
-                if (this.popFormRules[k].required) {
+                if (this.popFormRules[k] && this.popFormRules[k].required) {
                     this.popFormRules[k].state = 'success';
                 }
             }

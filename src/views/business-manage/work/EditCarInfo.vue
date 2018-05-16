@@ -446,7 +446,11 @@ export default {
             console.log(form);
             const { data } = await comprehensiveApi.save.r(form);
             console.log(data);
-            this.SET_WORK_ORDER(data);
+            let _obj = R.merge(data, {seCustomerInfo: form.seCustomerInfo, seCarInfo: form.seCarInfo});
+            if (this.WorkOrder.seProjectList) {
+                _obj = R.merge(_obj, {seProjectList: this.WorkOrder.seProjectList});
+            }
+            this.SET_WORK_ORDER(_obj);
             this.CHANGE_EDIT_STATE(true);
             this.$toast({
                 message: `${this.WorkOrder.comprehensiveId !== '' ? '保存' : '开单'}成功!`,
@@ -517,7 +521,12 @@ export default {
     },
     created() {
         if (this.CarInfo !== null) {
-            this.seCarInfo = R.merge(this.seCarInfo, this.CarInfo);
+            const _obj = R.merge(this.CarInfo, {
+                myCar: `${this.CarInfo.brandCode}/${this.CarInfo.carTrainCode}/${this.CarInfo.carType}`,
+                appearance: ['不正常', '良好'][this.CarInfo.appearance],
+                innage: `${this.innages[this.CarInfo.innage - 1].label}`
+            });
+            this.seCarInfo = R.merge(this.seCarInfo, _obj);
         }
         if (this.isEdited) {
             this.remark = this.WorkOrder.remark;

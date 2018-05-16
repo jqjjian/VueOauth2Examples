@@ -191,12 +191,6 @@ export default {
             test: {},
             title: '',
             selected: '0',
-            // popupVisible: false, // 车系
-            // popupYearVisible: false, // 车年款
-            // popupModelVisible: false, // 车型号
-            // showSelectCarList: true, // 车品牌
-            // popupColorVisible: false, // 车颜色
-            // sheetVisible: false, // 车辆情况
             popupServiceVisible: false, // 服务项目
             selectServicePopupVisible: false, // 服务项目信息报价
             selectServiceEdit: true,
@@ -205,10 +199,6 @@ export default {
             editPartsPrice: false, // 是否在修改价格
             selectCarindex: [], // 车品牌列表
             selectCarObj: {}, // 排序后车品牌列表
-            // brandName: '',
-            // styleName: '',
-            // styleId: '',
-            // modelName: '',
             selectCarListindex: [], // 车系分类
             selectCarListObj: {}, // 车系分类子项目列表
             serviceValue: {
@@ -225,49 +215,6 @@ export default {
             selectCarStyle: [], // 车款式
             yearValue: '', // 车年款值
             searchValue: '', // 搜索
-            carColors: [
-                // 车颜色
-                {
-                    label: '银色',
-                    value: '银色'
-                },
-                {
-                    label: '白色',
-                    value: '白色'
-                },
-                {
-                    label: '蓝色',
-                    value: '蓝色'
-                },
-                {
-                    label: '黑色',
-                    value: '黑色'
-                },
-                {
-                    label: '红色',
-                    value: '红色'
-                },
-                {
-                    label: '绿色',
-                    value: '绿色'
-                },
-                {
-                    label: '黄色',
-                    value: '黄色'
-                },
-                {
-                    label: '棕色',
-                    value: '棕色'
-                },
-                {
-                    label: '灰色',
-                    value: '灰色'
-                },
-                {
-                    label: '紫色',
-                    value: '紫色'
-                }
-            ],
             innageData: [
                 { value: '1', label: '空' },
                 { value: '2', label: '1/4' },
@@ -275,42 +222,7 @@ export default {
                 { value: '4', label: '3/4' },
                 { value: '5', label: '满' }
             ],
-            comprehensiveStatus: 0, // 综合服务单进度状态
-            swipeData: [
-                // 服务项目左滑删除样式
-                {
-                    content: '取消',
-                    style: {
-                        background: '#ddd',
-                        color: '#fff'
-                    },
-                    handler: () => {
-                        console.log(this);
-                    }
-                },
-                {
-                    content: '删除',
-                    style: {
-                        background: 'red',
-                        color: '#fff'
-                    },
-                    handler() {
-                        console.log(this);
-                    }
-                }
-            ],
-            serviceData: [
-                // 服务项目列表状态
-                // {
-                //     children: [],
-                //     title: '',
-                //     name: '新增服务项目',
-                //     description: '',
-                //     value: 0,
-                //     status: '',
-                //     serviceProjectId: ''
-                // }
-            ],
+            serviceData: [],
             serviceActive: 0, // 当前操作服务项目索引
             parts: [], // 当前操作服务项目配件列表
             selectCatStyleData: {
@@ -322,21 +234,6 @@ export default {
                 carTrainCode: '',
                 carType: '',
                 carModelYear: ''
-            },
-            selectCatStyleCacheData: {
-                // 选择车型状态缓存
-                // 选择品牌车型缓存数据
-                brand: '',
-                brandCode: '',
-                carTrain: '',
-                carTrainCode: '',
-                carType: '',
-                carModelYear: ''
-            },
-            cacheData: {
-                brandCode: '选择车型',
-                carColor: '请选择车辆颜色',
-                appearance: '请选择辆车辆外观状况'
             },
             form: {
                 // 综合服务单
@@ -481,19 +378,6 @@ export default {
                     }
                 ]
             },
-            del: [
-                // 项目配件删除样式
-                {
-                    content: '删除',
-                    style: {
-                        background: 'red',
-                        color: '#fff'
-                    },
-                    handler: () => {
-                        console.log(this);
-                    }
-                }
-            ],
             fittingsData: [
                 // 配件列表
                 [], // 配件
@@ -528,7 +412,8 @@ export default {
             if (this.form.seProjectList) {
                 for (let v of Object.values(this.form.seProjectList)) {
                     for (let j of Object.values(v.children)) {
-                        _total += (j.price - 0);
+                        console.log(j);
+                        _total += (j.price - 0) * j.number;
                     }
                 }
             }
@@ -583,7 +468,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('work', ['SET_WORK_ORDER']),
+        ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE']),
         async editParts(part) {
             console.log(part);
             try {
@@ -613,8 +498,9 @@ export default {
             this.parts = R.clone(project.children);
         },
         handleEdit() { // 修改服务单信息
+            this.CHANGE_EDIT_STATE(true);
             this.$router.push({
-                name: 'order-price-item',
+                name: 'EditCustomerInfo-item',
                 query: {
                     id: this.$route.query.id
                 }
@@ -960,7 +846,7 @@ export default {
         console.log('abcabc', this.WorkOrder);
         if (this.isEdited) {
             console.log('A');
-            this.form = R.clone(this.WorkOrder);
+            this.form = this.WorkOrder;
             this.brandCode = `${this.form.seCarInfo.brandCode}/${this.form.seCarInfo.carTrainCode}/${this.form.seCarInfo.carType}`;
             this.appearance = ['不正常', '良好'][this.form.seCarInfo.appearance];
             this.innage = `${this.innageData[this.form.seCarInfo.innage - 1].label}`;

@@ -9,7 +9,7 @@
         <div class="container-box">
             <template v-for="(v, i) in comprehensiveList">
                 <div class="page-part" :key="i">
-                    <mt-cell :title="`${v.carNumber}(${v.brandCode})`"
+                    <mt-cell :title="`${v.seCustomerInfo.carNumber}(${v.seCarInfo.brandCode})`"
                     is-link
                     :label="`开单时间：${v.createDate}`"
                     @click.native="handleEditComprehensive(v.comprehensiveId)"
@@ -65,18 +65,18 @@ export default {
                     pageSize: 9999
                 });
                 console.log(data);
-                this.comprehensiveList = data.map(v => {
-                    return {
-                        comprehensiveCd: v.comprehensiveCd,
-                        comprehensiveId: v.comprehensiveId,
-                        carNumber: v.seCustomerInfo ? v.seCustomerInfo.carNumber : '',
-                        brandCode: v.seCarInfo.brandCode,
-                        tel: v.seCustomerInfo ? v.seCustomerInfo.tel : '',
-                        createDate: v.createDate,
-                        carTrainCode: v.seCarInfo.carTrainCode
-                    };
-                });
-                console.log(this.comprehensiveList);
+                this.comprehensiveList = data;
+                // this.comprehensiveList = data.map(v => {
+                //     return {
+                //         comprehensiveCd: v.comprehensiveCd,
+                //         comprehensiveId: v.comprehensiveId,
+                //         carNumber: v.seCustomerInfo ? v.seCustomerInfo.carNumber : '',
+                //         brandCode: v.seCarInfo.brandCode,
+                //         tel: v.seCustomerInfo ? v.seCustomerInfo.tel : '',
+                //         createDate: v.createDate,
+                //         carTrainCode: v.seCarInfo.carTrainCode
+                //     };
+                // });
             } catch (err) {
                 console.error(err);
                 catchError(err);
