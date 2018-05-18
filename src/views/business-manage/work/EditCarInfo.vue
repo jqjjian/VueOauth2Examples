@@ -14,7 +14,15 @@
             <div class="page-part form">
                 <div class="info-title">车辆信息（*必填）</div>
                 <template v-for="(v, i) in field">
-                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :state="popFormRules[v].state" v-input="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
+                    <mt-field :class="{required: popFormRules[v].required}"
+                    :key="v + i" :label="`${popFormRules[v].label}：`"
+                    v-model="seCarInfo[v]"
+                    :placeholder="`请输入${popFormRules[v].label}`"
+                    :readonly="popFormRules[v].readonly"
+                    :type="popFormRules[v].type"
+                    :state="popFormRules[v].state"
+                    v-input="{label: v, rules}"
+                    v-focus="{label: v, event}"></mt-field>
                     <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
                 </template>
             </div>
@@ -214,58 +222,78 @@ export default {
                 adviseMileageMaintenance: {
                     label: '建议保养里程',
                     required: false,
+                    type: 'number',
+                    readonly: false,
                     state: ''
                 },
                 adviseMileageTime: {
                     label: '建议保养时间',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     state: ''
                 },
                 appearance: {
                     label: '车身外观',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '车身外观不能为空',
                     state: ''
                 },
                 brandCode: {
                     label: '品牌车型',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '请选择车品牌车型',
                     state: ''
                 },
                 carTrainCode: {
                     label: '车系',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '请选择车系',
                     state: ''
                 },
                 carModelYear: {
                     label: '车年款',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '请选择车年款',
                     state: ''
                 },
                 carType: {
                     label: '品牌车型',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '车品牌车型不能为空',
                     state: ''
                 },
                 myCar: {
                     label: '品牌车型',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '车品牌车型不能为空',
                     state: ''
                 },
                 displacement: {
                     label: '排量',
                     required: true,
+                    type: 'number',
+                    readonly: false,
                     message: '排量不能为空',
                     state: ''
                 },
                 engineNumber: {
                     label: '发动机号',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: '发动机号不符合规则',
                     rex: /^\d{7,8}$/g,
                     state: ''
@@ -273,18 +301,24 @@ export default {
                 innage: {
                     label: '剩余油量',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '剩余油量不能为空',
                     state: ''
                 },
                 mileage: {
                     label: '行驶里程',
                     required: true,
+                    type: 'number',
+                    readonly: false,
                     message: '行驶里程不能为空',
                     state: ''
                 },
                 vin: {
                     label: 'vin码',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: 'vin码不符合规则',
                     rex: /^[0-9a-zA-Z]{17}$/g,
                     state: ''
@@ -292,6 +326,8 @@ export default {
                 carColor: {
                     label: '车辆颜色',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '车辆颜色不能为空',
                     state: ''
                 }
@@ -556,6 +592,10 @@ export default {
 .mint-popup-select-list {
     width: 100%;
     height: 100%;
+    overflow-y: scroll;
+    .mint-radiolist {
+        padding-bottom: 50px;
+    }
     .mint-indexlist-content {
         > li:last-child {
             margin-bottom: 50px;

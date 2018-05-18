@@ -13,7 +13,7 @@
                     is-link
                     :label="`开单时间：${v.createDate}`"
                     @click.native="handleEditComprehensive(v.comprehensiveId)"
-                    >{{v.tel}}</mt-cell>
+                    >{{sviceStateIndex[v.status - 1]}}</mt-cell>
                 </div>
             </template>
         </div>
@@ -28,7 +28,8 @@ export default {
     data () {
         return {
             comprehensiveList: [],
-            title: ''
+            title: '',
+            sviceStateIndex: ['待确认', '施工中', '质检中', '完工']
         };
     },
     methods: {

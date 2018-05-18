@@ -5,6 +5,10 @@
             <mt-button slot="right" @click.native="handleEdit">修改</mt-button>
         </mt-header>
         <div class="container-box scroll">
+            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit">
+                <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
+                <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
+            </div>
             <div class="page-part car-info">
                 <mt-cell title="送修人信息" class="bold title"></mt-cell>
                 <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" readonly disableClear></mt-field>
@@ -26,7 +30,7 @@
                 <mt-field label="车辆外观状况：" v-model="appearance" readonly disableClear></mt-field>
             </div>
             <div class="page-part">
-                <mt-field label="备注：" v-model="form.seCustomerInfo.remark" readonly disableClear></mt-field>
+                <mt-field abel="备注：" v-model="remark" readonly disableClear></mt-field>
             </div>
             <div class="page-part service">
                 <mt-cell :title="`服务项目信息 （总费用：￥${allTotal}）`" class="bold"><mt-button type="primary" v-if="this.form.status < 5" size="small" @click.native="handleOpenSelectService(null)">添加</mt-button></mt-cell>
@@ -86,7 +90,7 @@
             <mt-popup :modal="false" v-model="selectServicePopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
                 <mt-header fixed title="选择配件">
                     <mt-button v-if="selectServiceEdit" icon="back" slot="left" @click.native="selectServicePopupVisible = false">返回</mt-button>
-                    <mt-button v-if="selectServiceEdit" slot="right" @click.native="saveServiceParts">保存</mt-button>
+                    <!-- <mt-button v-if="selectServiceEdit" slot="right" @click.native="saveServiceParts">保存</mt-button> -->
                     <mt-button v-if="!selectServiceEdit" slot="right" @click.native="selectServicePopupVisible = false">关闭</mt-button>
                 </mt-header>
                 <div class="container-box scroll">
@@ -98,7 +102,7 @@
                         <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
                         <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
                     </div>
-                    <div class="page-part">
+                    <div class="page-part" style="padding-bottom:">
                         <mt-cell v-if="selectServicePopupVisible && serviceData && serviceData.length !== 0" class="bold" :label="`备注：${serviceData[serviceActive].description}`" :title="`${serviceData[serviceActive].projectName}(￥${total})`">
                             <mt-button v-if="selectServiceEdit" size="small" type="primary" icon="" class="cell-btn" @click.native="getFittingindex">添加物料</mt-button>
                             <mt-button v-if="selectServiceEdit" size="small" type="primary" icon="" class="cell-btn" @click.native="handleAddmanHour">添加工时</mt-button>
@@ -188,7 +192,7 @@ import * as R from 'ramda';
 export default {
     data() {
         return {
-            test: {},
+            remark: '',
             title: '',
             selected: '0',
             popupServiceVisible: false, // 服务项目
@@ -642,6 +646,7 @@ export default {
                 console.log(data[0]);
                 this.SET_WORK_ORDER(data[0]);
                 this.form = this.WorkOrder;
+                this.remark = this.form.remark;
                 this.brandCode = `${this.form.seCarInfo.brandCode}/${this.form.seCarInfo.carTrainCode}/${this.form.seCarInfo.carType}`;
                 this.appearance = ['不正常', '良好'][this.form.seCarInfo.appearance];
                 this.innage = `${this.innageData[this.form.seCarInfo.innage - 1].label}`;
@@ -730,6 +735,7 @@ export default {
             this.numberSlots[0].values = _values.map(v => `${v.priceName}: ￥${v.price}`);
             let selectIndex = 0;
             this.editPartsPrice = values ? 1 : 0;
+            this.number = 1;
             if (values) {
                 const prices = R.map(R.prop('price'))(_values);
                 const _part = part.part;
@@ -843,10 +849,10 @@ export default {
         this.getServiceType();
         // const id = this.$route.query.id;
         // if (id) {
-        console.log('abcabc', this.WorkOrder);
         if (this.isEdited) {
             console.log('A');
             this.form = this.WorkOrder;
+            this.remark = this.form.remark;
             this.brandCode = `${this.form.seCarInfo.brandCode}/${this.form.seCarInfo.carTrainCode}/${this.form.seCarInfo.carType}`;
             this.appearance = ['不正常', '良好'][this.form.seCarInfo.appearance];
             this.innage = `${this.innageData[this.form.seCarInfo.innage - 1].label}`;
@@ -982,21 +988,21 @@ export default {
 .mint-popup-select-list {
     width: 100%;
     height: 100%;
-    transform: translate3d(-12%, -50%, 0);
+    // transform: translate3d(-12%, -50%, 0);
     background: none;
 }
 .select-list-wrap {
-    position: fixed;
-    width: 100%;
-    height: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: #fff;
-    transition: all 0.3s;
-    overflow: scroll;
-    transform: translate3d(100%, 0, 0);
+    // position: fixed;
+    // width: 100%;
+    // height: auto;
+    // left: 0;
+    // right: 0;
+    // top: 0;
+    // bottom: 0;
+    // background: #fff;
+    // transition: all 0.3s;
+    // overflow: scroll;
+    // transform: translate3d(100%, 0, 0);
     .checked{
         margin-left: 100px;
     }

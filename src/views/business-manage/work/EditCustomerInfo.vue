@@ -15,6 +15,8 @@
                     :label="`${popFormRules[v].label}：`"
                     v-model="seCustomerInfo[v]"
                     :placeholder="`请输入${popFormRules[v].label}`"
+                    :readonly="popFormRules[v].readonly"
+                    :type="popFormRules[v].type"
                     :state="popFormRules[v].state" v-input="{label: v, rules}"></mt-field>
                     <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
                 </template>
@@ -43,12 +45,16 @@ export default {
                 customerName: {
                     label: '送修人名称',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: '送修人名称不能为空',
                     state: ''
                 },
                 tel: {
                     label: '手机号码',
                     required: true,
+                    type: 'number',
+                    readonly: false,
                     message: '手机号码必须是11位数字',
                     state: '',
                     rex: /^\d{11}$/g
@@ -56,11 +62,15 @@ export default {
                 carNumber: {
                     label: '车牌号码',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: '车牌号码不能空',
                     state: ''
                 },
                 customerAddress: {
                     label: '住址',
+                    type: 'text',
+                    readonly: false,
                     required: false,
                     state: ''
                 }

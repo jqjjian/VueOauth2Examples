@@ -79,34 +79,34 @@ export default [
                                     hide: true
                                 }
                             },
-                            {
-                                path: '/mobile/business-manage/order-price',
-                                name: 'order-price',
-                                component: () => import('../views/business-manage/order-price.vue'),
-                                meta: {
-                                    name: '编辑工单',
-                                    allow: true,
-                                    hide: true
-                                }
-                            },
-                            {
-                                path: '/mobile/business-manage/pending',
-                                name: 'pending',
-                                component: () => import('../views/business-manage/pending.vue'),
-                                meta: {
-                                    name: '工单'
-                                }
-                            },
-                            {
-                                path: '/mobile/business-manage/pendingEdit',
-                                name: 'pendingEdit',
-                                component: () => import('../views/business-manage/pendingEdit.vue'),
-                                meta: {
-                                    name: '工单',
-                                    allow: true,
-                                    hide: true
-                                }
-                            },
+                            // {
+                            //     path: '/mobile/business-manage/order-price',
+                            //     name: 'order-price',
+                            //     component: () => import('../views/business-manage/order-price.vue'),
+                            //     meta: {
+                            //         name: '编辑工单',
+                            //         allow: true,
+                            //         hide: true
+                            //     }
+                            // },
+                            // {
+                            //     path: '/mobile/business-manage/pending',
+                            //     name: 'pending',
+                            //     component: () => import('../views/business-manage/pending.vue'),
+                            //     meta: {
+                            //         name: '工单'
+                            //     }
+                            // },
+                            // {
+                            //     path: '/mobile/business-manage/pendingEdit',
+                            //     name: 'pendingEdit',
+                            //     component: () => import('../views/business-manage/pendingEdit.vue'),
+                            //     meta: {
+                            //         name: '工单',
+                            //         allow: true,
+                            //         hide: true
+                            //     }
+                            // },
                             // {
                             //     path: '/mobile/business-manage/construction',
                             //     name: 'construction',
