@@ -105,6 +105,10 @@ export default {
                     }
                 }
             }
+            if (e === 'carNumber') {
+                this.seCustomerInfo[e] = this.seCustomerInfo[e].toUpperCase();
+            }
+            this.seCustomerInfo[e] = this.seCustomerInfo[e].replace(/(^\s+)|(\s+$)/g, '');
             popFormRules[e].state = 'success';
         },
         handleNext() {

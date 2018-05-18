@@ -284,7 +284,7 @@ export default {
                 displacement: {
                     label: '排量',
                     required: true,
-                    type: 'number',
+                    type: 'text',
                     readonly: false,
                     message: '排量不能为空',
                     state: ''
@@ -447,6 +447,8 @@ export default {
                     }
                 }
             }
+            console.log(this.seCarInfo[e]);
+            this.seCarInfo[e] = this.seCarInfo[e].replace(/(^\s+)|(\s+$)/g, '');
             popFormRules[e].state = 'success';
         },
         event(v) {
@@ -456,7 +458,9 @@ export default {
                 this.PopupVisible.btn = true;
             }
             if (v === 'adviseMileageTime') {
-                this.$refs.picker.open();
+                this.$refs.picker.open({
+                    // startDate: new Date('2018-5-18')
+                });
             }
             if (v === 'myCar') {
                 this.PopupVisible.selectCar = true;

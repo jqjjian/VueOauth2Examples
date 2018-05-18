@@ -5,7 +5,7 @@
             <mt-button slot="right" @click.native="handleEdit">修改</mt-button>
         </mt-header>
         <div class="container-box scroll">
-            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit">
+            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible">
                 <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
                 <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
             </div>
@@ -30,10 +30,10 @@
                 <mt-field label="车辆外观状况：" v-model="appearance" readonly disableClear></mt-field>
             </div>
             <div class="page-part">
-                <mt-field abel="备注：" v-model="remark" readonly disableClear></mt-field>
+                <mt-field label="备注：" v-model="remark" readonly disableClear></mt-field>
             </div>
             <div class="page-part service">
-                <mt-cell :title="`服务项目信息 （总费用：￥${allTotal}）`" class="bold"><mt-button type="primary" v-if="this.form.status < 5" size="small" @click.native="handleOpenSelectService(null)">添加</mt-button></mt-cell>
+                <mt-cell :title="`服务项目信息 (总价：￥${allTotal})`" class="bold"><mt-button type="primary" v-if="this.form.status < 5" size="small" @click.native="handleOpenSelectService(null)">添加</mt-button></mt-cell>
                 <div v-if="serviceData && serviceData.length !== 0">
                     <template v-for="(v, i) in serviceData">
                         <mt-cell-swipe :label="`备注：${v.description}`"  :title="`${i + 1}. ${v.projectName}`" :right="[ // 服务项目左滑删除样式
@@ -76,15 +76,15 @@
                 </div>
             </div>
             <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap" :class="[popupServiceVisible ? 'active' : '']">
+                <div class="select-list-wrap service" :class="[popupServiceVisible ? 'active' : '']">
                     <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
                     </mt-radio>
                     <mt-field label="描述："
                         v-model="serviceValue.description"
                         placeholder="请输入描述信息"
                     >
+                        <mt-button v-if="serviceValue.description !== '' && serviceValue.title !== ''" type="primary" size="small" class="checked" @click.native="saveServiceProject">确定</mt-button>
                     </mt-field>
-                     <mt-button v-if="serviceValue.description !== ''" type="primary" size="small" class="checked" @click.native="saveServiceProject">确定</mt-button>
                 </div>
             </mt-popup>
             <mt-popup :modal="false" v-model="selectServicePopupVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
@@ -1014,6 +1014,9 @@ export default {
     }
     &.checked {
         transform: translate3d(-38%, 0, 0);
+    }
+    &.service .mint-cell {
+        min-height: 35px;
     }
 }
 .popup-model {

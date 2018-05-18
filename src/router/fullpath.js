@@ -36,7 +36,7 @@ export default [
                                 name: 'work',
                                 component: () => import('../views/business-manage/work/WorkList.vue'),
                                 meta: {
-                                    name: '新工单'
+                                    name: '工单'
                                 }
                             },
                             {
