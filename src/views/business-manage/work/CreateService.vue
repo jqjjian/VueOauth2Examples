@@ -25,16 +25,15 @@ export default {
     data() {
         return {
             title: '服务开单'
-        };
+        }
     },
     methods: {
         comprehensiveSubmit() {
-            console.log('开单');
+            console.log('开单')
         }
     }
-};
+}
 </script>
 
 <style lang="postcss">
-
 </style>

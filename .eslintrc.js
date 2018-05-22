@@ -28,7 +28,7 @@ module.exports = {
       //引号风格
       // quotes: [2, 'double', 'avoid-escape'],
       //强制语句分号结尾
-      semi: [2, 'always'],
+      semi: [0, 'always'],
       //函数定义时括号前的空格
       // "space-before-function-paren": [0, "always"],
   

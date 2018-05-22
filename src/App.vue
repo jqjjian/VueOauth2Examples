@@ -231,7 +231,9 @@ export default {
                 console.log('用户信息：', data);
                 const userInfo = data;
                 common['useruuid'] = userInfo.uuid;
-
+                if (userInfo.shops.length) {
+                    common['shopuuid'] = userInfo.shops[0].uuid;
+                }
                 // 判断是否只有一个修理厂，如果是将修理厂设置到header
                 if (userInfo.shops) {
                     if (userInfo.shops.isArray && userInfo.shops.length > 0) {
