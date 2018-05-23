@@ -40,11 +40,11 @@
                 <mt-field label="收款时间" readonly v-model="payDate"></mt-field>
             </div>
         </div>
-        <div v-if="info.status===4" class="finance-buttom">
+        <div class="finance-buttom">
             <div>
                 <span>总金额: {{info.totalFee}}元</span>
             </div>
-            <div>
+            <div v-if="info.status===4">
                 <span>剩余应付: {{extendedAmount}}元</span>
                 <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
             </div>
