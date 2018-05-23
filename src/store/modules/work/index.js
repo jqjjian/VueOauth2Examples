@@ -1,9 +1,10 @@
-import getters from './getters';
-import actions from './actions';
-import mutations from './mutations';
+import getters from './getters'
+import actions from './actions'
+import mutations from './mutations'
 export default {
     namespaced: true,
     state: {
+        PROVINCE: [],
         workOrder: {
             comprehensiveId: '',
             orderType: 1,
@@ -20,4 +21,4 @@ export default {
     getters,
     actions,
     mutations
-};
+}

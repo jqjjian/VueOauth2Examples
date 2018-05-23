@@ -25,13 +25,26 @@ Vue.directive('has', {
 Vue.directive('blur', {
     bind(el, binding) {
         const input = el.querySelector('input');
-        input.onblur = () => binding.value.rules(binding.value.label);
+        // let time = null;
+        input.onblur = () => {
+            binding.value.rules(binding.value.label)
+            // if (time !== null) {
+            //     window.clearTimeout(time);
+            // }
+            // time = setTimeout(() => binding.value.rules(binding.value.label), 1000);
+        };
     }
 });
 Vue.directive('focus', {
     bind(el, binding) {
         const input = el.querySelector('input');
-        input.onfocus = () => binding.value.event(binding.value.label);
+        let time = null;
+        input.oninput = () => {
+            if (time !== null) {
+                window.clearTimeout(time);
+            }
+            time = setTimeout(() => binding.value.rules(binding.value.label), 1000);
+        };
     }
 });
 Vue.directive('input', {

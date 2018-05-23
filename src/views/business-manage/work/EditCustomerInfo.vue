@@ -10,12 +10,12 @@
             <div class="page-part form">
                 <div class="info-title">送修人信息（*必填）</div>
                 <template v-for="(v, i) in field">
-                    <mt-field v-if="v !== 'carNumber'" :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCustomerInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-input="{label: v, rules}">
+                    <mt-field v-if="v !== 'carNumber'" :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCustomerInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-blur="{label: v, rules}">
                         <!-- <mt-button v-if="v === 'carNumber'" type="primary" size="small" class="checked">{{province}}</mt-button> -->
                     </mt-field>
                     <mt-cell v-else title="车牌号码：" :key="v + i" class="carNum" :class="{required: popFormRules[v].required}">
-                        <mt-button type="primary" size="small" class="checked">{{province}}</mt-button>
-                        <input :readonly="popFormRules[v].readonly" type="text" class="mint-field-core" :placeholder="`输入${popFormRules[v].label}`" style="margin-left: 5px;" v-model="seCustomerInfo[v]" @input="handleInput(v)" />
+                        <mt-button type="primary" size="small" class="checked" @click.native="popupVisible = true">{{province}}</mt-button>
+                        <input :readonly="popFormRules[v].readonly" type="text" class="mint-field-core" :placeholder="`输入${popFormRules[v].label}`" style="margin-left: 5px;" v-model="seCustomerInfo[v]" @input="handleInput(v)" @blur="rules(v)" />
                         <span class="mint-field-state" v-if="popFormRules[v].state" :class="['is-' + popFormRules[v].state]">
                             <i class="mintui" :class="['mintui-field-' + popFormRules[v].state]"></i>
                         </span>
@@ -27,6 +27,15 @@
                 <mt-button type="primary" size="large" :disabled="!finish" @click.native="handleNext">下一步</mt-button>
             </div>
         </div>
+        <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom" class="my-popup">
+            <div class="select-list-wrap car-province" style="height: 250px; padding: 5px 5px 0;">
+                <template v-for="(v, i) in this.provinces">
+                    <div v-if="(i !== 0) && (i % 7 === 0)" class="car-province" style="width: 100%" :key="v.groupCode + `${i}`"> </div>
+                    <mt-button type="primary" size="small" style="margin-bottom: 5px;" :key="v.dicName" @click.native="handleSelectProvince(v.dicName)">{{v.dicName}}</mt-button>
+                </template>
+                <mt-button type="primary" size="large" @click.native="popupVisible = false">取消</mt-button>
+            </div>
+        </mt-popup>
     </div>
 </template>
 
@@ -36,6 +45,7 @@ import * as R from 'ramda'
 export default {
     data() {
         return {
+            popupVisible: false,
             province: '桂',
             carNumVal: '',
             field: ['customerName', 'tel', 'carNumber', 'customerAddress'],
@@ -84,7 +94,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('work', ['CustomerInfo', 'isEdited']),
+        ...mapGetters('work', ['CustomerInfo', 'isEdited', 'provinces']),
         finish() {
             let b = true
             for (let v of Object.values(this.popFormRules)) {
@@ -97,7 +107,7 @@ export default {
     },
     methods: {
         ...mapMutations('work', ['SET_CUSTOMER_INFO', 'CHANGE_EDIT_STATE']),
-        ...mapActions('work', ['getComprehensive']),
+        ...mapActions('work', ['getComprehensive', 'getProvince']),
         rules(e) {
             // 验证
             const popFormRules = this.popFormRules
@@ -112,23 +122,27 @@ export default {
                     }
                 }
             }
-            // if (e === 'carNumber') {
-            //     this.seCustomerInfo[e] = this.seCustomerInfo[e].toUpperCase();
-            // }
+            if (e === 'carNumber') {
+                this.seCustomerInfo[e] = this.seCustomerInfo[e].toUpperCase()
+            }
             this.seCustomerInfo[e] = this.seCustomerInfo[e].replace(/(^\s+)|(\s+$)/g, '')
             popFormRules[e].state = 'success'
         },
+        // verify(v) {
+        //     console.log(v);
+        // },
         handleInput(v) {
             // this.carNumVal = evt.target.value;
-            if (this.time !== null) {
-                window.clearTimeout(this.time)
-            }
-            this.time = setTimeout(() => this.rules(v), 1000)
+            // if (this.time !== null) {
+            //     window.clearTimeout(this.time)
+            // }
+            // this.time = setTimeout(() => this.rules(v), 1000)
         },
         handleNext() {
             console.log('下一步')
             // if (!this.isEdited) {
             // }
+            this.seCustomerInfo.carNumber = this.province + this.seCustomerInfo.carNumber
             this.SET_CUSTOMER_INFO(this.seCustomerInfo)
             this.$router.push({ name: 'EditCarInfo-item' })
             // this.CHANGE_EDIT_STATE(true);
@@ -138,6 +152,10 @@ export default {
             // } else {
             //     this.$router.push({name: 'EditCarInfo-item'});
             // }
+        },
+        handleSelectProvince(name) {
+            this.province = name
+            this.popupVisible = false
         }
     },
     watch: {
@@ -151,6 +169,8 @@ export default {
     created() {
         if (this.CustomerInfo !== null && this.isEdited) {
             this.seCustomerInfo = R.merge(this.seCustomerInfo, this.CustomerInfo)
+            this.province = this.seCustomerInfo.carNumber.slice(0, 1)
+            this.seCustomerInfo.carNumber = this.seCustomerInfo.carNumber.slice(1, 8)
         }
         if (this.isEdited) {
             for (let k of Object.keys(this.seCustomerInfo)) {
@@ -158,6 +178,9 @@ export default {
                     this.popFormRules[k].state = 'success'
                 }
             }
+        }
+        if (!this.provinces.length) {
+            this.getProvince()
         }
     }
 }
@@ -173,5 +196,18 @@ export default {
 }
 .mint-cell.carNum .mint-cell-value {
     width: 185px;
+}
+.my-popup {
+    width: 100%;
+    .picker-slot-wrapper,
+    .picker-item {
+        backface-visibility: hidden;
+    }
+}
+.car-province {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-content: flex-start;
 }
 </style>
