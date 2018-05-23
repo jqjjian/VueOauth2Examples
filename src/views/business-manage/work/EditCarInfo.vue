@@ -14,7 +14,7 @@
             <div class="page-part form">
                 <div class="info-title">车辆信息（*必填）</div>
                 <template v-for="(v, i) in field">
-                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :state="popFormRules[v].state" v-input="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
+                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-input="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
                     <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
                 </template>
             </div>
@@ -90,9 +90,9 @@
 </template>
 
 <script>
-import { carApi, comprehensiveApi } from '@/api';
-import { mapGetters, mapActions, mapMutations } from 'vuex';
-import * as R from 'ramda';
+import { carApi, comprehensiveApi } from '@/api'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import * as R from 'ramda'
 export default {
     data() {
         return {
@@ -214,84 +214,112 @@ export default {
                 adviseMileageMaintenance: {
                     label: '建议保养里程',
                     required: false,
+                    type: 'number',
+                    readonly: false,
                     state: ''
                 },
                 adviseMileageTime: {
                     label: '建议保养时间',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     state: ''
                 },
                 appearance: {
                     label: '车身外观',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '车身外观不能为空',
                     state: ''
                 },
                 brandCode: {
                     label: '品牌车型',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '请选择车品牌车型',
                     state: ''
                 },
                 carTrainCode: {
                     label: '车系',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '请选择车系',
                     state: ''
                 },
                 carModelYear: {
                     label: '车年款',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '请选择车年款',
                     state: ''
                 },
                 carType: {
                     label: '品牌车型',
                     required: false,
+                    type: 'text',
+                    readonly: true,
                     message: '车品牌车型不能为空',
                     state: ''
                 },
                 myCar: {
                     label: '品牌车型',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '车品牌车型不能为空',
                     state: ''
                 },
                 displacement: {
                     label: '排量',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: '排量不能为空',
                     state: ''
                 },
                 engineNumber: {
                     label: '发动机号',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: '发动机号不符合规则',
-                    rex: /^\d{7,8}$/g,
+                    rex: /^[0-9A-Za-z]{7,8}$/,
                     state: ''
                 },
                 innage: {
                     label: '剩余油量',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '剩余油量不能为空',
                     state: ''
                 },
                 mileage: {
                     label: '行驶里程',
                     required: true,
+                    type: 'number',
+                    readonly: false,
                     message: '行驶里程不能为空',
                     state: ''
                 },
                 vin: {
                     label: 'vin码',
                     required: true,
+                    type: 'text',
+                    readonly: false,
                     message: 'vin码不符合规则',
-                    rex: /^[0-9a-zA-Z]{17}$/g,
+                    rex: /^[0-9a-zA-Z]{17}$/,
                     state: ''
                 },
                 carColor: {
                     label: '车辆颜色',
                     required: true,
+                    type: 'text',
+                    readonly: true,
                     message: '车辆颜色不能为空',
                     state: ''
                 }
@@ -320,18 +348,18 @@ export default {
                 //     state: ''
                 // }
             }
-        };
+        }
     },
     computed: {
         ...mapGetters('work', ['WorkOrder', 'brandCodeData', 'CustomerInfo', 'CarInfo', 'isEdited']),
         finish() {
-            let b = true;
+            let b = true
             for (let v of Object.values(this.popFormRules)) {
                 if (v.required && v.state !== 'success') {
-                    b = false;
+                    b = false
                 }
             }
-            return b;
+            return b
         }
     },
     methods: {
@@ -341,26 +369,26 @@ export default {
         //     console.log(this.appearanceValue);
         // },
         test(v) {
-            console.log(v);
+            console.log(v)
         },
         handleConfirm(date) {
-            console.log(date);
-            const _date = new window.Date(date);
-            const time = `${_date.getFullYear()}年${_date.getMonth() + 1}月${_date.getDate()}日`;
-            this.seCarInfo.adviseMileageTime = time;
+            console.log(date)
+            const _date = new window.Date(date)
+            const time = `${_date.getFullYear()}年${_date.getMonth() + 1}月${_date.getDate()}日`
+            this.seCarInfo.adviseMileageTime = time
         },
         handleSelected() {
-            const that = this;
-            that.hidePopup();
-            const info = that.seCarInfo;
-            let _tag = false;
+            const that = this
+            that.hidePopup()
+            const info = that.seCarInfo
+            let _tag = false
             const event = {
                 myCar() {
-                    info.myCar = `${info.brandCode} ${info.carTrainCode} ${info.carModelYear} ${info.carType}`;
-                    if (info.brandCode !== '') _tag = true;
-                    if (info.carTrainCode !== '') _tag = true;
-                    if (info.carModelYear !== '') _tag = true;
-                    if (info.carType !== '') _tag = true;
+                    info.myCar = `${info.brandCode} ${info.carTrainCode} ${info.carModelYear} ${info.carType}`
+                    if (info.brandCode !== '') _tag = true
+                    if (info.carTrainCode !== '') _tag = true
+                    if (info.carModelYear !== '') _tag = true
+                    if (info.carType !== '') _tag = true
                     // if (_tag) {
                     //     this.popFormRules.myCar.state = 'success';
                     // }
@@ -382,162 +410,165 @@ export default {
                 // appearance () {
                 //     if (info.appearance !== '') _tag = true;
                 // }
-            };
+            }
             if (event.hasOwnProperty(this.currentField)) {
-                event[this.currentField]();
+                event[this.currentField]()
             } else if (info[this.currentField] !== '') {
-                _tag = true;
+                _tag = true
             }
             if (_tag) {
-                this.popFormRules[this.currentField].state = 'success';
+                this.popFormRules[this.currentField].state = 'success'
             }
         },
         hidePopup() {
             for (let k of Object.keys(this.PopupVisible)) {
-                this.PopupVisible[k] = false;
+                this.PopupVisible[k] = false
             }
         },
         rules(e) {
             // 验证
-            const popFormRules = this.popFormRules;
+            const popFormRules = this.popFormRules
+            this.seCarInfo[e] = this.seCarInfo[e].replace(/(^\s+)|(\s+$)/g, '')
             if (popFormRules[e].required) {
                 if (this.seCarInfo[e] === '') {
-                    popFormRules[e].state = 'error';
-                    return;
+                    popFormRules[e].state = 'error'
+                    return
                 } else if (popFormRules[e].rex) {
                     if (!popFormRules[e].rex.test(this.seCarInfo[e])) {
-                        popFormRules[e].state = 'error';
-                        return;
+                        popFormRules[e].state = 'error'
+                        return
                     }
                 }
             }
-            popFormRules[e].state = 'success';
+            popFormRules[e].state = 'success'
         },
         event(v) {
-            console.log(v);
-            this.currentField = v;
+            console.log(v)
+            this.currentField = v
             if (v === 'myCar' || v === 'carColor' || v === 'appearance' || v === 'innage') {
-                this.PopupVisible.btn = true;
+                this.PopupVisible.btn = true
             }
             if (v === 'adviseMileageTime') {
-                this.$refs.picker.open();
+                this.$refs.picker.open({
+                    // startDate: new Date('2018-5-18')
+                })
             }
             if (v === 'myCar') {
-                this.PopupVisible.selectCar = true;
+                this.PopupVisible.selectCar = true
                 if (this.brandCodeData.selectCarindex.length === 0) {
-                    this.getBrandCode();
+                    this.getBrandCode()
                 }
             } else if (this.PopupVisible.hasOwnProperty(`select${v}`)) {
-                this.PopupVisible[`select${v}`] = true;
+                this.PopupVisible[`select${v}`] = true
             }
         },
         async handleNext() {
-            console.log('提交');
+            console.log('提交')
             let form = {
                 comprehensiveId: this.WorkOrder.comprehensiveId,
                 orderType: this.WorkOrder.orderType,
                 remark: this.remark,
                 seCustomerInfo: this.CustomerInfo,
                 seCarInfo: R.clone(this.seCarInfo)
-            };
-            form.seCarInfo.appearance = form.seCarInfo.appearance === '良好' ? 1 : 0;
-            const _innage = R.map(R.prop('value'))(this.innages);
-            form.seCarInfo.innage = _innage.indexOf(form.seCarInfo.innage) + 1;
-            console.log(form);
-            const { data } = await comprehensiveApi.save.r(form);
-            console.log(data);
-            let _obj = R.merge(data, {seCustomerInfo: form.seCustomerInfo, seCarInfo: form.seCarInfo});
-            if (this.WorkOrder.seProjectList) {
-                _obj = R.merge(_obj, {seProjectList: this.WorkOrder.seProjectList});
             }
-            this.SET_WORK_ORDER(_obj);
-            this.CHANGE_EDIT_STATE(true);
+            form.seCarInfo.appearance = form.seCarInfo.appearance === '良好' ? 1 : 0
+            const _innage = R.map(R.prop('value'))(this.innages)
+            form.seCarInfo.innage = _innage.indexOf(form.seCarInfo.innage) + 1
+            console.log(form)
+            const { data } = await comprehensiveApi.save.r(form)
+            console.log(data)
+            let _obj = R.merge(data, { seCustomerInfo: form.seCustomerInfo, seCarInfo: form.seCarInfo })
+            if (this.WorkOrder.seProjectList) {
+                _obj = R.merge(_obj, { seProjectList: this.WorkOrder.seProjectList })
+            }
+            this.SET_WORK_ORDER(_obj)
+            this.CHANGE_EDIT_STATE(true)
             this.$toast({
                 message: `${this.WorkOrder.comprehensiveId !== '' ? '保存' : '开单'}成功!`,
                 iconClass: 'icon icon-success',
                 duration: 2000
-            });
-            console.log(this.WorkOrder.comprehensiveId);
+            })
+            console.log(this.WorkOrder.comprehensiveId)
             this.$router.push({
                 name: 'work-services-item',
                 query: {
                     id: this.WorkOrder.comprehensiveId
                 }
-            });
+            })
         },
         async handleSelectCarBrand(item) {
             // 通选择车品牌获取车系
-            console.log(item);
-            const { data } = await carApi.requestStyle.r({ brandId: item.id });
-            this.seCarInfo.brandCode = item.brandName;
-            console.log(data);
-            this.PopupVisible.selectCarTrain = true;
-            this.CarTrainData.CarTrainIndex = [...new Set(R.map(R.prop('factoryName'))(data))];
+            console.log(item)
+            const { data } = await carApi.requestStyle.r({ brandId: item.id })
+            this.seCarInfo.brandCode = item.brandName
+            console.log(data)
+            this.PopupVisible.selectCarTrain = true
+            this.CarTrainData.CarTrainIndex = [...new Set(R.map(R.prop('factoryName'))(data))]
             for (let v of data) {
                 if (this.CarTrainData.CarTrainObj[v.factoryName]) {
-                    this.CarTrainData.CarTrainObj[v.factoryName].children.push(v);
+                    this.CarTrainData.CarTrainObj[v.factoryName].children.push(v)
                 } else {
                     this.CarTrainData.CarTrainObj[v.factoryName] = {
                         children: [v]
-                    };
+                    }
                 }
             }
         },
         async handleSelectCarTrain(item) {
             // 通过选择车系获取年款值
-            console.log(item);
-            const vm = this;
-            const { data } = await carApi.requestYear.r({ styleId: item.id });
-            this.seCarInfo.carTrainCode = item.styleName;
-            this.CarTrainData.carTrainCode = item.id;
+            console.log(item)
+            const vm = this
+            const { data } = await carApi.requestYear.r({ styleId: item.id })
+            this.seCarInfo.carTrainCode = item.styleName
+            this.CarTrainData.carTrainCode = item.id
             if (data.length) {
-                vm.PopupVisible.selectCarYear = true;
+                vm.PopupVisible.selectCarYear = true
                 vm.CarYeaIndex = data.map(v => {
-                    v.value = v.year;
-                    v.label = v.year + '年';
-                    return v;
-                });
+                    v.value = v.year
+                    v.label = v.year + '年'
+                    return v
+                })
             }
         },
         async handleSelectCarModelYear(year) {
             // 通过年款值获取该年款车型
-            const vm = this;
+            const vm = this
             // const styleId = vm.selectCatStyleCacheData.carTrainCode;
             // vm.selectCatStyleCacheData.carModelYear = year;
-            const { data } = await carApi.requestModel.r({ styleId: this.CarTrainData.carTrainCode, year });
-            console.log(data);
+            const { data } = await carApi.requestModel.r({ styleId: this.CarTrainData.carTrainCode, year })
+            console.log(data)
             if (data.length) {
-                vm.PopupVisible.selectCarType = true;
+                vm.PopupVisible.selectCarType = true
                 vm.CarTypeIndex = data.map(v => {
-                    v.value = v.modelName;
-                    v.label = v.modelName;
-                    return v;
-                });
+                    v.value = v.modelName
+                    v.label = v.modelName
+                    return v
+                })
             }
         },
         handleSelectCarType(type) {
-            console.log(type);
+            console.log(type)
         }
     },
     created() {
-        if (this.CarInfo !== null) {
+        if (this.CarInfo !== null && this.isEdited) {
             const _obj = R.merge(this.CarInfo, {
                 myCar: `${this.CarInfo.brandCode}/${this.CarInfo.carTrainCode}/${this.CarInfo.carType}`,
                 appearance: ['不正常', '良好'][this.CarInfo.appearance],
                 innage: `${this.innages[this.CarInfo.innage - 1].label}`
-            });
-            this.seCarInfo = R.merge(this.seCarInfo, _obj);
+            })
+            this.seCarInfo = R.merge(this.seCarInfo, _obj)
         }
         if (this.isEdited) {
-            this.remark = this.WorkOrder.remark;
+            this.remark = this.WorkOrder.remark
             for (let k of Object.keys(this.popFormRules)) {
                 if (this.popFormRules[k].required) {
-                    this.popFormRules[k].state = 'success';
+                    this.popFormRules[k].state = 'success'
                 }
             }
         }
     }
-};
+}
 </script>
 
 <style lang="postcss">
@@ -556,6 +587,10 @@ export default {
 .mint-popup-select-list {
     width: 100%;
     height: 100%;
+    overflow-y: scroll;
+    .mint-radiolist {
+        padding-bottom: 50px;
+    }
     .mint-indexlist-content {
         > li:last-child {
             margin-bottom: 50px;
