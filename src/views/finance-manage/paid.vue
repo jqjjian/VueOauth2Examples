@@ -2,7 +2,7 @@
     <div>
         <template v-for="(v, i) in comprehensiveList">
             <div class="page-part" :key="i">
-                <mt-cell :title="v.seCustomerInfo.carNumber + (v.totalFee?'(￥'+v.totalFee+')':'')" is-link :label="`开单时间：${v.createDate}`" @click.native="handleEditComprehensive(v.comprehensiveId)">{{v.seCustomerInfo.tel}}</mt-cell>
+                <mt-cell :title="v.seCustomerInfo.carNumber + (v.totalFee?'(￥'+v.totalFee+')':'')" is-link :label="`开单时间：${v.createDate}`" @click.native="handleEditComprehensive(v)">{{v.seCustomerInfo.tel}}</mt-cell>
             </div>
         </template>
     </div>
@@ -21,13 +21,18 @@ export default {
     },
     methods: {
         ...mapMutations('work', ['SET_CUSTOMER_INFO', 'SET_CAR_INFO', 'CHANGE_EDIT_STATE']),
-        handleEditComprehensive(id) {
+        handleEditComprehensive(info) {
+            // this.CHANGE_EDIT_STATE(false);
+            // this.$router.push({
+            //     name: 'work-services-item',
+            //     query: {
+            //         id
+            //     }
+            // });
             this.CHANGE_EDIT_STATE(false);
             this.$router.push({
-                name: 'work-services-item',
-                query: {
-                    id
-                }
+                name: 'billing-detail-item',
+                params: { info }
             });
         },
         handleCreate() {
