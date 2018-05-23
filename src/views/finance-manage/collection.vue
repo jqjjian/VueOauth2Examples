@@ -2,7 +2,7 @@
     <div>
         <template v-for="(v, i) in comprehensiveList">
             <div class="page-part" :key="i">
-                <mt-cell :title="v.seCustomerInfo.carNumber + (v.totalFee?'(￥'+v.totalFee+')':'')" is-link :label="`开单时间：${v.createDate}`" @click.native="handleEditComprehensive(v)">{{v.seCustomerInfo.tel}}</mt-cell>
+                <mt-cell :title="v.seCustomerInfo.carNumber + (v.totalFee?'(￥'+v.totalFee+')':'')" is-link :label="v.seCustomerInfo.customerName+' '+v.seCustomerInfo.tel" @click.native="handleEditComprehensive(v)">{{v.createDate}}</mt-cell>
             </div>
         </template>
     </div>
@@ -63,9 +63,7 @@ export default {
                 //     };
                 // });
                 this.comprehensiveList = data;
-                console.log(this.comprehensiveList);
             } catch (err) {
-                console.error(err);
                 catchError(err);
             }
         }
