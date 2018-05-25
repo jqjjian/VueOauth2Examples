@@ -91,7 +91,7 @@ export default {
                             this.getFittingList();
                         } else {
                             Toast({
-                                message: '删除失败',
+                                message: '删除失败! 原因: ' + response.message,
                                 duration: 1000
                             });
                         }
