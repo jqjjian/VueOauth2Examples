@@ -42,8 +42,8 @@
     </div>
 </template>
 <script>
-import { MessageBox, Toast } from 'mint-ui';
-import { fittingApi } from '@/api';
+import { MessageBox, Toast } from 'mint-ui'
+import { fittingApi } from '@/api'
 export default {
     data() {
         return {
@@ -62,22 +62,22 @@ export default {
                 }
             ],
             materialist: []
-        };
+        }
     },
     created() {
-        this.getFittingList();
+        this.getFittingList()
     },
     methods: {
         getFittingList() {
             fittingApi.inventoryFitting.r({ classifyId: 3 }).then(resp => {
-                this.materialist = resp.data;
-            });
+                this.materialist = resp.data
+            })
         },
         editFn(val) {
             this.$router.push({
                 name: 'fitting-info-item',
                 params: { fittingInfo: val }
-            });
+            })
         },
         deleteFn(id) {
             MessageBox.confirm('确认删除?')
@@ -87,27 +87,27 @@ export default {
                             Toast({
                                 message: '删除成功',
                                 duration: 1000
-                            });
-                            this.getFittingList();
+                            })
+                            this.getFittingList()
                         } else {
                             Toast({
-                                message: '删除失败',
+                                message: '删除失败! 原因: ' + response.message,
                                 duration: 1000
-                            });
+                            })
                         }
-                    });
+                    })
                 })
                 .catch(() => {
-                    alert('取消');
-                });
+                    alert('取消')
+                })
         },
         addNewFitting() {
             this.$router.push({
                 name: 'fitting-info-item'
-            });
+            })
         }
     }
-};
+}
 </script>
 <style lang="postcss">
 .ycy-cell-swipe .mint-cell-value {
