@@ -1,23 +1,23 @@
 // import NProgress from 'nprogress';
-import axios from 'axios';
-import qs from 'qs';
-import { catchError } from '@/util';
-import { Indicator } from 'mint-ui';
+import axios from 'axios'
+import qs from 'qs'
+import { catchError } from '@/util'
+import { Indicator } from 'mint-ui'
 // import authConfig from '../config/authConfig';
-const gd = window.gloable;
+const gd = window.gloable
 const instance = axios.create({
     baseURL: gd.baseUrl,
     timeout: 10000
-});
+})
 const checkStatus = response => {
-    console.log('check');
+    console.log('check')
     // loading
     // 如果http状态码正常，则直接返回数据
     if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
-        return response.data;
+        return response.data
         // 如果不需要除了data之外的数据，可以直接 return response.data
     }
-};
+}
 // const post = async (url, data) => {
 //     // const _data = data.aa ? qs.stringify(data, { arrayFormat: 'repeat' }) : qs.stringify(data);
 //     try {
@@ -36,41 +36,41 @@ const checkStatus = response => {
 //     } catch (err) {
 //         console.error(err);
 //     }
-    // return instance({
-    //     method: 'post',
-    //     // baseURL: "http://localhost:8089/",
-    //     url,
-    //     data: qs.stringify(data), // 请求时带的参数
-    //     headers: {
-    //         'X-Requested-With': 'XMLHttpRequest',
-    //         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    //     },
-    //     timeout: 10000
-    // }).then(response => {
-    //     return checkStatus(response);
-    // });
+// return instance({
+//     method: 'post',
+//     // baseURL: "http://localhost:8089/",
+//     url,
+//     data: qs.stringify(data), // 请求时带的参数
+//     headers: {
+//         'X-Requested-With': 'XMLHttpRequest',
+//         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//     },
+//     timeout: 10000
+// }).then(response => {
+//     return checkStatus(response);
+// });
 // };
 // 设置请求等待
 instance.interceptors.request.use(
     config => {
         // loading
         // NProgress.set(0.4);
-        Indicator.open();
-        return config;
+        Indicator.open()
+        return config
     },
     error => {
-        catchError(error);
+        catchError(error)
     }
-);
+)
 // 设置请求响应后处理
 instance.interceptors.response.use(
     response => {
         // NProgress.done();
-        Indicator.close();
-        return checkStatus(response);
+        Indicator.close()
+        return checkStatus(response)
     },
     error => {
-        Indicator.close();
+        Indicator.close()
         // console.log('error', error.config);
         // console.log('error-url', error.config.url);
         // const originalRequest = error.config;
@@ -103,9 +103,9 @@ instance.interceptors.response.use(
         //     }
         // }
         // NProgress.done();
-        catchError(error);
+        catchError(error)
     }
-);
+)
 
 export default {
     async post(url, data) {
@@ -120,9 +120,9 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                 },
                 timeout: 10000
-            });
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
     },
     async postJson(url, data) {
@@ -132,9 +132,9 @@ export default {
                 url,
                 data, // 请求时带的参数
                 timeout: 10000
-            });
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
     },
     async get(url, params) {
@@ -147,9 +147,9 @@ export default {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-            });
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
         // return instance({
         //     method: 'get',
@@ -168,7 +168,7 @@ export default {
         //   }
         // )
     },
-    async del (url, params) {
+    async del(url, params) {
         try {
             return instance({
                 method: 'delete',
@@ -179,9 +179,9 @@ export default {
                 // headers: {
                 //     'X-Requested-With': 'XMLHttpRequest'
                 // }
-            });
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
         // return instance({
         //     method: 'delete',
@@ -197,4 +197,4 @@ export default {
         // });
     },
     instance
-};
+}
