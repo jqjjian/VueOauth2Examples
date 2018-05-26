@@ -38,13 +38,16 @@ Vue.directive('blur', {
 Vue.directive('focus', {
     bind(el, binding) {
         const input = el.querySelector('input')
-        let time = null
-        input.oninput = () => {
-            if (time !== null) {
-                window.clearTimeout(time)
-            }
-            time = setTimeout(() => binding.value.rules(binding.value.label), 1000)
+        // let time = null
+        input.onfocus = () => {
+            binding.value.event(binding.value.label)
         }
+        // input.oninput = () => {
+        //     if (time !== null) {
+        //         window.clearTimeout(time)
+        //     }
+        //     time = setTimeout(() => binding.value.rules(binding.value.label), 1000)
+        // }
     }
 })
 Vue.directive('input', {

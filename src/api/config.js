@@ -55,7 +55,7 @@ instance.interceptors.request.use(
     config => {
         // loading
         // NProgress.set(0.4);
-        Indicator.open()
+        // Indicator.open()
         return config
     },
     error => {

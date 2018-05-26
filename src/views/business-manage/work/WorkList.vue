@@ -6,8 +6,8 @@
             <mt-button @click.native="handleCreate" slot="right">开单</mt-button>
             <!-- </router-link> -->
         </mt-header>
-        <div class="container-box">
-            <mt-loadmore :top-method="loadTop" :bottom-method="loadBottom" ref="loadmore">
+        <div class="container-box" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
+            <mt-loadmore :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" :bottom-method="loadBottom" ref="loadmore">
                 <template v-for="(v, i) in comprehensiveList">
                     <div class="page-part" :key="i">
                         <mt-cell :title="`${v.seCustomerInfo.carNumber}(${v.seCarInfo.brandCode})`" :is-link="v.status !== 5" :label="`开单时间：${v.createDate}`" @click.native="handleEditComprehensive(v.comprehensiveId)">
@@ -16,6 +16,22 @@
                         </mt-cell>
                     </div>
                 </template>
+                <p v-show="loading" class="page-infinite-loading">
+                    <mt-spinner type="snake"></mt-spinner>
+                    加载中...
+                </p>
+                <div slot="top" class="mint-loadmore-top">
+                    <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">↓下拉刷新</span>
+                    <span v-show="topStatus === 'loading'">
+                        <mt-spinner type="snake"></mt-spinner>
+                    </span>
+                </div>
+                <!-- <div slot="bottom" class="mint-loadmore-top">
+                    <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">上拉加载</span>
+                    <span v-show="topStatus === 'loading'">
+                        <mt-spinner type="snake"></mt-spinner>
+                    </span>
+                </div> -->
             </mt-loadmore>
         </div>
     </div>
@@ -28,21 +44,81 @@ import { mapMutations } from 'vuex'
 export default {
     data() {
         return {
+            loading: false,
+            isLoading: false,
+            topStatus: '',
             comprehensiveList: [],
             title: '',
-            sviceStateIndex: ['待施工', '施工中', '质检中', '待付款', '已付款', '已完结']
+            moveTranslate: 0,
+            translate: 0,
+            meta: 0,
+            sviceStateIndex: ['待施工', '施工中', '质检中', '待付款', '已付款', '已完结'],
+            queryParams: {
+                // accountSquared: '',
+                // operatorId: '',
+                // serviceType: '',
+                // comprehensiveId: '',
+                fromDate: '',
+                endDate: '',
+                orderType: 0,
+                orderStyle: 0,
+                status: '',
+                param: '',
+                page: 0,
+                pageSize: 10
+            }
         }
     },
     methods: {
         ...mapMutations('work', ['SET_CUSTOMER_INFO', 'SET_CAR_INFO', 'CHANGE_EDIT_STATE']),
-        loadTop() {
-            console.log('上拉')
+        async loadTop() {
+            console.log('下拉')
+            const { data } = await comprehensiveApi.request.r({
+                // accountSquared: '',
+                // operatorId: '',
+                // serviceType: '',
+                // comprehensiveId: '',
+                fromDate: '',
+                endDate: '',
+                orderType: 0,
+                orderStyle: 0,
+                status: '',
+                param: '',
+                page: 1,
+                pageSize: this.comprehensiveList.length
+            })
+            console.log(data)
+            this.comprehensiveList = data
+            this.$refs.loadmore.onTopLoaded()
+        },
+        loadMore() {
+            if (this.isLoading) return false
+            console.log('加载..')
+            console.log(this.comprehensiveList.length)
+            if (this.meta === 0 || this.comprehensiveList.length < this.meta) {
+                console.log(3333)
+                this.loading = true
+                this.queryParams.page += 1
+                this.handleQuery()
+            }
         },
         loadBottom() {
-            console.log('下拉')
+            console.log('上拉')
         },
         allLoaded() {
             console.log('拉')
+        },
+        translateChange(translate) {
+            const translateNum = +translate
+            this.translate = translateNum.toFixed(2)
+            console.log('translate', this.translate)
+            this.moveTranslate = (1 + translateNum / 70).toFixed(2)
+            console.log('moveTranslate', this.moveTranslate)
+        },
+        handleTopChange(status) {
+            console.log('status', status)
+            this.moveTranslate = 1
+            this.topStatus = status
         },
         handleEditComprehensive(id) {
             this.CHANGE_EDIT_STATE(false)
@@ -87,23 +163,21 @@ export default {
             }
         },
         async handleQuery() {
+            if (this.isLoading) return false
+            this.isLoading = true
             try {
-                const { data } = await comprehensiveApi.request.r({
-                    // accountSquared: '',
-                    // operatorId: '',
-                    // serviceType: '',
-                    // comprehensiveId: '',
-                    fromDate: '',
-                    endDate: '',
-                    orderType: 0,
-                    orderStyle: 0,
-                    status: '',
-                    param: '',
-                    page: 1,
-                    pageSize: 9999
-                })
+                console.log(this.queryParams.page)
+                const { data, meta } = await comprehensiveApi.request.r(this.queryParams)
                 console.log(data)
-                this.comprehensiveList = data
+                console.log(meta)
+                this.meta = meta
+                if (this.comprehensiveList.length === 0) {
+                    this.comprehensiveList = data
+                } else {
+                    this.comprehensiveList = [...this.comprehensiveList, ...data]
+                }
+                this.loading = false
+                this.isLoading = false
                 // this.comprehensiveList = data.map(v => {
                 //     return {
                 //         comprehensiveCd: v.comprehensiveCd,
@@ -122,7 +196,7 @@ export default {
         }
     },
     created() {
-        this.handleQuery()
+        // this.handleQuery()
         this.title = this.$route.meta.name
     }
 }
@@ -135,5 +209,24 @@ export default {
 }
 .page-part {
     padding-bottom: 15px;
+}
+.mint-loadmore-top {
+    span {
+        display: inline-block;
+        transition: 0.2s linear;
+        vertical-align: middle;
+    }
+}
+.page-infinite-loading {
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    margin: 0;
+    margin-top: -10px;
+    div {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
 }
 </style>
