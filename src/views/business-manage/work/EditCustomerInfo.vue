@@ -1,6 +1,6 @@
 <template>
     <div>
-        <mt-header fixed :title="$route.meta.name" style="font-size: 16px;">
+        <mt-header fixed :title="$route.meta.name">
             <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
             <!-- <router-link :to="{name: 'order-price-item'}" slot="right">
                 <mt-button >开单</mt-button>
@@ -194,8 +194,14 @@ export default {
         }
     }
 }
-.mint-cell.carNum .mint-cell-value {
-    width: 185px;
+.mint-cell.carNum {
+    .mint-cell-title {
+        width: 115px;
+        flex: none;
+    }
+    .mint-cell-value {
+        width: 100%;
+    }
 }
 .my-popup {
     width: 100%;

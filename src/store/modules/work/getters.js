@@ -4,5 +4,7 @@ export default {
     WorkOrder: state => state.workOrder,
     brandCodeData: state => state.brandCodeData,
     isEdited: state => state.isEdited,
-    provinces: state => state.PROVINCE
+    provinces: state => state.PROVINCE,
+    comprehensiveList: state => state.comprehensiveList,
+    workQueryParams: state => state.workQueryParams
 }

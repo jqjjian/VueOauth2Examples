@@ -14,7 +14,7 @@
             <div class="page-part form">
                 <div class="info-title">车辆信息（*必填）</div>
                 <template v-for="(v, i) in field">
-                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-input="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
+                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :disabled="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-input="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
                     <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
                 </template>
             </div>

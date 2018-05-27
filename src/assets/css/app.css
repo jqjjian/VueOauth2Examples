@@ -1,6 +1,9 @@
 a {
     text-decoration: none;
 }
+.mint-header {
+    font-size: 16px;
+}
 .container-box {
     background: #eee;
     padding-top: 44px;

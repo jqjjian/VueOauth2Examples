@@ -17,13 +17,13 @@
                     </div>
                 </template>
                 <p v-show="loading" class="page-infinite-loading">
-                    <mt-spinner type="snake"></mt-spinner>
+                    <mt-spinner :size="20" type="snake"></mt-spinner>
                     加载中...
                 </p>
                 <div slot="top" class="mint-loadmore-top">
                     <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">↓下拉刷新</span>
                     <span v-show="topStatus === 'loading'">
-                        <mt-spinner type="snake"></mt-spinner>
+                        <mt-spinner :size="20" type="snake"></mt-spinner>
                     </span>
                 </div>
                 <!-- <div slot="bottom" class="mint-loadmore-top">
@@ -40,14 +40,14 @@
 <script>
 import { comprehensiveApi } from '@/api'
 import { catchError } from '@/util'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
     data() {
         return {
             loading: false,
             isLoading: false,
             topStatus: '',
-            comprehensiveList: [],
+            // comprehensiveList: [],
             title: '',
             moveTranslate: 0,
             translate: 0,
@@ -62,18 +62,28 @@ export default {
                 endDate: '',
                 orderType: 0,
                 orderStyle: 0,
-                status: '',
+                status: '1, 2, 3',
                 param: '',
                 page: 0,
                 pageSize: 10
             }
         }
     },
+    computed: {
+        ...mapGetters('work', ['comprehensiveList', 'workQueryParams'])
+    },
     methods: {
-        ...mapMutations('work', ['SET_CUSTOMER_INFO', 'SET_CAR_INFO', 'CHANGE_EDIT_STATE']),
+        ...mapMutations('work', [
+            'SET_CUSTOMER_INFO',
+            'SET_CAR_INFO',
+            'CHANGE_EDIT_STATE',
+            'SET_WORK_LIST',
+            'SET_WORK_PAGENUM',
+            'SET_WORK_LIST_SIZE'
+        ]),
         async loadTop() {
             console.log('下拉')
-            const { data } = await comprehensiveApi.request.r({
+            const { data, meta } = await comprehensiveApi.request.r({
                 // accountSquared: '',
                 // operatorId: '',
                 // serviceType: '',
@@ -82,23 +92,30 @@ export default {
                 endDate: '',
                 orderType: 0,
                 orderStyle: 0,
-                status: '',
+                status: '1, 2, 3',
                 param: '',
                 page: 1,
                 pageSize: this.comprehensiveList.length
             })
             console.log(data)
-            this.comprehensiveList = data
+            this.SET_WORK_LIST(data)
+            this.SET_WORK_LIST_SIZE(meta)
             this.$refs.loadmore.onTopLoaded()
         },
         loadMore() {
+            console.log(this.workQueryParams)
             if (this.isLoading) return false
             console.log('加载..')
             console.log(this.comprehensiveList.length)
-            if (this.meta === 0 || this.comprehensiveList.length < this.meta) {
+            if (this.workQueryParams.size === 0 || this.comprehensiveList.length < this.meta) {
                 console.log(3333)
                 this.loading = true
-                this.queryParams.page += 1
+                let num = 1
+                if (this.workQueryParams.workPageNum * 10 - this.workQueryParams.size <= 0) {
+                    num = 0
+                }
+                this.SET_WORK_PAGENUM(this.workQueryParams.workPageNum + num)
+                this.queryParams.page = this.workQueryParams.workPageNum
                 this.handleQuery()
             }
         },
@@ -170,11 +187,12 @@ export default {
                 const { data, meta } = await comprehensiveApi.request.r(this.queryParams)
                 console.log(data)
                 console.log(meta)
+                this.SET_WORK_LIST_SIZE(meta)
                 this.meta = meta
                 if (this.comprehensiveList.length === 0) {
-                    this.comprehensiveList = data
+                    this.SET_WORK_LIST(data)
                 } else {
-                    this.comprehensiveList = [...this.comprehensiveList, ...data]
+                    this.SET_WORK_LIST([...this.comprehensiveList, ...data])
                 }
                 this.loading = false
                 this.isLoading = false

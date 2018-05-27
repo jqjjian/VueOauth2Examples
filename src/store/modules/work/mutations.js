@@ -25,5 +25,15 @@ export default {
     SET_PROVINCE(state, provinces) {
         // 设置车牌地区
         state.PROVINCE = provinces
+    },
+    SET_WORK_LIST(state, payload) {
+        console.log('workOrder', payload)
+        state.comprehensiveList = payload
+    },
+    SET_WORK_PAGENUM(state, num) { // 工单列表页码
+        state.workQueryParams.workPageNum = num
+    },
+    SET_WORK_LIST_SIZE(state, size) { // 工单列表总数
+        state.workQueryParams.size = size
     }
 }

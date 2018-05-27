@@ -4,8 +4,8 @@ import mutations from './mutations'
 export default {
     namespaced: true,
     state: {
-        PROVINCE: [],
-        workOrder: {
+        PROVINCE: [], // 车牌省份
+        workOrder: { // 综合服务单对象
             comprehensiveId: '',
             orderType: 1,
             remark: '',
@@ -13,9 +13,14 @@ export default {
             seCarInfo: null
         },
         isEdited: false,
-        brandCodeData: {
+        brandCodeData: { // 车品牌
             selectCarindex: [],
             selectCarObj: {}
+        },
+        comprehensiveList: [], // 工单列表
+        workQueryParams: { // 工单列表查询状态
+            workPageNum: 0, // 页码
+            size: 0 // 总条数
         }
     },
     getters,
