@@ -1,7 +1,10 @@
 <template>
     <div>
-        <mt-header fixed :title="$route.meta.name">
-            <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+        <mt-header fixed
+            :title="$route.meta.name">
+            <mt-button icon="back"
+                slot="left"
+                @click.native="$router.back(-1)">返回</mt-button>
             <!-- <router-link :to="{name: 'order-price-item'}" slot="right">
                 <mt-button >开单</mt-button>
             </router-link> -->
@@ -10,30 +13,74 @@
             <div class="page-part form">
                 <div class="info-title">送修人信息（*必填）</div>
                 <template v-for="(v, i) in field">
-                    <mt-field v-if="v !== 'carNumber'" :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCustomerInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-blur="{label: v, rules}">
+                    <mt-field v-if="v !== 'carNumber'"
+                        :class="{required: popFormRules[v].required}"
+                        :key="v + i"
+                        :label="`${popFormRules[v].label}：`"
+                        v-model="seCustomerInfo[v]"
+                        :placeholder="`请输入${popFormRules[v].label}`"
+                        :readonly="popFormRules[v].readonly"
+                        :type="popFormRules[v].type"
+                        :state="popFormRules[v].state"
+                        v-blur="{label: v, rules}">
                         <!-- <mt-button v-if="v === 'carNumber'" type="primary" size="small" class="checked">{{province}}</mt-button> -->
                     </mt-field>
-                    <mt-cell v-else title="车牌号码：" :key="v + i" class="carNum" :class="{required: popFormRules[v].required}">
-                        <mt-button type="primary" size="small" class="checked" @click.native="popupVisible = true">{{province}}</mt-button>
-                        <input :readonly="popFormRules[v].readonly" type="text" class="mint-field-core" :placeholder="`输入${popFormRules[v].label}`" style="margin-left: 5px;" v-model="seCustomerInfo[v]" @input="handleInput(v)" @blur="rules(v)" />
-                        <span class="mint-field-state" v-if="popFormRules[v].state" :class="['is-' + popFormRules[v].state]">
-                            <i class="mintui" :class="['mintui-field-' + popFormRules[v].state]"></i>
+                    <mt-cell v-else
+                        title="车牌号码："
+                        :key="v + i"
+                        class="carNum"
+                        :class="{required: popFormRules[v].required}">
+                        <mt-button type="primary"
+                            size="small"
+                            class="checked"
+                            @click.native="popupVisible = true">{{province}}</mt-button>
+                        <input :readonly="popFormRules[v].readonly"
+                            type="text"
+                            class="mint-field-core"
+                            :placeholder="`输入${popFormRules[v].label}`"
+                            style="margin-left: 5px;"
+                            v-model="seCustomerInfo[v]"
+                            @input="handleInput(v)"
+                            @blur="rules(v)" />
+                        <span class="mint-field-state"
+                            v-if="popFormRules[v].state"
+                            :class="['is-' + popFormRules[v].state]">
+                            <i class="mintui"
+                                :class="['mintui-field-' + popFormRules[v].state]"></i>
                         </span>
                     </mt-cell>
-                    <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
+                    <div class="info-error"
+                        v-if="popFormRules[v].state === 'error'"
+                        :key="v + i + 'err'">{{popFormRules[v].message}}</div>
                 </template>
             </div>
             <div class="page-part subBtn">
-                <mt-button type="primary" size="large" :disabled="!finish" @click.native="handleNext">下一步</mt-button>
+                <mt-button type="primary"
+                    size="large"
+                    :disabled="!finish"
+                    @click.native="handleNext">下一步</mt-button>
             </div>
         </div>
-        <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom" class="my-popup">
-            <div class="select-list-wrap car-province" style="height: 250px; padding: 5px 5px 0;">
+        <mt-popup v-model="popupVisible"
+            popup-transition="popup-fade"
+            position="bottom"
+            class="my-popup">
+            <div class="select-list-wrap car-province"
+                style="height: 250px; padding: 5px 5px 0;">
                 <template v-for="(v, i) in this.provinces">
-                    <div v-if="(i !== 0) && (i % 7 === 0)" class="car-province" style="width: 100%" :key="v.groupCode + `${i}`"> </div>
-                    <mt-button type="primary" size="small" style="margin-bottom: 5px;" :key="v.dicName" @click.native="handleSelectProvince(v.dicName)">{{v.dicName}}</mt-button>
+                    <div v-if="(i !== 0) && (i % 7 === 0)"
+                        class="car-province"
+                        style="width: 100%"
+                        :key="v.groupCode + `${i}`"> </div>
+                    <mt-button type="primary"
+                        size="small"
+                        style="margin-bottom: 5px;"
+                        :key="v.dicName"
+                        @click.native="handleSelectProvince(v.dicName)">{{v.dicName}}</mt-button>
                 </template>
-                <mt-button type="primary" size="large" @click.native="popupVisible = false">取消</mt-button>
+                <mt-button type="primary"
+                    size="large"
+                    @click.native="popupVisible = false">取消</mt-button>
             </div>
         </mt-popup>
     </div>

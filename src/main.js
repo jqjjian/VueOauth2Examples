@@ -25,13 +25,14 @@ Vue.directive('has', {
 Vue.directive('blur', {
     bind(el, binding) {
         const input = el.querySelector('input')
-        // let time = null;
+        let time = null;
         input.onblur = () => {
+            // await setTimeout(() => {}, 1000)
             binding.value.rules(binding.value.label)
-            // if (time !== null) {
-            //     window.clearTimeout(time);
-            // }
-            // time = setTimeout(() => binding.value.rules(binding.value.label), 1000);
+            if (time !== null) {
+                window.clearTimeout(time);
+            }
+            time = setTimeout(() => binding.value.rules(binding.value.label), 100);
         }
     }
 })

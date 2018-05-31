@@ -30,10 +30,16 @@ export default {
         console.log('workOrder', payload)
         state.comprehensiveList = payload
     },
-    SET_WORK_PAGENUM(state, num) { // 工单列表页码
+    SET_WORK_PAGENUM(state, num) {
+        // 工单列表页码
         state.workQueryParams.workPageNum = num
     },
-    SET_WORK_LIST_SIZE(state, size) { // 工单列表总数
+    SET_WORK_LIST_SIZE(state, size) {
+        // 工单列表总数
         state.workQueryParams.size = size
+    },
+    SET_PROJECT_LIST(state, list) {
+        // 设置服务项目列表
+        state.workOrder.seProjectList = list
     }
 }

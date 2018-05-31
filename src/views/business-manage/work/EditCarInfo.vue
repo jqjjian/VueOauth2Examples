@@ -14,7 +14,7 @@
             <div class="page-part form">
                 <div class="info-title">车辆信息（*必填）</div>
                 <template v-for="(v, i) in field">
-                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :disabled="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-input="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
+                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-blur="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
                     <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
                 </template>
             </div>
@@ -67,19 +67,19 @@
             </mt-popup>
             <mt-popup v-model="PopupVisible.selectcarColor" popup-transition="popup-fade" class="mint-popup-select-list">
                 <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择车辆颜色：" v-model="seCarInfo.carColor" :options="carColors">
+                    <mt-radio title="选择车辆颜色：" v-model="seCarInfo.carColor" :options="carColors" @change="handleChange">
                     </mt-radio>
                 </div>
             </mt-popup>
             <mt-popup v-model="PopupVisible.selectappearance" popup-transition="popup-fade" class="mint-popup-select-list">
                 <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择车辆外观：" v-model="seCarInfo.appearance" :options="appearances">
+                    <mt-radio title="选择车辆外观：" v-model="seCarInfo.appearance" :options="appearances" @change="handleChange">
                     </mt-radio>
                 </div>
             </mt-popup>
             <mt-popup v-model="PopupVisible.selectinnage" popup-transition="popup-fade" class="mint-popup-select-list">
                 <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择车辆外观：" v-model="seCarInfo.innage" :options="innages">
+                    <mt-radio title="选择剩余油量：" v-model="seCarInfo.innage" :options="innages" @change="handleChange">
                     </mt-radio>
                 </div>
             </mt-popup>
@@ -114,6 +114,12 @@ export default {
                 CarTrainIndex: [],
                 CarTrainObj: {},
                 carTrainCode: ''
+            },
+            carData: {
+                brandCode: '',
+                carTrainCode: '',
+                carModelYear: '',
+                carType: ''
             },
             CarYeaIndex: [], // 年款缓存
             CarTypeIndex: [], // 车型缓存
@@ -363,7 +369,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE']),
+        ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE', 'SET_PROJECT_LIST']),
         ...mapActions('work', ['getBrandCode']),
         // handleChange(v) {
         //     console.log(this.appearanceValue);
@@ -377,11 +383,17 @@ export default {
             const time = `${_date.getFullYear()}年${_date.getMonth() + 1}月${_date.getDate()}日`
             this.seCarInfo.adviseMileageTime = time
         },
+        handleChange(v) {
+            console.log(v)
+            this.$set(this.seCarInfo, this.currentField, v)
+            this.hidePopup()
+        },
         handleSelected() {
             const that = this
-            that.hidePopup()
+            that.seCarInfo = R.merge(that.seCarInfo, R.clone(that.carData))
             const info = that.seCarInfo
             let _tag = false
+            that.hidePopup()
             const event = {
                 myCar() {
                     info.myCar = `${info.brandCode} ${info.carTrainCode} ${info.carModelYear} ${info.carType}`
@@ -440,6 +452,9 @@ export default {
                     }
                 }
             }
+            if (e === 'displacement' || e === 'engineNumber' || e === 'vin') {
+                this.seCarInfo[e] = this.seCarInfo[e].toUpperCase()
+            }
             popFormRules[e].state = 'success'
         },
         event(v) {
@@ -463,7 +478,12 @@ export default {
             }
         },
         async handleNext() {
+            const that = this
             console.log('提交')
+            console.log(that.isEdited)
+            if (!that.isEdited) {
+                that.SET_PROJECT_LIST([])
+            }
             let form = {
                 comprehensiveId: this.WorkOrder.comprehensiveId,
                 orderType: this.WorkOrder.orderType,
@@ -500,7 +520,10 @@ export default {
             // 通选择车品牌获取车系
             console.log(item)
             const { data } = await carApi.requestStyle.r({ brandId: item.id })
-            this.seCarInfo.brandCode = item.brandName
+            for (let k of Object.keys(this.carData)) {
+                this.carData[k] = ''
+            }
+            this.carData.brandCode = item.brandName
             console.log(data)
             this.PopupVisible.selectCarTrain = true
             this.CarTrainData.CarTrainIndex = [...new Set(R.map(R.prop('factoryName'))(data))]
@@ -519,7 +542,7 @@ export default {
             console.log(item)
             const vm = this
             const { data } = await carApi.requestYear.r({ styleId: item.id })
-            this.seCarInfo.carTrainCode = item.styleName
+            this.carData.carTrainCode = item.styleName
             this.CarTrainData.carTrainCode = item.id
             if (data.length) {
                 vm.PopupVisible.selectCarYear = true
@@ -533,6 +556,7 @@ export default {
         async handleSelectCarModelYear(year) {
             // 通过年款值获取该年款车型
             const vm = this
+            this.carData.carModelYear = year
             // const styleId = vm.selectCatStyleCacheData.carTrainCode;
             // vm.selectCatStyleCacheData.carModelYear = year;
             const { data } = await carApi.requestModel.r({ styleId: this.CarTrainData.carTrainCode, year })
@@ -548,6 +572,7 @@ export default {
         },
         handleSelectCarType(type) {
             console.log(type)
+            this.carData.carType = type
         }
     },
     created() {

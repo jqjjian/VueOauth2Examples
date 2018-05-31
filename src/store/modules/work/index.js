@@ -19,7 +19,7 @@ export default {
         },
         comprehensiveList: [], // 工单列表
         workQueryParams: { // 工单列表查询状态
-            workPageNum: 0, // 页码
+            workPageNum: 1, // 页码
             size: 0 // 总条数
         }
     },

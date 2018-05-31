@@ -62,7 +62,7 @@ export default {
                 endDate: '',
                 orderType: 0,
                 orderStyle: 0,
-                status: '1, 2, 3',
+                status: '1,2,3,4',
                 param: '',
                 page: 0,
                 pageSize: 10
@@ -92,12 +92,13 @@ export default {
                 endDate: '',
                 orderType: 0,
                 orderStyle: 0,
-                status: '1, 2, 3',
+                status: '1,2,3,4',
                 param: '',
                 page: 1,
                 pageSize: this.comprehensiveList.length
             })
             console.log(data)
+            console.log(meta)
             this.SET_WORK_LIST(data)
             this.SET_WORK_LIST_SIZE(meta)
             this.$refs.loadmore.onTopLoaded()
@@ -107,11 +108,13 @@ export default {
             if (this.isLoading) return false
             console.log('加载..')
             console.log(this.comprehensiveList.length)
+            console.log(this.workQueryParams.size)
             if (this.workQueryParams.size === 0 || this.comprehensiveList.length < this.meta) {
                 console.log(3333)
+                console.log(this.workQueryParams.workPageNum * 10)
                 this.loading = true
                 let num = 1
-                if (this.workQueryParams.workPageNum * 10 - this.workQueryParams.size <= 0) {
+                if (this.workQueryParams.workPageNum * 10 >= this.workQueryParams.size) {
                     num = 0
                 }
                 this.SET_WORK_PAGENUM(this.workQueryParams.workPageNum + num)

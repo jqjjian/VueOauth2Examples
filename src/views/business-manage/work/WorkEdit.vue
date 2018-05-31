@@ -5,7 +5,7 @@
             <mt-button slot="right" @click.native="handleEdit">修改</mt-button>
         </mt-header>
         <div class="container-box scroll">
-            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible">
+            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible && !pickerVisible">
                 <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
                 <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
             </div>
@@ -583,6 +583,13 @@ export default {
         },
         handleOpenSelectService(i) {
             // 打开可选服务项目列表
+            if (this.serviceData[i].status === 6) {
+                return this.$toast({
+                    message: `该项目已完工，无法修改。`,
+                    iconClass: 'icon icon-success',
+                    duration: 2000
+                })
+            }
             this.popupServiceVisible = true
             this.serviceValue.serviceIndex = i
             this.serviceValue.title = i !== null ? this.serviceData[i].projectName : ''
@@ -594,35 +601,68 @@ export default {
             const index = this.serviceValue.serviceIndex
             const title = this.serviceValue.title
             const description = this.serviceValue.description
+            // let serviceProject = null
             if (index !== null) {
                 this.serviceData[index].projectName = title
                 this.serviceData[index].description = description
+                let serviceProject = this.serviceData
+                const { data } = await comprehensiveApi.seproject.r([serviceProject])
+                this.popupServiceVisible = false
+                this.serviceData[index] = data[0]
+                console.log('保存服务项目后', this.serviceData)
+                // {
+                //     children: [],
+                //     comprehensiveId: this.form.comprehensiveId,
+                //     constructorId: '',
+                //     constructorName: '',
+                //     description,
+                //     projectName: title,
+                //     projectType: _type + 1,
+                //     status: 1
+                // }
             } else {
                 if (this.serviceData === null) {
                     this.serviceData = []
                 }
-                this.serviceData.push({
+                const types = R.map(R.prop('dicName'))(this.selectServiceindex)
+                const _type = types.indexOf(title)
+                let _serviceProject = {
                     children: [],
                     comprehensiveId: this.form.comprehensiveId,
                     constructorId: '',
                     constructorName: '',
                     description,
                     projectName: title,
-                    projectType: 0,
+                    projectType: _type + 1,
                     status: 1
-                })
-            }
-            try {
-                const { data } = await comprehensiveApi.seproject.r(this.serviceData)
+                }
+                const { data } = await comprehensiveApi.seproject.r([_serviceProject])
                 this.popupServiceVisible = false
+                this.serviceData.push(...data)
                 console.log('保存服务项目后', this.serviceData)
-                // this.serviceData = res;
-                const last = R.last(this.serviceData)
-                last.serviceProjectId = R.last(data).serviceProjectId
-            } catch (err) {
-                console.error(err)
-                catchError(err)
+                // this.serviceData.push({
+                //     children: [],
+                //     comprehensiveId: this.form.comprehensiveId,
+                //     constructorId: '',
+                //     constructorName: '',
+                //     description,
+                //     projectName: title,
+                //     projectType: _type + 1,
+                //     status: 1
+                // })
             }
+            // try {
+            //     const { data } = await comprehensiveApi.seproject.r(serviceProject)
+            //     this.popupServiceVisible = false
+            //     this.serviceData.push(...data)
+            //     console.log('保存服务项目后', this.serviceData)
+            //     // this.serviceData = res;
+            //     // const last = R.last(this.serviceData)
+            //     // last.serviceProjectId = R.last(data).serviceProjectId
+            // } catch (err) {
+            //     console.error(err)
+            //     catchError(err)
+            // }
         },
         handleSelectService(v) {
             // 确定选择服务项目
@@ -998,16 +1038,16 @@ export default {
     background: none;
 }
 .select-list-wrap {
-    // position: fixed;
-    // width: 100%;
-    // height: auto;
-    // left: 0;
-    // right: 0;
-    // top: 0;
-    // bottom: 0;
-    // background: #fff;
-    // transition: all 0.3s;
-    // overflow: scroll;
+    position: fixed;
+    width: 100%;
+    height: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    transition: all 0.3s;
+    overflow: scroll;
     // transform: translate3d(100%, 0, 0);
     .checked {
         margin-left: 100px;
