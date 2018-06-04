@@ -196,7 +196,7 @@ export default {
             selected: '0',
             popupServiceVisible: false, // 服务项目
             selectServicePopupVisible: false, // 服务项目信息报价
-            selectServiceEdit: true,
+            selectServiceEdit: true, // 服务项目编辑状态||查看详情状态
             selectServicePopupListVisible: false, // 配件列表
             pickerVisible: false, // 配件计数器
             editPartsPrice: false, // 是否在修改价格
@@ -475,6 +475,7 @@ export default {
     methods: {
         ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE']),
         async editParts(part) {
+            // 编辑修改配件价格
             console.log(part)
             try {
                 const { data } = await fittingApi.getPrice.r({
@@ -489,13 +490,14 @@ export default {
             }
         },
         changeNumber(num) {
+            // 修改项目物料数量
             this.number += num
             if (this.number === 0) {
                 this.number = 1
             }
         },
         showServiceInfo(i) {
-            // 单个项目信息
+            // 显示单个项目信息
             console.log(i)
             const project = this.serviceData[i]
             this.selectServicePopupVisible = true
@@ -532,6 +534,7 @@ export default {
             }
         },
         async handleAddmanHour() {
+            // 添加工时费
             const that = this
             try {
                 const result = await that.$prompt(' ', '请输入工时费')
@@ -583,7 +586,7 @@ export default {
         },
         handleOpenSelectService(i) {
             // 打开可选服务项目列表
-            if (this.serviceData[i].status === 6) {
+            if (this.serviceData[i] && this.serviceData[i].status === 6) {
                 return this.$toast({
                     message: `该项目已完工，无法修改。`,
                     iconClass: 'icon icon-success',
@@ -796,8 +799,8 @@ export default {
             this.price = '1'
         },
         onPriceChange(picker, values) {
-            console.log(values)
             // 修改配件价格
+            console.log(values)
             this.price = values[0]
             if (this.picker === null) {
                 this.picker = picker
