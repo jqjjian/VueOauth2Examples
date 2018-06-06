@@ -15,7 +15,7 @@
                     </mt-field>
                     <mt-cell v-else title="车牌号码：" :key="v + i" class="carNum" :class="{required: popFormRules[v].required}">
                         <mt-button type="primary" size="small" class="checked" @click.native="popupVisible = true">{{province}}</mt-button>
-                        <input :readonly="popFormRules[v].readonly" type="text" class="mint-field-core" :placeholder="`输入${popFormRules[v].label}`" style="margin-left: 5px;" v-model="seCustomerInfo[v]" @input="handleInput(v)" @blur="rules(v)" />
+                        <input :readonly="popFormRules[v].readonly" type="text" class="mint-field-core" :placeholder="`输入${popFormRules[v].label}`" style="margin-left: 5px;" v-model="seCustomerInfo[v]" @blur="rules(v)" />
                         <span class="mint-field-state" v-if="popFormRules[v].state" :class="['is-' + popFormRules[v].state]">
                             <i class="mintui" :class="['mintui-field-' + popFormRules[v].state]"></i>
                         </span>
@@ -133,13 +133,13 @@ export default {
         // verify(v) {
         //     console.log(v);
         // },
-        handleInput(v) {
-            // this.carNumVal = evt.target.value;
-            // if (this.time !== null) {
-            //     window.clearTimeout(this.time)
-            // }
-            // this.time = setTimeout(() => this.rules(v), 1000)
-        },
+        // handleInput(v) {
+        // this.carNumVal = evt.target.value;
+        // if (this.time !== null) {
+        //     window.clearTimeout(this.time)
+        // }
+        // this.time = setTimeout(() => this.rules(v), 1000)
+        // },
         handleNext() {
             console.log('下一步')
             // if (!this.isEdited) {
@@ -169,6 +169,7 @@ export default {
         // }
     },
     created() {
+        // 判断是新开单或是编辑工单
         if (this.CustomerInfo !== null && this.isEdited) {
             this.seCustomerInfo = R.merge(this.seCustomerInfo, this.CustomerInfo)
             this.province = this.seCustomerInfo.carNumber.slice(0, 1)
@@ -181,6 +182,8 @@ export default {
                 }
             }
         }
+
+        // 获取车牌区号
         if (!this.provinces.length) {
             this.getProvince()
         }

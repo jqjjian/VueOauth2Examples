@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         ...mapActions('oauth', [
-            'getUserByToken',
+            'getUserResources',
             'initializeUser'
         ]),
         storageMenu (allowedRouter) {
@@ -227,7 +227,7 @@ export default {
             common['Authorization'] = 'Bearer ' + localToken.access_token;
             console.log(oauthApi);
             try {
-                const { data } = await this.getUserByToken();
+                const { data } = await this.getUserResources();
                 console.log('用户信息：', data);
                 const userInfo = data;
                 common['useruuid'] = userInfo.uuid;
@@ -278,59 +278,6 @@ export default {
                 console.error(err);
                 catchError(err);
             }
-            // 通过store去获取缓存用户到store
-            // this.getUserByToken().then(res => {
-            //     const userInfo = res;
-            //     console.log('请求用户', userInfo);
-            //     // 将登录用户的uuid 设置到header
-            //     common['useruuid'] = userInfo.uuid;
-            //     // 判断是否只有一个修理厂，如果是将修理厂设置到header
-            //     if (userInfo.shops) {
-            //         if (userInfo.shops.isArray && userInfo.shops.length > 0) {
-            //             const shopUUID = userInfo.shops[0].uuid;
-            //             // 将登录用户的修理厂uuid 设置到header
-            //             common['shopuuid'] = shopUUID;
-            //         }
-            //     }
-            //     // 取得资源权限
-            //     const resourcePermission = vm.getPermission(userInfo);
-            //     console.log('处理资源权限', resourcePermission);
-            //     // 请求拦截
-            //     vm.setInterceptor(resourcePermission);
-            //     // 获得路由
-            //     const allowedRouter = vm.getRoutes(userInfo);
-            //     if (!allowedRouter || !allowedRouter.length) {
-            //         util.session('token', '');
-            //         return document.body.innerHTML === '<h1>账号访问受限，请联系系统管理员！</h1>';
-            //     }
-            //     // 注入动态路由
-            //     vm.extendRoutes(allowedRouter);
-            //     // 保存菜单数据
-            //     vm.storageMenu(allowedRouter);
-            //     // 用户信息持久化
-            //     // vm.storageUser(Object.assign(localUser || {}, userInfo))
-            //     vm.userData = userInfo;
-            //     // 权限检查方法
-            //     Vue.prototype.$_has = function(rArray) {
-            //         let resources = [];
-            //         let permission = true;
-            //         if (Array.isArray(rArray)) {
-            //             rArray.forEach(function(e) {
-            //                 resources = resources.concat(e.p);
-            //             });
-            //         } else {
-            //             resources = resources.concat(rArray.p);
-            //         }
-            //         resources.forEach(function(p) {
-            //             if (!resourcePermission[p]) {
-            //                 // console.log("进入", permission === false);
-            //                 permission = false;
-            //             }
-            //         });
-            //         return permission;
-            //     };
-            //     typeof cb === 'function' && cb();
-            // });
         },
         loginDirect (newPath) {
             this.signin(() => {

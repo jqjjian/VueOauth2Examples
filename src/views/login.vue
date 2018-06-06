@@ -4,10 +4,10 @@
             <div>{{text}}</div>
         </mt-popup>
         <mt-header fixed title="系统登录">
-        <div slot="left">
-            <!-- <mt-button v-link="'/'" icon="back">返回</mt-button> -->
-            <mt-button @click="handleClose">关闭</mt-button>
-        </div>
+            <div slot="left">
+                <!-- <mt-button v-link="'/'" icon="back">返回</mt-button> -->
+                <mt-button @click="handleClose">关闭</mt-button>
+            </div>
         </mt-header>
         <div class="login-form">
             <mt-field label="用户名" placeholder="请输入用户名" v-model="username"></mt-field>
@@ -48,8 +48,8 @@ export default {
             const loginParams = {
                 username: vm.username,
                 password: vm.password,
-                client_id: 'stbid5b7f2b8dd2b96fe0accee7',
-                client_secret: 'a298234a09d26bc9010e1d0539b72e2e',
+                client_id: '75c666ad-752b-48be-b76a-aca75776eec3',
+                client_secret: 'aa6f3fd6-35ff-46da-a70b-2e73ab83ba1e',
                 grant_type: 'password'
             };
             try {
@@ -97,15 +97,14 @@ export default {
             margin: 0 -10px;
         }
     }
-    .popup{
+    .popup {
         width: 100%;
         height: 50px;
         line-height: 50px;
         color: #fff;
         text-align: center;
-        background-color: rgba(0,0,0,.6);
+        background-color: rgba(0, 0, 0, 0.6);
         backface-visibility: hidden;
     }
 }
-
 </style>

@@ -1,7 +1,7 @@
 import { session, catchError } from '@/util'
 import { oauthApi } from '@/api'
 export default {
-    async getUserByToken({ commit }, request) {
+    async getUserResources({ commit }, request) {
         const localToken = session('token')
         const param = {
             access_token: localToken.access_token

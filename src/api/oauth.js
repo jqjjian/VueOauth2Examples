@@ -1,13 +1,13 @@
-import config from './config';
-const baseurl = window.gloable.authUrl;
-
+import config from './config'
+// const baseurl = window.gloable.baseUrl
+const tokenUrl = window.gloable.authUrl
 export default {
     getResources: {
         p: ['get,/auth/user/resource'],
-        r: params => config.get(baseurl + 'api/v1/sys/user/resources/token', params)
+        r: params => config.get(tokenUrl + '/api/v1/sys/user/resources/token', params)
     },
     getToken: {
-        p: ['get,/oauth/token'],
-        r: params => config.post(baseurl + 'oauth/token', params)
+        p: [`get,${tokenUrl}/oauth/token`],
+        r: params => config.post(tokenUrl + '/oauth/token', params)
     }
-};
+}

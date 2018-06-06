@@ -70,7 +70,7 @@
                                 }
                             ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
                             <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
-                                <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                                <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
                                 <span v-else :key="k.name + j">{{k.name}}</span>
                             </template>
                         </mt-cell-swipe>
@@ -894,7 +894,7 @@ export default {
         // }
     },
     created() {
-        this.getServiceType()
+        this.getServiceType() // 获取服务项目类型
         // const id = this.$route.query.id;
         // if (id) {
         if (this.isEdited) {

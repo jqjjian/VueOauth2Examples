@@ -82,6 +82,7 @@ export default {
             'SET_WORK_LIST_SIZE'
         ]),
         async loadTop() {
+            // 下拉刷新
             console.log('下拉')
             const { data, meta } = await comprehensiveApi.request.r({
                 // accountSquared: '',
@@ -104,6 +105,7 @@ export default {
             this.$refs.loadmore.onTopLoaded()
         },
         loadMore() {
+            // 滚动到底部加载, 触发区域在可视区域内触发
             console.log(this.workQueryParams)
             if (this.isLoading) return false
             console.log('加载..')
@@ -123,12 +125,13 @@ export default {
             }
         },
         loadBottom() {
-            console.log('上拉')
+            console.log('拉')
         },
         allLoaded() {
             console.log('拉')
         },
         translateChange(translate) {
+            // 触发下拉刷新条件
             const translateNum = +translate
             this.translate = translateNum.toFixed(2)
             console.log('translate', this.translate)
@@ -136,11 +139,13 @@ export default {
             console.log('moveTranslate', this.moveTranslate)
         },
         handleTopChange(status) {
+            // 拖拽滑动状态
             console.log('status', status)
             this.moveTranslate = 1
             this.topStatus = status
         },
         handleEditComprehensive(id) {
+            // 查看服务单详细信息
             this.CHANGE_EDIT_STATE(false)
             this.$router.push({
                 name: 'work-services-item',
@@ -150,14 +155,14 @@ export default {
             })
         },
         handleCreate() {
+            // 创建服务单
             this.CHANGE_EDIT_STATE(false)
             this.SET_CUSTOMER_INFO(null)
             this.SET_CAR_INFO(null)
             this.$router.push({ name: 'EditCustomerInfo-item' })
         },
-        // 交车
         async handleSubmitCar(item) {
-            // 保存服务项目报价
+            // 修改服务单状态为已交车
             const that = this
             try {
                 const result = await that.$message({
@@ -183,6 +188,7 @@ export default {
             }
         },
         async handleQuery() {
+            // 查询服务单列表
             if (this.isLoading) return false
             this.isLoading = true
             try {
@@ -190,26 +196,17 @@ export default {
                 const { data, meta } = await comprehensiveApi.request.r(this.queryParams)
                 console.log(data)
                 console.log(meta)
-                this.SET_WORK_LIST_SIZE(meta)
+                this.SET_WORK_LIST_SIZE(meta) // 设置服务单数据总数
                 this.meta = meta
+
+                // 缓存服务单列表
                 if (this.comprehensiveList.length === 0) {
                     this.SET_WORK_LIST(data)
                 } else {
                     this.SET_WORK_LIST([...this.comprehensiveList, ...data])
                 }
-                this.loading = false
-                this.isLoading = false
-                // this.comprehensiveList = data.map(v => {
-                //     return {
-                //         comprehensiveCd: v.comprehensiveCd,
-                //         comprehensiveId: v.comprehensiveId,
-                //         carNumber: v.seCustomerInfo ? v.seCustomerInfo.carNumber : '',
-                //         brandCode: v.seCarInfo.brandCode,
-                //         tel: v.seCustomerInfo ? v.seCustomerInfo.tel : '',
-                //         createDate: v.createDate,
-                //         carTrainCode: v.seCarInfo.carTrainCode
-                //     };
-                // });
+                this.loading = false // 判断是否在请求数据中
+                this.isLoading = false // 判断是否在请求数据中
             } catch (err) {
                 console.error(err)
                 catchError(err)

@@ -151,22 +151,6 @@ export default {
         } catch (err) {
             console.error(err)
         }
-        // return instance({
-        //     method: 'get',
-        //     url,
-        //     params, // 请求时带的参数
-        //     timeout: 10000,
-        //     headers: {
-        //         'X-Requested-With': 'XMLHttpRequest'
-        //     }
-        // }).then(response => {
-        //     return checkStatus(response);
-        // });
-        // .then(
-        //   (res) => {
-        //     return checkCode(res)
-        //   }
-        // )
     },
     async del(url, params) {
         try {
@@ -183,18 +167,6 @@ export default {
         } catch (err) {
             console.error(err)
         }
-        // return instance({
-        //     method: 'delete',
-        //     // baseURL: "http://localhost:8089/",
-        //     url,
-        //     params, // 请求时带的参数
-        //     timeout: 10000
-        //     // headers: {
-        //     //     'X-Requested-With': 'XMLHttpRequest'
-        //     // }
-        // }).then(response => {
-        //     return checkStatus(response);
-        // });
     },
     instance
 }
