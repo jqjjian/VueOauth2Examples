@@ -106,7 +106,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('work', ['SET_CUSTOMER_INFO', 'CHANGE_EDIT_STATE']),
+        ...mapMutations('work', ['SET_CUSTOMER_INFO', 'CHANGE_EDIT_STATE', 'SET_WORK_ORDER']),
         ...mapActions('work', ['getComprehensive', 'getProvince']),
         rules(e) {
             // 验证
@@ -142,8 +142,15 @@ export default {
         // },
         handleNext() {
             console.log('下一步')
-            // if (!this.isEdited) {
-            // }
+            if (!this.isEdited) {
+                this.SET_WORK_ORDER({
+                    comprehensiveId: '',
+                    orderType: 1,
+                    remark: '',
+                    seCustomerInfo: null,
+                    seCarInfo: null
+                })
+            }
             this.seCustomerInfo.carNumber = this.province + this.seCustomerInfo.carNumber
             this.SET_CUSTOMER_INFO(this.seCustomerInfo)
             this.$router.push({ name: 'EditCarInfo-item' })
@@ -157,6 +164,12 @@ export default {
         },
         handleSelectProvince(name) {
             this.province = name
+            if (name === '无牌') {
+                this.popFormRules.carNumber.state = 'success'
+                this.seCustomerInfo.carNumber = ''
+            } else {
+                this.popFormRules.carNumber.state = ''
+            }
             this.popupVisible = false
         }
     },

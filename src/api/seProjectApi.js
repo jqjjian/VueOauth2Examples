@@ -11,7 +11,7 @@ const deleteSeProject = {
 // 保存修改服务项目
 const saveSeProject = {
     p: [`post,${baseUrl}`],
-    r: params => config.get(baseUrl, params)
+    r: params => config.postJson(baseUrl, params)
 }
 
 // 无法施工

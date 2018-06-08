@@ -69,8 +69,8 @@
                                     }
                                 }
                             ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
-                            <template v-for="(k, j) in workState[sviceStateIndex[v.status - 1]]">
-                                <mt-button type="primary" size="small" v-if="v.status && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                            <template v-for="(k, j) in workState[sviceStateIndex[v.status]]">
+                                <mt-button type="primary" size="small" v-if="v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
                                 <span v-else :key="k.name + j">{{k.name}}</span>
                             </template>
                         </mt-cell-swipe>
@@ -184,7 +184,7 @@
 </template>
 
 <script>
-import { dictionaryApi, comprehensiveApi, fittingApi } from '@/api'
+import { dictionaryApi, comprehensiveApi, fittingApi, seProjectApi } from '@/api'
 import { mapGetters, mapMutations } from 'vuex'
 import { catchError } from '@/util'
 import * as R from 'ramda'
@@ -313,8 +313,20 @@ export default {
                 // totalFee: 220.5, //
                 // totalHourFee: 100.5 //
             },
-            sviceStateIndex: ['toQuote', 'approve', 'construction', 'constructionIng', 'testing', 'finish'], // 项目状态索引
+            sviceStateIndex: ['cannot', 'toQuote', 'approve', 'construction', 'constructionIng', 'testing', 'finish'], // 项目状态索引
             workState: {
+                cannot: [
+                    {
+                        name: '确认停工',
+                        value: 'approve',
+                        state: 2
+                    },
+                    {
+                        name: '继续施工',
+                        value: 'constructionIng',
+                        state: 4
+                    }
+                ],
                 toQuote: [
                     {
                         name: '报价',
@@ -354,8 +366,8 @@ export default {
                 constructionIng: [
                     {
                         name: '停工',
-                        value: 'approve',
-                        state: 2
+                        value: 'cannot',
+                        state: 0
                     },
                     {
                         name: '质检',
@@ -477,6 +489,7 @@ export default {
         async editParts(part) {
             // 编辑修改配件价格
             console.log(part)
+            // this.editPartsPrice = true
             try {
                 const { data } = await fittingApi.getPrice.r({
                     fittingId: part.part.materialId
@@ -569,8 +582,8 @@ export default {
                 })
                 if (result === 'confirm') {
                     that.currentService.children = this.parts
-                    console.log(JSON.stringify(that.currentService))
-                    const res = await comprehensiveApi.seproject.r([that.currentService])
+                    console.log('当前项目', that.currentService)
+                    const res = await seProjectApi.saveSeProject.r([that.currentService])
                     console.log(res)
                     this.$toast({
                         message: `保存成功!`,
@@ -608,21 +621,14 @@ export default {
             if (index !== null) {
                 this.serviceData[index].projectName = title
                 this.serviceData[index].description = description
-                let serviceProject = this.serviceData
-                const { data } = await comprehensiveApi.seproject.r([serviceProject])
+                let serviceProject = this.serviceData[index]
+                console.log('修改', serviceProject)
+                const { data } = await seProjectApi.saveSeProject.r([serviceProject])
                 this.popupServiceVisible = false
-                this.serviceData[index] = data[0]
-                console.log('保存服务项目后', this.serviceData)
-                // {
-                //     children: [],
-                //     comprehensiveId: this.form.comprehensiveId,
-                //     constructorId: '',
-                //     constructorName: '',
-                //     description,
-                //     projectName: title,
-                //     projectType: _type + 1,
-                //     status: 1
-                // }
+                this.serviceData[index].description = data[0].description
+                this.serviceData[index].projectName = data[0].projectName
+                this.serviceData[index].projectType = data[0].projectType
+                console.log('保存服务项目后', data)
             } else {
                 if (this.serviceData === null) {
                     this.serviceData = []
@@ -639,33 +645,12 @@ export default {
                     projectType: _type + 1,
                     status: 1
                 }
-                const { data } = await comprehensiveApi.seproject.r([_serviceProject])
+                console.log('新增', _serviceProject)
+                const { data } = await seProjectApi.saveSeProject.r([_serviceProject])
                 this.popupServiceVisible = false
                 this.serviceData.push(...data)
                 console.log('保存服务项目后', this.serviceData)
-                // this.serviceData.push({
-                //     children: [],
-                //     comprehensiveId: this.form.comprehensiveId,
-                //     constructorId: '',
-                //     constructorName: '',
-                //     description,
-                //     projectName: title,
-                //     projectType: _type + 1,
-                //     status: 1
-                // })
             }
-            // try {
-            //     const { data } = await comprehensiveApi.seproject.r(serviceProject)
-            //     this.popupServiceVisible = false
-            //     this.serviceData.push(...data)
-            //     console.log('保存服务项目后', this.serviceData)
-            //     // this.serviceData = res;
-            //     // const last = R.last(this.serviceData)
-            //     // last.serviceProjectId = R.last(data).serviceProjectId
-            // } catch (err) {
-            //     console.error(err)
-            //     catchError(err)
-            // }
         },
         handleSelectService(v) {
             // 确定选择服务项目
@@ -712,6 +697,9 @@ export default {
             console.log('project', project)
             that.currentService = project
             const fns = {
+                cannot() {
+                    console.log('无法施工')
+                },
                 toQuote() {
                     that.selectServicePopupVisible = true
                     that.selectServiceEdit = true
@@ -737,7 +725,7 @@ export default {
             fns[status.value]()
             try {
                 if (status.state !== 1) {
-                    const { data } = await comprehensiveApi.seprojectUpdateStatus.r({
+                    const { data } = await seProjectApi.updateStatusSeProject.r({
                         serviceProjectId: project.serviceProjectId,
                         status: status.state
                     })
@@ -819,6 +807,7 @@ export default {
             // 确定添加配件
             console.log(this.selectedPart)
             console.log('金额', this.selectNum)
+            console.log('修改金额', this.editPartsPrice)
             if (this.editPartsPrice) {
                 console.log(this.selectedPart.part)
                 console.log(this.parts)
@@ -840,6 +829,7 @@ export default {
                 }
                 this.parts.push(part)
             }
+            this.editPartsPrice = false
             this.pickerVisible = false
         },
         async deleteServiceProject(i, v) {
@@ -855,7 +845,7 @@ export default {
                     if (status <= 3) {
                         console.log(that.serviceData)
                         console.log(that.serviceData)
-                        const res = await comprehensiveApi.deleteProject.r({
+                        const res = await seProjectApi.deleteSeProject.r({
                             params: '',
                             serviceProjectId: that.serviceData[i].serviceProjectId
                         })

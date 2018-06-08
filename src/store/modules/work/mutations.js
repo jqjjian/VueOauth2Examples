@@ -11,6 +11,7 @@ export default {
         state.workOrder.seCustomerInfo = R.clone(payload)
     },
     SET_WORK_ORDER(state, payload) {
+        // 工单信息
         console.log('workOrder', payload)
         state.workOrder = payload
     },
@@ -27,6 +28,7 @@ export default {
         state.PROVINCE = provinces
     },
     SET_WORK_LIST(state, payload) {
+        // 工单列表
         console.log('workOrder', payload)
         state.comprehensiveList = payload
     },

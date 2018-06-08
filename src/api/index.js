@@ -7,4 +7,4 @@ export { default as comprehensiveApi } from './comprehensiveApi';
 export { default as constructApi } from './constructApi';
 export { default as fittingApi } from './fittingApi';
 export { default as accountApi } from './accountApi';
-export { default as seProject } from './seProject';
+export { default as seProjectApi } from './seProjectApi';
