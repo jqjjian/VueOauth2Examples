@@ -19,8 +19,10 @@ export default [
                     {
                         path: '/mobile/customer-manage',
                         name: 'customer-manage',
+                        component: () => import('../views/customer-manage/index.vue'),
                         meta: {
-                            name: '客户管理'
+                            name: '客户管理',
+                            icon: 'fa-kehuguanli'
                         }
                     },
                     {
@@ -28,7 +30,8 @@ export default [
                         name: 'business-manage',
                         component: () => import('../views/business-manage/index.vue'),
                         meta: {
-                            name: '业务管理'
+                            name: '业务管理',
+                            icon: 'fa-yewu'
                         },
                         children: [
                             {
@@ -36,7 +39,8 @@ export default [
                                 name: 'work',
                                 component: () => import('../views/business-manage/work/WorkList.vue'),
                                 meta: {
-                                    name: '工单'
+                                    name: '工单',
+                                    icon: 'fa-order'
                                 }
                             },
                             {
@@ -138,7 +142,8 @@ export default [
                                 name: 'finance-manage',
                                 component: () => import('../views/finance-manage/index.vue'),
                                 meta: {
-                                    name: '财务管理'
+                                    name: '财务管理',
+                                    icon: 'fa-caiwu'
                                 }
                             },
                             {
@@ -156,7 +161,8 @@ export default [
                                 name: 'warehouse-manage',
                                 component: () => import('../views/warehouse-manage/index.vue'),
                                 meta: {
-                                    name: '仓库管理'
+                                    name: '仓库管理',
+                                    icon: 'fa-cangku'
                                 }
                             },
                             {
@@ -173,21 +179,24 @@ export default [
                                 path: '/mobile/business-manage/service-log',
                                 name: 'service-log',
                                 meta: {
-                                    name: '服务记录'
+                                    name: '服务记录',
+                                    icon: 'fa-yuyuejilu'
                                 }
                             },
                             {
                                 path: '/mobile/business-manage/reservation-record',
                                 name: 'reservation-record',
                                 meta: {
-                                    name: '预约记录'
+                                    name: '预约记录',
+                                    icon: 'fa-yuyue'
                                 }
                             },
                             {
                                 path: '/mobile/business-manage/trailers-service',
                                 name: 'trailers-service',
                                 meta: {
-                                    name: '拖车服务'
+                                    name: '拖车服务',
+                                    icon: 'fa-cheliangweixiubaoyang'
                                 }
                             }
                         ]
@@ -195,15 +204,19 @@ export default [
                     {
                         path: '/mobile/mall',
                         name: 'mall',
+                        component: () => import('../views/mall/index.vue'),
                         meta: {
-                            name: '商城'
+                            name: '商城',
+                            icon: 'fa-store_icon'
                         }
                     },
                     {
                         path: '/mobile/my',
                         name: 'my',
+                        component: () => import('../views/my/index.vue'),
                         meta: {
-                            name: '我的'
+                            name: '我的',
+                            icon: 'fa-user'
                         }
                     }
                 ]

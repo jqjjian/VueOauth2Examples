@@ -1,7 +1,7 @@
 <template>
     <div>
         <mt-header fixed :title="$route.meta.name" style="font-size: 16px;">
-            <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            <mt-button icon="back" slot="left" @click.native="back">返回</mt-button>
             <!-- <router-link :to="{name: 'order-price-item'}" slot="right">
                 <mt-button >开单</mt-button>
             </router-link> -->
@@ -374,8 +374,9 @@ export default {
         // handleChange(v) {
         //     console.log(this.appearanceValue);
         // },
-        test(v) {
-            console.log(v)
+        back(v) {
+            this.CHANGE_EDIT_STATE(true)
+            this.$router.back(-1)
         },
         handleConfirm(date) {
             console.log(date)

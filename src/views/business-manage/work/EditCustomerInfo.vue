@@ -183,7 +183,9 @@ export default {
     },
     created() {
         // 判断是新开单或是编辑工单
+        console.log('送修人信息', this.isEdited)
         if (this.CustomerInfo !== null && this.isEdited) {
+            console.log(1122222)
             this.seCustomerInfo = R.merge(this.seCustomerInfo, this.CustomerInfo)
             this.province = this.seCustomerInfo.carNumber.slice(0, 1)
             this.seCustomerInfo.carNumber = this.seCustomerInfo.carNumber.slice(1, 8)

@@ -35,6 +35,7 @@
 .mt-grid {
     position: relative;
     // float: left;
+    color: #333;
     padding: 20px 10px;
     width: calc(100% / 3);
     box-sizing: border-box;
@@ -68,9 +69,16 @@
 }
 
 .mt-grid__icon {
-    width: 28px;
-    height: 28px;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
     margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    // background: rgb(0, 160, 255);
     img {
         display: block;
         width: 100%;

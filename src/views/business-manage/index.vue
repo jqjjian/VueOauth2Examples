@@ -9,7 +9,7 @@
         <grid :cols="3">
             <template v-for="(v, i) in menus">
                 <grid-item v-if="!v.meta.hide" :label="v.meta.name" :link="{name: `${v.name}-item`}" :key="i">
-                    <i class="" slot="icon"></i>
+                    <i class="fa" :class="v.meta.icon" slot="icon" style="font-size: 28px; color: rgb(0, 160, 255);"></i>
                 </grid-item>
             </template>
         </grid>

@@ -12,7 +12,10 @@
         <mt-tabbar fixed v-model="selected">
             <template v-for="(v, i) in menus">
                 <mt-tab-item v-if="v.meta.show === undefined || v.meta.show !== false" :id="v.name" :key="i" @click.native="handleSelected(v)">
-                {{v.meta.name}}
+                    <div solt="icon" style="margin-bottom: 5px;">
+                        <i class="fa" :class="v.meta.icon" style="font-size: 24px;"></i>
+                    </div>
+                    {{v.meta.name}}
                 </mt-tab-item>
             </template>
         </mt-tabbar>
@@ -20,38 +23,38 @@
 </template>
 <script>
 export default {
-    data () {
+    data() {
         return {
             selected: '',
             menus: [],
             title: '',
             prevPath: '',
             count: 0
-        };
-    },
-    methods: {
-        handleSelected (item) {
-            this.$router.push({name: item.name});
-            this.title = item.meta.name;
         }
     },
-    created () {
-        this.menus = this.$parent.menuData;
-        console.log('tab', this.menus);
-        this.selected = this.menus[1].name;
-        this.title = this.menus[1].meta.name;
+    methods: {
+        handleSelected(item) {
+            this.$router.push({ name: item.name })
+            this.title = item.meta.name
+        }
+    },
+    created() {
+        this.menus = this.$parent.menuData
+        console.log('tab', this.menus)
+        this.selected = this.menus[1].name
+        this.title = this.menus[1].meta.name
     },
     watch: {
-        $route () {
+        $route() {
             // if (this.$route.path === '/mobile/business-manage' || this.$route.path === '/mobile') {
             //     this.count = 0;
             // } else {
             //     this.count++;
             // }
-            this.title = this.$route.meta.name;
+            this.title = this.$route.meta.name
         }
     }
-};
+}
 </script>
 
 <style>
