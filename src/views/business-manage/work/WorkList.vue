@@ -65,7 +65,7 @@ export default {
                 status: '1,2,3,4',
                 param: '',
                 page: 0,
-                pageSize: 10
+                pageSize: 20
             }
         }
     },
@@ -113,10 +113,10 @@ export default {
             console.log(this.workQueryParams.size)
             if (this.workQueryParams.size === 0 || this.comprehensiveList.length < this.meta) {
                 console.log(3333)
-                console.log(this.workQueryParams.workPageNum * 10)
+                console.log(this.workQueryParams.workPageNum * this.queryParams.pageSize)
                 this.loading = true
                 let num = 1
-                if (this.workQueryParams.workPageNum * 10 >= this.workQueryParams.size) {
+                if (this.workQueryParams.workPageNum * this.queryParams.pageSize >= this.workQueryParams.size) {
                     num = 0
                 }
                 this.SET_WORK_PAGENUM(this.workQueryParams.workPageNum + num)

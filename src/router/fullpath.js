@@ -178,6 +178,7 @@ export default [
                             {
                                 path: '/mobile/business-manage/service-log',
                                 name: 'service-log',
+                                component: () => import('../components/default.vue'),
                                 meta: {
                                     name: '服务记录',
                                     icon: 'fa-yuyuejilu'
@@ -186,6 +187,7 @@ export default [
                             {
                                 path: '/mobile/business-manage/reservation-record',
                                 name: 'reservation-record',
+                                component: () => import('../components/default.vue'),
                                 meta: {
                                     name: '预约记录',
                                     icon: 'fa-yuyue'
@@ -194,6 +196,7 @@ export default [
                             {
                                 path: '/mobile/business-manage/trailers-service',
                                 name: 'trailers-service',
+                                component: () => import('../components/default.vue'),
                                 meta: {
                                     name: '拖车服务',
                                     icon: 'fa-cheliangweixiubaoyang'

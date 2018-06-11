@@ -15,7 +15,6 @@ export default {
         };
     },
     created () {
-        this.handleQuery();
         this.title = this.$route.meta.name;
     }
 };
