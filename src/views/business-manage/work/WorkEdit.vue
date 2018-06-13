@@ -18,7 +18,7 @@
             </div>
             <div class="page-part car-info">
                 <mt-cell title="车辆信息" class="bold title"></mt-cell>
-                <mt-field label="品牌车型:" v-model="brandCode" readonly disableClear></mt-field>
+                <mt-field label="品牌车型：" v-model="brandCode" readonly disableClear></mt-field>
                 <mt-field label="排量：" v-model="form.seCarInfo.displacement" readonly disableClear></mt-field>
                 <mt-field label="VIN码：" v-model="form.seCarInfo.vin" readonly disableClear></mt-field>
                 <mt-field label="发动机号：" v-model="form.seCarInfo.engineNumber" readonly disableClear></mt-field>
@@ -337,6 +337,9 @@ export default {
                         name: '提交',
                         value: 'approve',
                         state: 2
+                    },
+                    {
+                        name: '待报价'
                     }
                 ],
                 approve: [
@@ -349,6 +352,9 @@ export default {
                         name: '下派',
                         value: 'construction',
                         state: 3
+                    },
+                    {
+                        name: '审核中'
                     }
                 ],
                 construction: [
@@ -373,6 +379,9 @@ export default {
                         name: '质检',
                         value: 'testing',
                         state: 5
+                    },
+                    {
+                        name: '施工中'
                     }
                 ],
                 testing: [
@@ -385,6 +394,9 @@ export default {
                         name: '完成',
                         value: 'finish',
                         state: 6
+                    },
+                    {
+                        name: '质检中'
                     }
                 ],
                 finish: [
