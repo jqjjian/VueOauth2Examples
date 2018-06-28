@@ -7,7 +7,7 @@
             <!-- </router-link> -->
         </mt-header>
         <div class="container-box" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
-            <mt-loadmore :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" :bottom-method="loadBottom" ref="loadmore">
+            <mt-loadmore style="height: calc(100vh - 44px);" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore" >
                 <template v-for="(v, i) in comprehensiveList">
                     <div class="page-part" :key="i">
                         <mt-cell :title="`${v.seCustomerInfo.carNumber}(${v.seCarInfo.brandCode})`" :is-link="v.status !== 5" :label="`开单时间：${v.createDate}`" @click.native="handleEditComprehensive(v.comprehensiveId)">

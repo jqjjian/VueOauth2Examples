@@ -7,85 +7,87 @@
             </router-link> -->
         </mt-header>
         <div class="container-box scroll">
-            <div class="selectCarTypeBox" style="z-index: 3000;" v-if="PopupVisible.btn">
-                <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button>
-                <mt-button type="primary" size="normal" @click="handleSelected">确定</mt-button>
-            </div>
-            <div class="page-part form">
-                <div class="info-title">车辆信息（*必填）</div>
-                <template v-for="(v, i) in field">
-                    <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-blur="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
-                    <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
-                </template>
-            </div>
-            <div class="page-part form">
-                <mt-field label="备注：" v-model="remark" placeholder="请输入备注" :state="remark !== '' ? 'success' : ''"></mt-field>
-            </div>
-            <div class="page-part subBtn">
-                <!-- <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
+            <div>
+                <div class="selectCarTypeBox" style="z-index: 3000;" v-if="PopupVisible.btn">
+                    <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button>
+                    <mt-button type="primary" size="normal" @click="handleSelected">确定</mt-button>
+                </div>
+                <div class="page-part form">
+                    <div class="info-title">车辆信息（*必填）</div>
+                    <template v-for="(v, i) in field">
+                        <mt-field :class="{required: popFormRules[v].required}" :key="v + i" :label="`${popFormRules[v].label}：`" v-model="seCarInfo[v]" :placeholder="`请输入${popFormRules[v].label}`" :readonly="popFormRules[v].readonly" :type="popFormRules[v].type" :state="popFormRules[v].state" v-blur="{label: v, rules}" v-focus="{label: v, event}"></mt-field>
+                        <div class="info-error" v-if="popFormRules[v].state === 'error'" :key="v + i + 'err'">{{popFormRules[v].message}}</div>
+                    </template>
+                </div>
+                <div class="page-part form">
+                    <mt-field label="备注：" v-model="remark" placeholder="请输入备注" :state="remark !== '' ? 'success' : ''"></mt-field>
+                </div>
+                <div class="page-part subBtn">
+                    <!-- <mt-button type="primary" v-if="comprehensiveStatus === 1" size="large" @click.native="saveSubmit">保存工单</mt-button>
                 <br> -->
-                <mt-button type="primary" size="large" :disabled="!finish" @click.native="handleNext">完成</mt-button>
+                    <mt-button type="primary" size="large" :disabled="!finish" @click.native="handleNext">完成</mt-button>
+                </div>
             </div>
-            <mt-popup :modal="false" v-model="PopupVisible.selectCar" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
-                <mt-index-list v-if="brandCodeData.selectCarindex.length !== 0" ref="list">
-                    <template v-for="(v, i) in brandCodeData.selectCarindex">
+        </div>
+        <mt-popup :modal="false" v-model="PopupVisible.selectCar" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
+            <mt-index-list v-if="brandCodeData.selectCarindex.length !== 0" ref="list">
+                <template v-for="(v, i) in brandCodeData.selectCarindex">
+                    <mt-index-section :index="v" :key="i">
+                        <template v-for="(j, k) in brandCodeData.selectCarObj[v].children">
+                            <mt-cell :title="j.brandName" :class="[seCarInfo.brandCode === j.brandName ? 'active' : '']" :key="k + j.brandName" is-link @click.native="handleSelectCarBrand(j)">
+                                <img slot="icon" :src="j.logoUrl" width="24" height="24">
+                            </mt-cell>
+                        </template>
+                    </mt-index-section>
+                </template>
+            </mt-index-list>
+        </mt-popup>
+        <mt-popup v-model="PopupVisible.selectCarTrain" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div class="select-list-wrap" :class="[]">
+                <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
+                <mt-index-list v-if="CarTrainData.CarTrainIndex.length !== 0">
+                    <template v-for="(v, i) in CarTrainData.CarTrainIndex">
                         <mt-index-section :index="v" :key="i">
-                            <template v-for="(j, k) in brandCodeData.selectCarObj[v].children">
-                                <mt-cell :title="j.brandName" :class="[seCarInfo.brandCode === j.brandName ? 'active' : '']" :key="k + j.brandName" is-link @click.native="handleSelectCarBrand(j)">
-                                    <img slot="icon" :src="j.logoUrl" width="24" height="24">
-                                </mt-cell>
+                            <template v-for="(j, k) in CarTrainData.CarTrainObj[v].children">
+                                <mt-cell :title="j.styleName" :class="[]" :key="k" is-link @click.native="handleSelectCarTrain(j)"></mt-cell>
                             </template>
                         </mt-index-section>
                     </template>
                 </mt-index-list>
-            </mt-popup>
-            <mt-popup v-model="PopupVisible.selectCarTrain" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap" :class="[]">
-                    <p style="margin: 5px 0; color: #ccc;padding-left: 10px;">选择车系：</p>
-                    <mt-index-list v-if="CarTrainData.CarTrainIndex.length !== 0">
-                        <template v-for="(v, i) in CarTrainData.CarTrainIndex">
-                            <mt-index-section :index="v" :key="i">
-                                <template v-for="(j, k) in CarTrainData.CarTrainObj[v].children">
-                                    <mt-cell :title="j.styleName" :class="[]" :key="k" is-link @click.native="handleSelectCarTrain(j)"></mt-cell>
-                                </template>
-                            </mt-index-section>
-                        </template>
-                    </mt-index-list>
-                </div>
-            </mt-popup>
-            <mt-popup v-model="PopupVisible.selectCarYear" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择年份：" v-model="seCarInfo.carModelYear" :options="CarYeaIndex" @change="handleSelectCarModelYear">
-                    </mt-radio>
-                </div>
-            </mt-popup>
-            <mt-popup v-model="PopupVisible.selectCarType" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap car-type" style="font-size: 12px;" :class="['']">
-                    <mt-radio title="选择车款：" v-model="seCarInfo.carType" :options="CarTypeIndex" @change="handleSelectCarType">
-                    </mt-radio>
-                </div>
-            </mt-popup>
-            <mt-popup v-model="PopupVisible.selectcarColor" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择车辆颜色：" v-model="seCarInfo.carColor" :options="carColors" @change="handleChange">
-                    </mt-radio>
-                </div>
-            </mt-popup>
-            <mt-popup v-model="PopupVisible.selectappearance" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择车辆外观：" v-model="seCarInfo.appearance" :options="appearances" @change="handleChange">
-                    </mt-radio>
-                </div>
-            </mt-popup>
-            <mt-popup v-model="PopupVisible.selectinnage" popup-transition="popup-fade" class="mint-popup-select-list">
-                <div class="select-list-wrap" :class="['']">
-                    <mt-radio title="选择剩余油量：" v-model="seCarInfo.innage" :options="innages" @change="handleChange">
-                    </mt-radio>
-                </div>
-            </mt-popup>
-            <mt-datetime-picker @confirm="handleConfirm" ref="picker" type="date" v-model="datetime" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
-            </mt-datetime-picker>
-        </div>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="PopupVisible.selectCarYear" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div class="select-list-wrap" :class="['']">
+                <mt-radio title="选择年份：" v-model="seCarInfo.carModelYear" :options="CarYeaIndex" @change="handleSelectCarModelYear">
+                </mt-radio>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="PopupVisible.selectCarType" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div class="select-list-wrap car-type" style="font-size: 12px;" :class="['']">
+                <mt-radio title="选择车款：" v-model="seCarInfo.carType" :options="CarTypeIndex" @change="handleSelectCarType">
+                </mt-radio>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="PopupVisible.selectcarColor" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div class="select-list-wrap" :class="['']">
+                <mt-radio title="选择车辆颜色：" v-model="seCarInfo.carColor" :options="carColors" @change="handleChange">
+                </mt-radio>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="PopupVisible.selectappearance" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div class="select-list-wrap" :class="['']">
+                <mt-radio title="选择车辆外观：" v-model="seCarInfo.appearance" :options="appearances" @change="handleChange">
+                </mt-radio>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="PopupVisible.selectinnage" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div class="select-list-wrap" :class="['']">
+                <mt-radio title="选择剩余油量：" v-model="seCarInfo.innage" :options="innages" @change="handleChange">
+                </mt-radio>
+            </div>
+        </mt-popup>
+        <mt-datetime-picker @confirm="handleConfirm" ref="picker" type="date" v-model="datetime" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
+        </mt-datetime-picker>
     </div>
 </template>
 

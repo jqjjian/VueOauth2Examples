@@ -1,7 +1,7 @@
 export default [
     {
         path: '/',
-        name: '首页',
+        name: 'home',
         // component: () => import('../views/index.vue'),
         component: () => import('../components/Container.vue'),
         redirect: '/mobile/business-manage',

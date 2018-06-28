@@ -6,20 +6,52 @@
             </router-link> -->
             <!-- <mt-button icon="more" slot="right"></mt-button> -->
         </mt-header>
-        <div> 正在建设中...</div>
+        <div class="container-box scroll">
+            <div class="page-part subBtn">
+                <mt-button size="large" type="default" @click="logout">退出登录</mt-button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import { oauthApi } from '@/api'
 export default {
-    data () {
+    data() {
         return {
             menus: [],
             title: ''
-        };
+        }
     },
-    created () {
-        this.title = this.$route.meta.name;
+    methods: {
+        async logout() {
+            try {
+                await this.$message({
+                    title: '提示',
+                    message: '确定保存服务项目信息？',
+                    showCancelButton: true
+                })
+                // if (result === 'confirm') {
+                await oauthApi.clearToken.r()
+                // 清除缓存session
+                console.log(sessionStorage)
+                sessionStorage.setItem('token', '')
+                console.log(sessionStorage)
+                sessionStorage.removeItem('token')
+                console.log(sessionStorage)
+                sessionStorage.clear()
+                console.log(sessionStorage)
+                // window.location.href = window.gloable.loginUrl
+                window.location.href = process.env.NODE_ENV === 'development' ? 'http://localhost:8081/' : window.gloable.loginUrl
+                // this.$router.replace({ name: 'login' })
+                // }
+            } catch (err) {
+                console.error(err)
+            }
+        }
+    },
+    created() {
+        this.title = this.$route.meta.name
     }
 }
 </script>

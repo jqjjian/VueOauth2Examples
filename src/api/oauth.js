@@ -9,5 +9,9 @@ export default {
     getToken: {
         p: [`get,${tokenUrl}/oauth/token`],
         r: params => config.post(tokenUrl + '/oauth/token', params)
+    },
+    clearToken: {
+        p: ['get,/oauth/revoke_token'],
+        r: params => config.get(tokenUrl + '/oauth/revoke_token', params)
     }
 }
