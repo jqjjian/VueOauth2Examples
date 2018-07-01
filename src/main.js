@@ -17,6 +17,9 @@ Vue.prototype.$prompt = MintUI.MessageBox.prompt
 Vue.config.productionTip = false
 Vue.directive('has', {
     bind(el, binding) {
+        console.log(el)
+        console.log(el.parentNode)
+        console.log('binding:', !Vue.prototype.$_has(binding.value))
         if (!Vue.prototype.$_has(binding.value)) {
             el.parentNode.removeChild(el)
         }

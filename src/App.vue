@@ -8,7 +8,7 @@
 import Vue from 'vue'
 import { session, catchError, buildMenu } from '@/util'
 import { intercept, oauthApi } from '@/api'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 import oauthconfig from '@/config'
 import userPath from '@/router/fullpath'
 import * as R from 'ramda'
@@ -22,8 +22,12 @@ export default {
             userData: []
         }
     },
+    computed: {
+        ...mapGetters(['Permission'])
+    },
     methods: {
         ...mapActions('oauth', ['getUserResources', 'initializeUser']),
+        ...mapMutations(['SET_PERMISSION']),
         storageMenu(allowedRouter) {
             // allowedRouter.forEach(route => {
             //     if (route.children) {
@@ -125,9 +129,9 @@ export default {
                     // }
                     // console.log("reg2-perName", perName);
                     // 匹配权限
-                    console.log('aaaaa', config.method + ',' + perName)
-                    if (!resourcePermission[config.method + ',' + perName]) {
-                        console.warn(resourcePermission, config.method + ',' + perName)
+                    console.log('接口权限标识', config.method + ',' + perName)
+                    if (!resourcePermission.api[config.method + ',' + perName]) {
+                        console.warn(resourcePermission.api, config.method + ',' + perName)
                         // vm.$message({
                         //     message: '无访问权限，请联系系统管理员',
                         //     type: 'warning'
@@ -146,17 +150,27 @@ export default {
         },
         getPermission(userInfo) {
             console.log(userInfo)
-            const resourcePermission = {}
-            if (Array.isArray(userInfo.resources)) {
+            const resourcePermission = {
+                api: {},
+                vis: {},
+                dis: {}
+            }
+            if (Array.isArray(userInfo.resources) && userInfo.resources.length) {
+                let key = null
                 for (let e of userInfo.resources) {
-                    const key = e.httpMethod.toLowerCase() + ',' + e.resourceString
-                    resourcePermission[key] = true
+                    if (e.resourceType === 'api') {
+                        key = e.httpMethod.toLowerCase() + ',' + e.resourceString
+                    } else {
+                        key = e.resourceString
+                    }
+                    resourcePermission[e.resourceType][key] = true
                 }
                 // userInfo.resources.forEach(function(e, i) {
                 //     const key = e.httpMethod.toLowerCase() + ',' + e.resourceString;
                 //     resourcePermission[key] = true;
                 // });
             }
+            this.SET_PERMISSION(resourcePermission)
             return resourcePermission
         },
         getRoutes(userInfo) {
@@ -254,23 +268,41 @@ export default {
                 // 用户信息持久化
                 // vm.storageUser(Object.assign(localUser || {}, userInfo))
                 vm.userData = userInfo
-                Vue.prototype.$_has = rArray => {
-                    let resources = []
-                    let permission = true
-                    if (Array.isArray(rArray)) {
-                        rArray.forEach(function(e) {
-                            resources = resources.concat(e.p)
-                        })
+                Vue.prototype.$_has = p => {
+                    let _permission = false
+                    if (
+                        p.currentP.hasOwnProperty('value') &&
+                        this.Permission.vis.hasOwnProperty(p.currentP.pTag) &&
+                        this.Permission.vis[p.currentP.pTag] === true
+                    ) {
+                        console.log(111)
+                        _permission = true
                     } else {
-                        resources = resources.concat(rArray.p)
-                    }
-                    resources.forEach(function(p) {
-                        if (!resourcePermission[p]) {
-                            // console.log("进入", permission === false);
-                            permission = false
+                        console.log(222)
+                        for (let v of Object.values(p.allP)) {
+                            if (v.value && this.Permission.vis.hasOwnProperty(v.pTag)) {
+                                _permission = false
+                                break
+                            } else {
+                                _permission = true
+                                break
+                            }
                         }
-                    })
-                    return permission
+                    }
+                    // if (Array.isArray(rArray)) {
+                    //     rArray.forEach(function(e) {
+                    //         resources = resources.concat(e.p)
+                    //     })
+                    // } else {
+                    //     resources = resources.concat(rArray.p)
+                    // }
+                    // resources.forEach(function(p) {
+                    //     if (!resourcePermission[p]) {
+                    //         // console.log("进入", permission === false);
+                    //         permission = false
+                    //     }
+                    // })
+                    return R.clone(_permission)
                 }
                 typeof cb === 'function' && cb()
             } catch (err) {

@@ -71,8 +71,8 @@
                                     }
                                 ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
                                 <template v-for="(k, j) in workState[sviceStateIndex[v.status]]">
-                                    <mt-button type="primary" size="small" v-if="v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
-                                    <span v-else :key="k.name + j">{{k.name}}</span>
+                                    <mt-button v-has={allP:workState[sviceStateIndex[v.status]],currentP:k} type="primary" size="small" v-if="k.value && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                                    <mt-button size="small" disabled v-else v-has={allP:workState[sviceStateIndex[v.status]],currentP:k} :key="k.name + j">{{k.name}}</mt-button>
                                 </template>
                             </mt-cell-swipe>
                         </template>
@@ -321,11 +321,13 @@ export default {
                     {
                         name: '确认停工',
                         value: 'approve',
+                        pTag: 'confirmShutdown',
                         state: 2
                     },
                     {
                         name: '继续施工',
                         value: 'constructionIng',
+                        pTag: 'continueToConstruction',
                         state: 4
                     }
                 ],
@@ -333,11 +335,13 @@ export default {
                     {
                         name: '报价',
                         value: 'toQuote',
+                        pTag: 'offer',
                         state: 1
                     },
                     {
                         name: '提交',
                         value: 'approve',
+                        pTag: 'submitOffer',
                         state: 2
                     },
                     {
@@ -348,11 +352,13 @@ export default {
                     {
                         name: '修改',
                         value: 'toQuote',
+                        pTag: 'modifiedOnOffer',
                         state: 1
                     },
                     {
                         name: '下派',
                         value: 'construction',
+                        pTag: 'appoint',
                         state: 3
                     },
                     {
@@ -363,11 +369,13 @@ export default {
                     {
                         name: '撤回',
                         value: 'approve',
+                        pTag: 'withdrawTheAppoint',
                         state: 2
                     },
                     {
                         name: '施工',
                         value: 'constructionIng',
+                        pTag: 'roadWork',
                         state: 4
                     }
                 ],
@@ -375,11 +383,13 @@ export default {
                     {
                         name: '停工',
                         value: 'cannot',
+                        pTag: 'shutDown',
                         state: 0
                     },
                     {
                         name: '质检',
                         value: 'testing',
+                        pTag: 'testing',
                         state: 5
                     },
                     {
@@ -390,11 +400,13 @@ export default {
                     {
                         name: '返工',
                         value: 'construction',
+                        pTag: 'rework',
                         state: 4
                     },
                     {
                         name: '完成',
                         value: 'finish',
+                        pTag: 'finish',
                         state: 6
                     },
                     {
@@ -436,6 +448,7 @@ export default {
     },
     computed: {
         ...mapGetters('work', ['WorkOrder', 'isEdited']),
+        ...mapGetters(['Permission']),
         allTotal() {
             // 服务单总金额
             let _total = 0

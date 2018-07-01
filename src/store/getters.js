@@ -1,1 +1,3 @@
-export default {}
+export default {
+    Permission: state => state.Permission
+}

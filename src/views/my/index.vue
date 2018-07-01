@@ -28,7 +28,7 @@ export default {
             try {
                 await this.$message({
                     title: '提示',
-                    message: '确定保存服务项目信息？',
+                    message: '是否确定退出?',
                     showCancelButton: true
                 })
                 // if (result === 'confirm') {

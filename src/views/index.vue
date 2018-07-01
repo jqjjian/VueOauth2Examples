@@ -22,6 +22,7 @@
     </div>
 </template>
 <script>
+import * as R from 'ramda'
 export default {
     data() {
         return {
@@ -41,8 +42,12 @@ export default {
     created() {
         this.menus = this.$parent.menuData
         console.log('tab', this.menus)
-        this.selected = this.menus[1].name
-        this.title = this.menus[1].meta.name
+        const names = R.map(R.prop('name'))(this.menus)
+        const index = names.indexOf('business-manage')
+        if (this.menus.length) {
+            this.selected = this.menus[index !== -1 ? index : 0].name
+            this.title = this.menus[index !== -1 ? index : 0].meta.name
+        }
     },
     watch: {
         $route() {
