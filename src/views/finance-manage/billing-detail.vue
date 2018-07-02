@@ -27,7 +27,9 @@
                 </div>
             </div>
             <div v-if="info.status===4" style="margin-top:10px;">
-                <div style="font-size: 0.8rem; padding: 10px 5px;">请在对应的支付方式输入金额</div>
+                <my-radio title="选择支付方式" v-model="value" :options="['支付宝', '微信']">
+                </my-radio>
+                <!-- <div style="font-size: 0.8rem; padding: 10px 5px;">请在对应的支付方式输入金额</div>
                 <mt-field label=" 现金" type="number" v-model="payType.Cash"></mt-field>
                 <mt-field label="刷卡" type="number" v-model="payType.Card"></mt-field>
                 <mt-field label="支票" type="number" v-model="payType.Cheque"></mt-field>
@@ -37,26 +39,31 @@
                 <mt-field label="挂账" type="number" v-model="payType.Arrears"></mt-field>
                 <mt-field label="网络支付" type="number" v-model="payType.InternetPay"></mt-field>
                 <mt-field label="备注" type="textarea" rows="2" v-model="payType.remark"></mt-field>
-                <mt-field label="收款时间" readonly v-model="payDate"></mt-field>
+                <mt-field label="收款时间" readonly v-model="payDate"></mt-field> -->
             </div>
         </div>
         <div class="finance-buttom">
             <div>
                 <span>总金额: {{info.totalFee}}元</span>
             </div>
-            <div v-if="info.status===4">
+            <!-- <div v-if="info.status===4">
                 <span>剩余应付: {{extendedAmount}}元</span>
                 <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
-            </div>
-            <!-- <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button> -->
+            </div> -->
+            <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
         </div>
     </div>
 </template>
 <script>
 import { accountApi } from '@/api'
+import MyRadio from '@/components/radio'
 export default {
+    components: {
+        MyRadio
+    },
     data() {
         return {
+            value: '',
             msg: 'msg',
             info: {},
             payType: {
@@ -70,7 +77,13 @@ export default {
                 Arrears: null, // 挂账
                 InternetPay: null, // 网络支付
                 remark: ''
-            }
+            },
+            options: [
+                {
+                    label: '支付宝',
+                    value: ''
+                }
+            ]
         }
     },
     computed: {

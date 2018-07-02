@@ -269,26 +269,54 @@ export default {
                 // vm.storageUser(Object.assign(localUser || {}, userInfo))
                 vm.userData = userInfo
                 Vue.prototype.$_has = p => {
+                    console.log(this.Permission)
+                    console.log(p)
                     let _permission = false
-                    if (
-                        p.currentP.hasOwnProperty('value') &&
-                        this.Permission.vis.hasOwnProperty(p.currentP.pTag) &&
-                        this.Permission.vis[p.currentP.pTag] === true
-                    ) {
-                        console.log(111)
-                        _permission = true
+                    if (p.currentP.value) {
+                        if (
+                            p.currentP.hasOwnProperty('value') &&
+                            this.Permission.vis.hasOwnProperty(p.currentP.pTag) &&
+                            this.Permission.vis[p.currentP.pTag] === true
+                        ) {
+                            console.log(111)
+                            _permission = true
+                        }
                     } else {
                         console.log(222)
                         for (let v of Object.values(p.allP)) {
-                            if (v.value && this.Permission.vis.hasOwnProperty(v.pTag)) {
-                                _permission = false
-                                break
+                            console.log('ptag', v.pTag)
+                            console.log('AAAAAAAA', this.Permission.vis.hasOwnProperty(v.pTag))
+                            if (v.value) {
+                                if (this.Permission.vis.hasOwnProperty(v.pTag)) {
+                                    _permission = false
+                                    break
+                                }
                             } else {
                                 _permission = true
-                                break
                             }
                         }
                     }
+                    // if (
+                    //     p.currentP.hasOwnProperty('value') &&
+                    //     this.Permission.vis.hasOwnProperty(p.currentP.pTag) &&
+                    //     this.Permission.vis[p.currentP.pTag] === true
+                    // ) {
+                    //     console.log(111)
+                    //     _permission = true
+                    // } else {
+                    //     console.log(222)
+                    //     for (let v of Object.values(p.allP)) {
+                    //         console.log('ptag', v.pTag)
+                    //         console.log('AAAAAAAA', this.Permission.vis.hasOwnProperty(v.pTag))
+                    //         if (v.value) {
+                    //             if (this.Permission.vis.hasOwnProperty(v.pTag)) {
+                    //                 _permission = false
+                    //             }
+                    //         } else {
+                    //             _permission = true
+                    //         }
+                    //     }
+                    // }
                     // if (Array.isArray(rArray)) {
                     //     rArray.forEach(function(e) {
                     //         resources = resources.concat(e.p)
