@@ -60,7 +60,7 @@
 <script>
 import { accountApi } from '@/api'
 import MyRadio from '@/components/radio'
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 export default {
     components: {
         MyRadio
@@ -161,9 +161,14 @@ export default {
             this.payParams.shopId = this.loginUser.shops[0].uuid
             console.log(this.loginUser)
             const qr = await accountApi.toAliPay.r(this.payParams)
-            console.log(qr)
-            this.html = qr
-            this.visible = true
+            // console.log(qr)
+            // this.html = qr
+            // this.visible = true
+            // document.forms[0].submit();
+            const div = window.document.createElement('div')
+            div.innerHTML = qr
+            document.body.appendChild(div)
+            document.forms[0].submit()
             // accountApi.saveAccount.r(this.payType).then(response => {
             //     console.log(response)
             //     if (response.status === 200) {
