@@ -5,7 +5,7 @@
             <slot name="left"></slot>
         </div>
         <div class="mint-cell-wrapper">
-            <div class="mint-cell-title">
+            <div class="mint-cell-title my-cell">
                 <slot name="icon">
                     <i v-if="icon" class="mintui" :class="'mintui-' + icon"></i>
                 </slot>
@@ -83,4 +83,10 @@ export default {
 </script>
 
 <style lang="css">
+.my-cell .mint-radiolist-label {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
 </style>

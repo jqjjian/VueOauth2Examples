@@ -7,6 +7,7 @@
                     <input class="mint-radio-input" type="radio" v-model="currentValue" :disabled="option.disabled" :value="option.value || option">
                     <span class="mint-radio-core"></span>
                 </span>
+                <i v-if="option.icon" :class="['fa', option.icon]"></i>
                 <span class="mint-radio-label" v-text="option.label || option"></span>
             </label>
         </x-cell>
@@ -60,4 +61,14 @@ export default {
 </script>
 
 <style lang="css">
+.fa {
+    font-size: 22px;
+    margin-left: 5px;
+}
+.fa-wxpay{
+    color: green;
+}
+.fa-zhifubao {
+    color:dodgerblue;
+}
 </style>

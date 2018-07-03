@@ -103,9 +103,11 @@ export default {
                 console.log('请求的url:', config.url)
                 // 得到类权限路径
                 const baseAuthUrl = window.gloable.authUrl
+                const payUrl = window.gloable.payUrl
                 const perName = config.url
                     .replace(config.baseURL, '')
                     .replace(baseAuthUrl, '')
+                    .replace(payUrl, '')
                     .replace('/GET', '')
                     .replace('/POST', '')
                     .replace('/DELETE', '')

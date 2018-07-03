@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div v-if="info.status===4" style="margin-top:10px;">
-                <my-radio title="选择支付方式" v-model="value" :options="['支付宝', '微信']">
+                <my-radio title="选择支付方式" v-model="payType" :options="options">
                 </my-radio>
                 <!-- <div style="font-size: 0.8rem; padding: 10px 5px;">请在对应的支付方式输入金额</div>
                 <mt-field label=" 现金" type="number" v-model="payType.Cash"></mt-field>
@@ -52,55 +52,79 @@
             </div> -->
             <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
         </div>
+        <mt-popup v-model="visible" popup-transition="popup-fade" class="mint-popup-select-list">
+            <div v-html="html" style="width: 300px; height: 300px;"></div>
+        </mt-popup>
     </div>
 </template>
 <script>
 import { accountApi } from '@/api'
 import MyRadio from '@/components/radio'
+import { mapGetters } from 'vuex';
 export default {
     components: {
         MyRadio
     },
     data() {
         return {
+            visible: false,
+            html: '',
             value: '',
             msg: 'msg',
             info: {},
-            payType: {
-                comprehensiveId: null,
-                Cash: null, // 现金
-                Card: null, // 刷卡
-                Cheque: null, // 支票
-                Transfer: null, // 银行转账
-                Alipay: null, // 支付宝
-                WeChatPay: null, // 微信支付
-                Arrears: null, // 挂账
-                InternetPay: null, // 网络支付
-                remark: ''
+            payParams: {
+                // comprehensiveId: null,
+                // Cash: null, // 现金
+                // Card: null, // 刷卡
+                // Cheque: null, // 支票
+                // Transfer: null, // 银行转账
+                // Alipay: null, // 支付宝
+                // WeChatPay: null, // 微信支付
+                // Arrears: null, // 挂账
+                // InternetPay: null, // 网络支付
+                // remark: '',
+                // type: ''
+                outTradeNo: '',
+                shopId: '',
+                totalAmount: 0,
+                returnUrl: 'https://www.baidu.com'
             },
+            payType: '',
             options: [
                 {
                     label: '支付宝',
-                    value: ''
+                    value: 'alipay',
+                    icon: 'fa-zhifubao'
+                },
+                {
+                    label: '微信',
+                    value: 'wxpay',
+                    icon: 'fa-wxpay'
                 }
             ]
         }
     },
     computed: {
+        ...mapGetters('oauth', ['loginUser']),
         extendedAmount() {
-            let total = 0
-            let tt =
-                this.info.totalFee -
-                this.payType.Cash -
-                this.payType.Card -
-                this.payType.Cheque -
-                this.payType.Transfer -
-                this.payType.Alipay -
-                this.payType.WeChatPay -
-                this.payType.Arrears -
-                this.payType.InternetPay
-            total = Math.floor(parseFloat(tt * 100)) / 100
-            return total
+            // let total = 0
+            // let tt =
+            //     this.info.totalFee -
+            //     this.payType.Cash -
+            //     this.payType.Card -
+            //     this.payType.Cheque -
+            //     this.payType.Transfer -
+            //     this.payType.Alipay -
+            //     this.payType.WeChatPay -
+            //     this.payType.Arrears -
+            //     this.payType.InternetPay
+            // total = Math.floor(parseFloat(tt * 100)) / 100
+            // if (this.info.totalFee === 0 || this.payType === '') {
+            //     return true
+            // } else {
+            //     return false
+            // }
+            return this.info.totalFee === 0 || this.payType === '' ? 1 : 0
         },
         payDate() {
             let myDate = new Date()
@@ -125,31 +149,37 @@ export default {
         }
     },
     created() {
-        console.log(this.$route.params.info)
         if (this.$route.params.info) {
             this.info = this.$route.params.info
+            console.log(this.info)
         }
     },
     methods: {
-        accountBilling() {
-            this.payType.comprehensiveId = this.info.comprehensiveId
-            console.log(accountApi)
-            accountApi.saveAccount.r(this.payType).then(response => {
-                console.log(response)
-                if (response.status === 200) {
-                    this.collectionVisible = false
-                    this.$message({
-                        message: '付款成功',
-                        type: 'success'
-                    })
-                    this.getNotPaid()
-                } else {
-                    this.$message({
-                        message: '付款失败',
-                        type: 'error'
-                    })
-                }
-            })
+        async accountBilling() {
+            this.payParams.outTradeNo = this.info.comprehensiveId
+            this.payParams.totalAmount = this.info.totalFee
+            this.payParams.shopId = this.loginUser.shops[0].uuid
+            console.log(this.loginUser)
+            const qr = await accountApi.toAliPay.r(this.payParams)
+            console.log(qr)
+            this.html = qr
+            this.visible = true
+            // accountApi.saveAccount.r(this.payType).then(response => {
+            //     console.log(response)
+            //     if (response.status === 200) {
+            //         this.collectionVisible = false
+            //         this.$message({
+            //             message: '付款成功',
+            //             type: 'success'
+            //         })
+            //         this.getNotPaid()
+            //     } else {
+            //         this.$message({
+            //             message: '付款失败',
+            //             type: 'error'
+            //         })
+            //     }
+            // })
         }
     }
 }
