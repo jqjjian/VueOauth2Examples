@@ -1012,6 +1012,9 @@ export default {
 }
 .cell-btn {
     margin-right: 10px;
+    &:last-child{
+        margin-right: 0;
+    }
 }
 .mint-indexsection-index {
     background: #eee;
