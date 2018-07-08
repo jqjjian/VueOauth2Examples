@@ -4,8 +4,8 @@
             <mt-button icon="back" slot="left" @click.native="$router.push({name: 'work-item'})">返回</mt-button>
             <mt-button slot="right" @click.native="handleEdit">修改</mt-button>
         </mt-header>
-        <div class="container-box scroll">
-            <div>
+        <div class="container-box">
+            <mt-loadmore style="" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore">
                 <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible && !pickerVisible">
                     <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
                     <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
@@ -40,45 +40,64 @@
                     <div v-if="serviceData && serviceData.length !== 0">
                         <template v-for="(v, i) in serviceData">
                             <mt-cell-swipe :label="`备注：${v.description}`" :title="`${i + 1}. ${v.projectName}`" :right="[ // 服务项目左滑删除样式
-                                    {
-                                        content: '取消',
-                                        style: {
-                                            background: '#ddd',
-                                            color: '#fff'
+                                        {
+                                            content: '取消',
+                                            style: {
+                                                background: '#ddd',
+                                                color: '#fff'
+                                            },
+                                            handler: () => {
+                                            }
                                         },
-                                        handler: () => {
-                                        }
-                                    },
-                                    {
-                                        content: '修改',
-                                        style: {
-                                            background: '#26a2ff',
-                                            color: '#fff'
+                                        {
+                                            content: '修改',
+                                            style: {
+                                                background: '#26a2ff',
+                                                color: '#fff'
+                                            },
+                                            handler() {
+                                                handleOpenSelectService(i);
+                                            }
                                         },
-                                        handler() {
-                                            handleOpenSelectService(i);
+                                        {
+                                            content: '删除',
+                                            style: {
+                                                background: 'red',
+                                                color: '#fff'
+                                            },
+                                            handler() {
+                                                deleteServiceProject(i, v);
+                                            }
                                         }
-                                    },
-                                    {
-                                        content: '删除',
-                                        style: {
-                                            background: 'red',
-                                            color: '#fff'
-                                        },
-                                        handler() {
-                                            deleteServiceProject(i, v);
-                                        }
-                                    }
-                                ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
-                                <template v-for="(k, j) in workState[sviceStateIndex[v.status]]">
-                                    <mt-button v-has={allP:workState[sviceStateIndex[v.status]],currentP:k} type="primary" size="small" v-if="k.value && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
-                                    <mt-button size="small" disabled v-else v-has={allP:workState[sviceStateIndex[v.status]],currentP:k} :key="k.name + j">{{k.name}}</mt-button>
+                                    ]" :key="v.projectName + i + '-index'" @click.native="showServiceInfo(i)">
+                                <template v-for="(k, j) in subWorkState(v.status)">
+                                    <mt-button type="primary" size="small" v-if="k.value && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                                    <!-- <mt-button v-has={allP:workState[sviceStateIndex[v.status]],currentP:k} type="primary" size="small" v-if="k.value && v.status !== 6" :key="k.name + j" :class="[j === 0 ? 'cell-btn' : '']" @click.native.stop="workStateMethods(i, k, v)">{{v.children.length > 0 && v.status === 1 && j === 0 ? '修改' : k.name}}</mt-button>
+                                    <mt-button size="small" disabled v-else v-has={allP:workState[sviceStateIndex[v.status]],currentP:k} :key="k.name + j">{{k.name}}</mt-button> -->
+                                    <span v-else :key="k.name">{{k.name}}</span>
                                 </template>
                             </mt-cell-swipe>
                         </template>
                     </div>
                 </div>
-            </div>
+
+                <!-- <p v-show="loading" class="page-infinite-loading">
+                    <mt-spinner :size="20" type="snake"></mt-spinner>
+                    加载中...
+                </p> -->
+                <div slot="top" class="mint-loadmore-top">
+                    <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">↓下拉刷新</span>
+                    <span v-show="topStatus === 'loading'">
+                        <mt-spinner :size="20" type="snake"></mt-spinner>
+                    </span>
+                </div>
+                <!-- <div slot="bottom" class="mint-loadmore-top">
+                    <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">上拉加载</span>
+                    <span v-show="topStatus === 'loading'">
+                        <mt-spinner type="snake"></mt-spinner>
+                    </span>
+                </div> -->
+            </mt-loadmore>
         </div>
         <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap service" :class="[popupServiceVisible ? 'active' : '']">
@@ -193,6 +212,9 @@ import * as R from 'ramda'
 export default {
     data() {
         return {
+            loading: false,
+            isLoading: false,
+            topStatus: '',
             remark: '',
             title: '',
             selected: '0',
@@ -513,6 +535,65 @@ export default {
     },
     methods: {
         ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE']),
+        // loadMore() {},
+        subWorkState(state) {
+            console.log(state)
+            const all = this.workState[this.sviceStateIndex[state]]
+            console.log(this.Permission)
+            let _permission = false
+            const _filter = v => {
+                if (v.value) {
+                    console.log(111)
+                    if (
+                        v.hasOwnProperty('value') &&
+                        this.Permission.vis.hasOwnProperty(v.pTag) &&
+                        this.Permission.vis[v.pTag] === true
+                    ) {
+                        console.log('有', v)
+                        _permission = true
+                    } else {
+                        _permission = false
+                    }
+                } else {
+                    console.log(222)
+                    for (let k of Object.values(all)) {
+                        console.log(k)
+                        console.log('ptag', k.pTag)
+                        if (k.pTag) {
+                            if (this.Permission.vis.hasOwnProperty(k.pTag)) {
+                                _permission = false
+                                break
+                            }
+                        } else {
+                            _permission = true
+                        }
+                    }
+                }
+                return _permission
+            }
+            const arr = R.filter(_filter, all)
+            console.log('arr', arr)
+            return arr
+        },
+        async loadTop() {
+            console.log('下拉')
+            await this.handleQuery(this.$route.query.id)
+            this.$refs.loadmore.onTopLoaded()
+        },
+        translateChange(translate) {
+            // 触发下拉刷新条件
+            const translateNum = +translate
+            this.translate = translateNum.toFixed(2)
+            console.log('translate', this.translate)
+            this.moveTranslate = (1 + translateNum / 70).toFixed(2)
+            console.log('moveTranslate', this.moveTranslate)
+        },
+        handleTopChange(status) {
+            // 拖拽滑动状态
+            console.log('status', status)
+            this.moveTranslate = 1
+            this.topStatus = status
+        },
         async editParts(part) {
             // 编辑修改配件价格
             console.log(part)
@@ -686,6 +767,7 @@ export default {
         },
         async handleQuery(id) {
             // 查询服务单详情
+            console.log('id', id)
             try {
                 const { data } = await comprehensiveApi.request.r({
                     accountSquared: '',
@@ -1012,7 +1094,7 @@ export default {
 }
 .cell-btn {
     margin-right: 10px;
-    &:last-child{
+    &:last-child {
         margin-right: 0;
     }
 }

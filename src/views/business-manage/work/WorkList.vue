@@ -125,10 +125,10 @@ export default {
             }
         },
         loadBottom() {
-            console.log('拉')
+            console.log('上拉')
         },
         allLoaded() {
-            console.log('拉')
+            console.log('全拉')
         },
         translateChange(translate) {
             // 触发下拉刷新条件
