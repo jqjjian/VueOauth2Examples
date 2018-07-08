@@ -156,8 +156,8 @@ export default {
     },
     methods: {
         async accountBilling() {
-            this.payParams.outTradeNo = this.info.comprehensiveId
-            this.payParams.totalAmount = this.info.totalFee
+            this.payParams.outTradeNo = this.info.comprehensiveCd
+            this.payParams.totalAmount = 0.01 // this.info.totalFee
             this.payParams.shopId = this.loginUser.shops[0].uuid
             console.log(this.loginUser)
             const qr = await accountApi.toAliPay.r(this.payParams)
