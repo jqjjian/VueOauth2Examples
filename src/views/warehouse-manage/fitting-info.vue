@@ -1,6 +1,6 @@
 <template>
     <div style="background: #fafafa;">
-        <mt-header fixed title="配件新增/修改">
+        <mt-header fixed :title="isEdit? '修改配件' : '新增配件'">
             <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
         </mt-header>
         <div style="padding-top:40px;padding-bottom:53px; backgroung: #000">
@@ -12,7 +12,7 @@
                         <small>{{popFormRules['materialName'].message}}</small>
                     </div>
                 </template> -->
-                <mt-field class="tcth-field-required" label="材料名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
+                <mt-field class="tcth-field-required" label="配件名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
                 <mt-field class="tcth-field-required" label="适用车型" placeholder="请选择适用车型" :value="fittingInfo.brand + ' ' + fittingInfo.carSeries" :readonly="true">
                     <mt-button size="small" @click="popupVisibleBrand=true">选择</mt-button>
                 </mt-field>
@@ -24,8 +24,8 @@
             </div>
             <div>
                 <mt-field label="仓位" placeholder="请输入仓位" v-model="fittingInfo.warehouse"></mt-field>
-                <mt-field class="tcth-field-required" label="采购价" placeholder="请输入采购价" type="number" v-model="fittingInfo.buyingPrice"></mt-field>
-                <mt-field class="tcth-field-required" label="数量" placeholder="请输入数量" type="number" v-model="fittingInfo.num"></mt-field>
+                <mt-field v-if="!isEdit" class="tcth-field-required" label="采购价" placeholder="请输入采购价" type="number" v-model="fittingInfo.buyingPrice"></mt-field>
+                <mt-field v-if="!isEdit" class="tcth-field-required" label="数量" placeholder="请输入数量" type="number" v-model="fittingInfo.num"></mt-field>
                 <mt-field label="运费" placeholder="请输入运费" type="number" v-model="fittingInfo.freight"></mt-field>
                 <mt-field class="tcth-field-required" v-for="(item,index) in fittingInfo.prices" :key="index" :label="item.priceName" placeholder="请编辑价格信息" :disabled="true" type="number" v-model="item.price">
                     <mt-button size="small" v-if="index == 0" @click="showprices()">编辑</mt-button>
@@ -33,7 +33,10 @@
                 </mt-field>
             </div>
         </div>
-        <div style="position: fixed;bottom: 0;background: rgba(0,0,0,0.5);width: 100%;padding: 10px;">
+        <div v-if="isEdit" style="position: fixed;bottom: 0;background: rgba(0,0,0,0.5);width: 100%;padding: 10px;">
+            <mt-button size="small" @click="edit()">保存</mt-button>
+        </div>
+        <div v-else style="position: fixed;bottom: 0;background: rgba(0,0,0,0.5);width: 100%;padding: 10px;">
             <mt-button size="small" @click="refresh()">重置</mt-button>
             <mt-button size="small" @click="save()">入库</mt-button>
             <mt-button size="small" @click="goonSave()">继续入库</mt-button>
@@ -77,8 +80,8 @@
     </div>
 </template>
 <script>
-import { MessageBox, Toast } from 'mint-ui';
-import { fittingApi, carApi } from '@/api';
+import { MessageBox, Toast } from 'mint-ui'
+import { fittingApi, carApi } from '@/api'
 // import * as R from 'ramda';
 
 export default {
@@ -158,8 +161,9 @@ export default {
             ],
             brandlist: [],
             stylelist: [],
-            newPrices: []
-        };
+            newPrices: [],
+            isEdit: false
+        }
     },
     components: {
         MessageBox,
@@ -167,44 +171,62 @@ export default {
     },
     created() {
         if (this.$route.params.fittingInfo) {
-            this.fittingInfo = this.$route.params.fittingInfo;
+            this.isEdit = true
+            this.fittingInfo = this.$route.params.fittingInfo
         }
-        this.getCarBrand();
+        this.getCarBrand()
     },
     methods: {
         getCarBrand() {
             carApi.requestBrand.r().then(res => {
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(initial => {
-                    let cells = res.data.filter(brand => brand.firstLetter === initial);
+                    let cells = res.data.filter(brand => brand.firstLetter === initial)
                     if (cells.length > 0) {
                         this.brandlist.push({
                             initial,
                             cells
-                        });
+                        })
                     }
-                });
-            });
+                })
+            })
         },
         requiredData() {
-            let result = true;
+            let result = true
             if (this.fittingInfo.materialName === '') {
-                result = false;
+                result = false
             }
             if (this.fittingInfo.carSeries === '') {
-                result = false;
+                result = false
             }
-            if (this.fittingInfo.buyingPrice === null || this.fittingInfo.buyingPrice === '') {
-                result = false;
+            if (!this.isEdit) {
+                if (this.fittingInfo.buyingPrice === null || this.fittingInfo.buyingPrice === '') {
+                    result = false
+                }
             }
-            if (this.fittingInfo.num === null || this.fittingInfo.num === '') {
-                result = false;
+            if (!this.isEdit) {
+                if (this.fittingInfo.num === null || this.fittingInfo.num === '') {
+                    result = false
+                }
             }
             this.fittingInfo.prices.forEach(element => {
                 if (element.price === null || element.price === '') {
-                    result = false;
+                    result = false
                 }
-            });
-            return result;
+            })
+            return result
+        },
+        edit() {
+            console.log('修改')
+            if (this.requiredData()) {
+                fittingApi.saveFitting.r(this.fittingInfo).then(response => {
+                    Toast({
+                        message: '修改成功',
+                        duration: 3000
+                    })
+                })
+            } else {
+                Toast('请输入红色字体必填项')
+            }
         },
         save() {
             if (this.requiredData()) {
@@ -212,10 +234,10 @@ export default {
                     Toast({
                         message: '入库成功',
                         duration: 3000
-                    });
-                });
+                    })
+                })
             } else {
-                Toast('请输入红色字体必填项');
+                Toast('请输入红色字体必填项')
             }
         },
         refresh() {
@@ -243,92 +265,92 @@ export default {
                 status: 1, // 状态 0:下架 1：上架
                 unit: '', // 单位
                 warehouse: '' // 仓位
-            };
+            }
         },
         goonSave() {
-            this.save();
-            this.refresh();
+            this.save()
+            this.refresh()
         },
         showStyle(brandinfo) {
-            this.stylelist = [];
+            this.stylelist = []
             let getData = {
                 brandId: brandinfo.id
-            };
-            this.fittingInfo.brand = brandinfo.brandName;
+            }
+            this.fittingInfo.brand = brandinfo.brandName
             carApi.requestStyle.r(getData).then(res => {
                 // this.stylelist = res.data;
-                let factoryList = [];
+                let factoryList = []
                 res.data.forEach(item => {
-                    let index = factoryList.indexOf(item.factoryName);
+                    let index = factoryList.indexOf(item.factoryName)
                     if (index < 0) {
-                        factoryList.push(item.factoryName);
+                        factoryList.push(item.factoryName)
                         this.stylelist.push({
                             initial: item.factoryName,
                             cells: [item]
-                        });
+                        })
                     } else {
-                        this.stylelist[index].cells.push(item);
+                        this.stylelist[index].cells.push(item)
                     }
-                });
-            });
-            this.popupVisibleStyle = true;
+                })
+            })
+            this.popupVisibleStyle = true
         },
         selectStyle(item) {
-            this.fittingInfo.carSeries = item.styleName;
-            this.popupVisibleStyle = false;
-            this.popupVisibleBrand = false;
+            this.fittingInfo.carSeries = item.styleName
+            this.popupVisibleStyle = false
+            this.popupVisibleBrand = false
         },
         showprices() {
-            this.newPrices = [];
+            this.newPrices = []
             this.fittingInfo.prices.forEach(element => {
-                this.newPrices.push(element);
-            });
-            this.popupVisiblePrices = true;
+                this.newPrices.push(element)
+            })
+            this.popupVisiblePrices = true
         },
         addNewPrice() {
-            let last = this.newPrices[this.newPrices.length - 1];
+            let last = this.newPrices[this.newPrices.length - 1]
 
             if (last.priceName !== '' && last.price > 0 && last.price !== null) {
                 let newprice = {
                     priceName: '',
                     price: null
-                };
-                this.newPrices.push(newprice);
+                }
+                this.newPrices.push(newprice)
             } else {
-                this.toastVisibleDesc = true;
+                this.toastVisibleDesc = true
                 setTimeout(() => {
-                    this.toastVisibleDesc = false;
-                }, 5000);
+                    this.toastVisibleDesc = false
+                }, 5000)
             }
         },
         // 删除指定价格
         removeNewPrice(index) {
-            this.newPrices.splice(index, 1);
+            this.newPrices.splice(index, 1)
         },
         deletePrice(index) {
-            this.fittingInfo.prices.splice(index, 1);
+            this.fittingInfo.prices.splice(index, 1)
         },
         savePrices() {
-            let last = this.newPrices[this.newPrices.length - 1];
+            let last = this.newPrices[this.newPrices.length - 1]
             if (last.priceName !== '' && last.price > 0 && last.price !== null) {
-                this.fittingInfo.prices = [];
+                this.fittingInfo.prices = []
                 this.newPrices.forEach(element => {
                     let price = {
                         price: element.price, // 售价
                         priceName: element.priceName // 价格名称
-                    };
-                    this.fittingInfo.prices.push(price);
-                });
-                this.popupVisiblePrices = false;
+                    }
+                    this.fittingInfo.prices.push(price)
+                })
+                this.popupVisiblePrices = false
             } else {
-                this.toastVisibleDesc = true;
+                this.toastVisibleDesc = true
                 setTimeout(() => {
-                    this.toastVisibleDesc = false;
-                }, 5000);
+                    this.toastVisibleDesc = false
+                }, 5000)
             }
         }
     }
-};
+}
 </script>
 <style>
 /* .container-box div + div{
