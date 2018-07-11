@@ -1,9 +1,9 @@
 // import NProgress from 'nprogress';
 import axios from 'axios'
 import qs from 'qs'
-import { catchError } from '@/util'
+import { catchError, setLoginSession, getLoginSession, removeLoginSession } from '@/util'
 import { Indicator } from 'mint-ui'
-// import authConfig from '../config/authConfig';
+import authConfig from '../config'
 const gd = window.gloable
 const instance = axios.create({
     baseURL: gd.baseUrl,
@@ -50,6 +50,21 @@ const checkStatus = response => {
 //     return checkStatus(response);
 // });
 // };
+const get = async (url, params) => {
+    try {
+        return await instance({
+            method: 'get',
+            url,
+            params, // 请求时带的参数
+            timeout: 10000,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+    } catch (err) {
+        console.error(err)
+    }
+}
 // 设置请求等待
 instance.interceptors.request.use(
     config => {
@@ -69,13 +84,45 @@ instance.interceptors.response.use(
         Indicator.close()
         return checkStatus(response)
     },
-    error => {
+    async error => {
         Indicator.close()
-        // console.log('error', error.config);
-        // console.log('error-url', error.config.url);
-        // const originalRequest = error.config;
+        console.log('error', error.config)
+        console.log('error-url', error.config.url)
         // var loginUrl = gd.authUrl + 'oauth/token';
         // // 先判断是否放行的url
+        if (error.response) {
+            const config = error.config
+            const refreshUrl = window.gloable.localUrl + '/oauth/refresh'
+            if (error.response.status === 401) {
+                // 判断是否已经刷新过token
+                if (!config.isRetryRequest) {
+                    if (!authConfig.allowUrls[config.url]) {
+                        let localToken = getLoginSession()
+                        let params = {
+                            refreshToken: localToken.refresh_token
+                        }
+                        try {
+                            const { data } = await get(refreshUrl, params)
+                            if (data.success) {
+                                // 保存access_token 到本地
+                                // util.session('token', data.data)
+                                // 修改flag
+                                config.isRetryRequest = true
+                                removeLoginSession()
+                                setLoginSession(data)
+                                // instance.defaults.headers.common.Authorization = 'Bearer ' + data.data.access_token
+                                // config.baseUrl = ''
+                                config.headers.Authorization = 'Bearer ' + data.access_token
+                                return instance(config)
+                            }
+                        } catch (err) {
+                            removeLoginSession()
+                            window.location.href = window.gloable.localUrl
+                        }
+                    }
+                }
+            }
+        }
         // if (!authConfig.allowUrls[originalRequest.url]) {
         //     console.log('不是放行url');
         //     let localToken = util.session('token');
@@ -137,21 +184,22 @@ export default {
             console.error(err)
         }
     },
-    async get(url, params) {
-        try {
-            return await instance({
-                method: 'get',
-                url,
-                params, // 请求时带的参数
-                timeout: 10000,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-        } catch (err) {
-            console.error(err)
-        }
-    },
+    get,
+    // async get(url, params) {
+    //     try {
+    //         return await instance({
+    //             method: 'get',
+    //             url,
+    //             params, // 请求时带的参数
+    //             timeout: 10000,
+    //             headers: {
+    //                 'X-Requested-With': 'XMLHttpRequest'
+    //             }
+    //         })
+    //     } catch (err) {
+    //         console.error(err)
+    //     }
+    // },
     async del(url, params) {
         try {
             return instance({

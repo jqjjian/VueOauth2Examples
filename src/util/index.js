@@ -1,5 +1,24 @@
 // import { MessageBox } from 'mint-ui';
 import Vue from 'vue'
+
+// 设置到sessionStorage
+export const setLoginSession = function(value) {
+    sessionStorage.setItem('carToken', JSON.stringify(value))
+}
+
+// 获取Item
+export const getLoginSession = function() {
+    const strToken = sessionStorage.getItem('carToken')
+    const localToken = JSON.parse(strToken)
+    return localToken
+}
+
+// 移除登录Token
+export const removeLoginSession = function() {
+    sessionStorage.removeItem('carToken')
+    console.log('移除后', sessionStorage.getItem('carToken'))
+}
+// sessionStorage
 export const session = function(key, value) {
     if (value === void 0) {
         const localToken = sessionStorage.getItem(key)

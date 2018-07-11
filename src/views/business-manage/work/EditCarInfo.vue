@@ -359,7 +359,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('work', ['WorkOrder', 'brandCodeData', 'CustomerInfo', 'CarInfo', 'isEdited']),
+        ...mapGetters('work', ['WorkOrder', 'brandCodeData', 'CustomerInfo', 'CarInfo', 'isEdited', 'comprehensiveList']),
         finish() {
             let b = true
             for (let v of Object.values(this.popFormRules)) {
@@ -371,7 +371,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE', 'SET_PROJECT_LIST']),
+        ...mapMutations('work', ['SET_WORK_ORDER', 'CHANGE_EDIT_STATE', 'SET_PROJECT_LIST', 'SET_WORK_LIST', 'SET_WORK_LIST_SIZE']),
         ...mapActions('work', ['getBrandCode']),
         // handleChange(v) {
         //     console.log(this.appearanceValue);
@@ -511,6 +511,20 @@ export default {
                 iconClass: 'icon icon-success',
                 duration: 2000
             })
+            const res = await comprehensiveApi.request.r({
+                fromDate: '',
+                endDate: '',
+                orderType: 0,
+                orderStyle: 0,
+                status: '1,2,3,4',
+                param: '',
+                page: 1,
+                pageSize: 1
+            })
+            console.log('创建后获取新的数据条数', res.meta)
+            console.log('创建后获取新的数据', res.data)
+            this.SET_WORK_LIST_SIZE(res.meta)
+            this.SET_WORK_LIST([...res.data, ...this.comprehensiveList])
             console.log(this.WorkOrder.comprehensiveId)
             this.$router.push({
                 name: 'work-services-item',

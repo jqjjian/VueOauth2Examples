@@ -9,6 +9,7 @@ export default {
         // '/reservation/index': false
         '/api/v1/sys/user/resources/token': true,
         '/oauth/token': true,
+        '/oauth/refresh': true,
         '/oauth/revoke_token': true,
         '/reservation/index': false
     }

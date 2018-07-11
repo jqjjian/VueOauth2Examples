@@ -104,7 +104,9 @@ export default {
                 // 得到类权限路径
                 const baseAuthUrl = window.gloable.authUrl
                 const payUrl = window.gloable.payUrl
+                const localUrl = window.gloable.localUrl
                 const perName = config.url
+                    .replace(localUrl, '')
                     .replace(config.baseURL, '')
                     .replace(baseAuthUrl, '')
                     .replace(payUrl, '')
