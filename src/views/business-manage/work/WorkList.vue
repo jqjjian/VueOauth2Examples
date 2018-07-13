@@ -10,7 +10,7 @@
             <mt-loadmore style="" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore" >
                 <template v-for="(v, i) in comprehensiveList">
                     <div class="page-part" :key="i">
-                        <mt-cell :title="`${v.seCustomerInfo.carNumber}(${v.seCarInfo.brandCode})`" :is-link="v.status !== 5" :label="`开单时间：${v.createDate}`" @click.native="handleEditComprehensive(v.comprehensiveId)">
+                        <mt-cell :title="`${v.seCustomerInfo.carNumber}(${v.seCarInfo.brandCode})`" :is-link="v.status !== 5" :label="`${v.seCustomerInfo.customerName} ${v.createDate}`" @click.native="handleEditComprehensive(v.comprehensiveId)">
                             <mt-button type="primary" size="small" v-if="v.status === 5" @click.native.stop="handleSubmitCar(v)">交车</mt-button>
                             <span v-else>{{sviceStateIndex[v.status - 1]}}</span>
                         </mt-cell>

@@ -6,8 +6,8 @@
 
 <script>
 import Vue from 'vue'
-import { session, catchError, buildMenu } from '@/util'
-import { intercept, oauthApi } from '@/api'
+import { catchError, buildMenu, getLoginSession } from '@/util'
+import { intercept } from '@/api'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import oauthconfig from '@/config'
 import userPath from '@/router/fullpath'
@@ -232,7 +232,7 @@ export default {
         },
         async signin(cb) {
             const vm = this
-            const localToken = session('token') // 获取认证
+            const localToken = getLoginSession() // 获取认证
             console.log('app_localToken', localToken)
             if (!localToken || !localToken.access_token) {
                 return vm.$router.push({
@@ -242,7 +242,6 @@ export default {
             }
             const { common } = intercept.instance.defaults.headers
             common['Authorization'] = 'Bearer ' + localToken.access_token
-            console.log(oauthApi)
             try {
                 const { data } = await this.getUserResources()
                 console.log('用户信息：', data)

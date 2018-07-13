@@ -16,6 +16,8 @@ const checkStatus = response => {
     if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
         return response.data
         // 如果不需要除了data之外的数据，可以直接 return response.data
+    } else {
+        return response
     }
 }
 // const post = async (url, data) => {
@@ -98,12 +100,16 @@ instance.interceptors.response.use(
                 if (!config.isRetryRequest) {
                     if (!authConfig.allowUrls[config.url]) {
                         let localToken = getLoginSession()
+                        console.log('localToken', localToken)
                         let params = {
                             refreshToken: localToken.refresh_token
                         }
                         try {
-                            const { data } = await get(refreshUrl, params)
-                            if (data.success) {
+                            const res = await get(refreshUrl, params)
+                            const { data } = res
+                            console.log('新token', res)
+                            if (res.success) {
+                                console.log('获取新的tokens', data)
                                 // 保存access_token 到本地
                                 // util.session('token', data.data)
                                 // 修改flag

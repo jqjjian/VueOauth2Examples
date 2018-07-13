@@ -1,8 +1,8 @@
 <template>
     <div class="wrap" @keyup.enter="login">
-        <mt-popup class="popup" popup-transition="popup-fade" position="top" :model="popupVisible">
+        <!-- <mt-popup class="popup" popup-transition="popup-fade" position="top" :model="popupVisible">
             <div>{{text}}</div>
-        </mt-popup>
+        </mt-popup> -->
         <mt-header fixed title="系统登录">
             <div slot="left">
                 <!-- <mt-button v-link="'/'" icon="back">返回</mt-button> -->
@@ -10,6 +10,7 @@
             </div>
         </mt-header>
         <div class="login-form">
+        <h3 style="margin-top: 30vh; text-align: center">执天使汽车服务运营系统</h3>
             <mt-field label="用户名" placeholder="请输入用户名" v-model="username"></mt-field>
             <mt-field label="密码" placeholder="请输入密码" type="password" v-model="password"></mt-field>
             <mt-button class="btn" size="large" type="primary" @click.native="login">登录</mt-button>
@@ -18,32 +19,32 @@
 </template>
 
 <script>
-import { oauthApi } from '@/api';
-import { session } from '@/util';
+import { oauthApi } from '@/api'
+import { setLoginSession } from '@/util'
 export default {
-    data () {
+    data() {
         return {
             popupVisible: false,
             text: '',
             username: '',
             password: ''
-        };
+        }
     },
     methods: {
-        handleClose () {
-            console.log('关闭');
+        handleClose() {
+            console.log('关闭')
         },
-        async login () {
-            const vm = this;
+        async login() {
+            const vm = this
             if (!vm.username) {
-                vm.popupVisible = true;
-                vm.text = '请输入用户名';
-                return false;
+                vm.popupVisible = true
+                vm.text = '请输入用户名'
+                return false
             }
             if (!vm.password) {
-                vm.popupVisible = true;
-                vm.text = '请输入密码';
-                return false;
+                vm.popupVisible = true
+                vm.text = '请输入密码'
+                return false
             }
             const loginParams = {
                 username: vm.username,
@@ -51,15 +52,15 @@ export default {
                 client_id: '75c666ad-752b-48be-b76a-aca75776eec3',
                 client_secret: 'aa6f3fd6-35ff-46da-a70b-2e73ab83ba1e',
                 grant_type: 'password'
-            };
+            }
             try {
-                const res = await oauthApi.getToken.r(loginParams);
-                if (res.access_token) {
-                    session('token', res);
-                    vm.$emit('login', vm.$router.currentRoute.query.from);
+                const res = await oauthApi.getToken.r(loginParams)
+                if (res && res.hasOwnProperty('access_token')) {
+                    setLoginSession(res)
+                    vm.$emit('login', vm.$router.currentRoute.query.from)
                 }
             } catch (err) {
-                console.error(err);
+                console.error(err)
             }
         }
     },
@@ -67,15 +68,15 @@ export default {
         popupVisible(val) {
             if (val) {
                 setTimeout(() => {
-                    this.popupVisible = false;
-                }, 2000);
+                    this.popupVisible = false
+                }, 2000)
             }
         }
     },
     created() {
-        sessionStorage.clear();
+        sessionStorage.clear()
     }
-};
+}
 </script>
 
 <style lang="postcss">
@@ -91,7 +92,7 @@ export default {
     height: 100%;
     .login-form {
         padding: 0 20px;
-        margin-top: 30vh;
+        // margin-top: 30vh;
         width: 100%;
         .mint-cell {
             margin: 0 -10px;

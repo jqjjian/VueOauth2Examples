@@ -1,8 +1,8 @@
-import { session, catchError } from '@/util'
+import { getLoginSession, catchError } from '@/util'
 import { oauthApi } from '@/api'
 export default {
     async getUserResources({ commit }, request) {
-        const localToken = session('token')
+        const localToken = getLoginSession()
         const param = {
             access_token: localToken.access_token
         }

@@ -2,19 +2,19 @@
 import Vue from 'vue'
 
 // 设置到sessionStorage
-export const setLoginSession = function(value) {
+export const setLoginSession = value => {
     sessionStorage.setItem('carToken', JSON.stringify(value))
 }
 
 // 获取Item
-export const getLoginSession = function() {
+export const getLoginSession = () => {
     const strToken = sessionStorage.getItem('carToken')
     const localToken = JSON.parse(strToken)
     return localToken
 }
 
 // 移除登录Token
-export const removeLoginSession = function() {
+export const removeLoginSession = () => {
     sessionStorage.removeItem('carToken')
     console.log('移除后', sessionStorage.getItem('carToken'))
 }

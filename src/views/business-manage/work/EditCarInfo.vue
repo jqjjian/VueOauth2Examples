@@ -86,7 +86,7 @@
                 </mt-radio>
             </div>
         </mt-popup>
-        <mt-datetime-picker @confirm="handleConfirm" ref="picker" type="date" v-model="datetime" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
+        <mt-datetime-picker :startDate="startDate" @confirm="handleConfirm" ref="picker" type="date" v-model="datetime" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
         </mt-datetime-picker>
     </div>
 </template>
@@ -98,6 +98,7 @@ import * as R from 'ramda'
 export default {
     data() {
         return {
+            startDate: new Date(),
             currentField: '', // 当前编辑内容
             remark: '', // 服务单备注
             PopupVisible: {
@@ -295,7 +296,7 @@ export default {
                     type: 'text',
                     readonly: false,
                     message: '发动机号不符合规则',
-                    rex: /^[0-9A-Za-z]{7,8}$/,
+                    rex: /^[0-9A-Za-z]$/,
                     state: ''
                 },
                 innage: {

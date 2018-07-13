@@ -6,7 +6,8 @@
             </router-link> -->
             <!-- <mt-button icon="more" slot="right"></mt-button> -->
         </mt-header>
-        <div class="container-box scroll">
+        <div class="scroll">
+            <mt-cell title="标题" label="描述信息" class="my-name"></mt-cell>
             <div class="page-part subBtn">
                 <mt-button size="large" type="default" @click="logout">退出登录</mt-button>
             </div>
@@ -42,7 +43,8 @@ export default {
                 sessionStorage.clear()
                 console.log(sessionStorage)
                 // window.location.href = window.gloable.loginUrl
-                window.location.href = process.env.NODE_ENV === 'development' ? 'http://localhost:8081/' : window.gloable.loginUrl
+                window.location.href =
+                    process.env.NODE_ENV === 'development' ? 'http://localhost:8081/' : window.gloable.localUrl
                 // this.$router.replace({ name: 'login' })
                 // }
             } catch (err) {
@@ -56,5 +58,18 @@ export default {
 }
 </script>
 
-<style>
+<style lang="postcss">
+.my-name {
+    background: #26a2ff;
+    color: #fff;
+    .mint-cell-wrapper {
+        background-size: 120% 0;
+    }
+    .mint-cell-label {
+        color: #ddd;
+    }
+}
+.subBtn {
+    margin-top: 30px;
+}
 </style>
