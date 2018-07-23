@@ -101,6 +101,7 @@
         </div>
         <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap service" :class="[popupServiceVisible ? 'active' : '']">
+                <mt-button size="small" type="default" style="float: right; margin-top: 10px; margin-right: 10px;" @click.native="popupServiceVisible = false">关闭</mt-button>
                 <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
                 </mt-radio>
                 <mt-field label="描述：" v-model="serviceValue.description" placeholder="请输入描述信息">
@@ -168,7 +169,7 @@
                                             }
                                         }]" :title=" i=== 2 ? `${j + 1}.￥${k.price}` : `${j + 1}.${k.materialName} `" :label=" i !== 2 ? `编码：${k.code}` : ''">
                                     <button v-if="i !== 2" class="my-input-button" @click.stop="handleChangeNumber(i, j, -1)">－</button>
-                                    <span v-if="i !== 2" >{{k.number}}</span>
+                                    <span v-if="i !== 2">{{k.number}}</span>
                                     <button v-if="i !== 2" class="my-input-button" @click.stop="handleChangeNumber(i, j, 1)">＋</button>
                                 </mt-cell-swipe>
                                 <mt-cell :key="'swipe' + j + i" v-else :title=" i=== 2 ? `${j + 1}.￥${k.price}` : `${j + 1}.${k.materialName} `" :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell>
