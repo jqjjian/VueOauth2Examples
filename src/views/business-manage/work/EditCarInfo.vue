@@ -295,8 +295,8 @@ export default {
                     required: true,
                     type: 'text',
                     readonly: false,
-                    message: '发动机号不符合规则',
-                    rex: /^[0-9A-Za-z]$/,
+                    message: '发动机号不能为空',
+                    // rex: /^[0-9A-Za-z]$/,
                     state: ''
                 },
                 innage: {
