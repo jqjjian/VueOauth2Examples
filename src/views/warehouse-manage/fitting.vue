@@ -76,7 +76,7 @@ export default {
         editFn(val) {
             this.$router.push({
                 name: 'fitting-info-item',
-                params: { fittingInfo: val }
+                params: { fittingInfo: val, classifyId: '1' }
             })
         },
         deleteFn(id) {
@@ -98,12 +98,13 @@ export default {
                     })
                 })
                 .catch(() => {
-                    alert('取消')
+                    // alert('取消')
                 })
         },
         addNewFitting() {
             this.$router.push({
-                name: 'fitting-info-item'
+                name: 'fitting-info-item',
+                params: { classifyId: '1' }
             })
         }
     }
