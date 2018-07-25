@@ -11,5 +11,9 @@ export default {
     SET_LIST_TOTAL(state, total) {
         // 预约单列表总数
         state.queryParams.total = total
+    },
+    // 设置当前条目
+    SET_CURRENT_ITEM(state, item) {
+        state.currentItem = item
     }
 }

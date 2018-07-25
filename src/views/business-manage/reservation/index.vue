@@ -9,14 +9,20 @@
         <div class="container-box" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
             <mt-loadmore style="" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore">
                 <template v-for="(v, i) in listData">
-                        <mt-cell :title="`标题`" is-link :label="`副标题`" @click.native="handleEdit" :key="i">
+                        <mt-cell  is-link @click.native="handleEdit(v.comprehensiveId)" :key="i" class="r-cell">
                             <!-- <mt-button type="primary" size="small" v-if="v.status === 5" @click.native.stop="handleSubmitCar(v)">交车</mt-button>
                             <span v-else>{{sviceStateIndex[v.status - 1]}}</span> -->
                             <slot name="value">
                                 <div class="my-item">
                                     <div class="info">
-                                        <div>
-                                            <span>{{item.specification}}</span>
+                                        <div class="carUser">
+                                            <span>{{v.carUserName}}</span>
+                                            <span>{{v.phone}}</span>
+                                            <span>{{v.carInfo}}</span>
+                                        </div>
+                                        <div class="date">
+                                            <span>{{`预约时间：${v.reservationTime}`}}</span>
+                                            <span>{{`服务方式：${serviceStyle[v.serviceStyle - 1]}`}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -71,7 +77,8 @@ export default {
                 param: '',
                 page: 0,
                 pageSize: 20
-            }
+            },
+            serviceStyle: ['到店', '上门']
         }
     },
     computed: {
@@ -165,12 +172,12 @@ export default {
         handleEdit(id) {
             // 查看预约单详细信息
             // this.CHANGE_EDIT_STATE(false)
-            // this.$router.push({
-            //     name: 'work-services-item',
-            //     query: {
-            //         id
-            //     }
-            // })
+            this.$router.push({
+                name: 'reservation-details-item',
+                query: {
+                    id
+                }
+            })
         },
         handleCreate() {
             // 创建预约单
@@ -238,6 +245,33 @@ export default {
         display: inline-block;
         vertical-align: middle;
         margin-right: 5px;
+    }
+}
+.r-cell {
+    .mint-cell-title{
+        flex: none;
+    }
+    .mint-cell-value.is-link {
+        margin-right: 0;
+    }
+}
+.my-item{
+    .info {
+        width: 85vw;
+        > div {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-content: flex-start;
+            &.carUser{
+            font-size: 16px;
+                color: #000;
+                margin-bottom: 10px;
+            }
+            &.date {
+                font-size: 12px;
+            }
+        }
     }
 }
 </style>
