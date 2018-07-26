@@ -9,7 +9,7 @@
         <div class="container-box" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
             <mt-loadmore style="" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore">
                 <template v-for="(v, i) in listData">
-                        <mt-cell  is-link @click.native="handleEdit(v.comprehensiveId)" :key="i" class="r-cell">
+                        <mt-cell  is-link @click.native="handleCheck(v, i)" :key="i" class="r-cell">
                             <!-- <mt-button type="primary" size="small" v-if="v.status === 5" @click.native.stop="handleSubmitCar(v)">交车</mt-button>
                             <span v-else>{{sviceStateIndex[v.status - 1]}}</span> -->
                             <slot name="value">
@@ -86,7 +86,7 @@ export default {
         // ...mapGetters(['Permission'])
     },
     methods: {
-        ...mapMutations('reservation', ['SET_LIST', 'SET_PAGENUM', 'SET_LIST_TOTAL']),
+        ...mapMutations('reservation', ['SET_LIST', 'SET_PAGENUM', 'SET_LIST_TOTAL', 'SET_CURRENT_ITEM']),
         async handleQuery() {
             // 查询服务单列表
             if (this.isLoading) return false
@@ -169,17 +169,21 @@ export default {
             this.moveTranslate = 1
             this.topStatus = status
         },
-        handleEdit(id) {
+        handleCheck(item, index) {
             // 查看预约单详细信息
-            // this.CHANGE_EDIT_STATE(false)
+            this.SET_CURRENT_ITEM(item)
             this.$router.push({
                 name: 'reservation-details-item',
                 query: {
-                    id
+                    id: item.reservationId,
+                    index
                 }
             })
         },
         handleCreate() {
+            this.$router.push({
+                name: 'reservation-details-item'
+            })
             // 创建预约单
             // this.CHANGE_EDIT_STATE(false)
             // this.SET_CUSTOMER_INFO(null)
@@ -248,6 +252,7 @@ export default {
     }
 }
 .r-cell {
+    border-bottom: 1px solid #eee;
     .mint-cell-title{
         flex: none;
     }
@@ -256,6 +261,7 @@ export default {
     }
 }
 .my-item{
+    padding: 10px 0;
     .info {
         width: 85vw;
         > div {

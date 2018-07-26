@@ -15,5 +15,13 @@ export default {
     // 设置当前条目
     SET_CURRENT_ITEM(state, item) {
         state.currentItem = item
+    },
+    // 新增预约单
+    ADD_ITEM(state, item) {
+        state.listData.push(item)
+    },
+    // 保存修改预约单
+    SAVE_LIST(state, payload) {
+        state.listData[payload.index] = payload.item
     }
 }
