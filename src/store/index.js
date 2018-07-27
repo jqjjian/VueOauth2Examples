@@ -9,7 +9,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     namespaced: true,
     state: {
-        Permission: {}
+        Permission: {},
+        fittingMenuIndex: '3'
     },
     actions,
     mutations,

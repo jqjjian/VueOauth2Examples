@@ -5,7 +5,7 @@
         </mt-header>
         <div style="padding-top:40px;padding-bottom:53px; backgroung: #000">
             <div style="margin-bottom: 10px;">
-                <mt-field label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
+                <mt-field class="tcth-field-required" label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
                 <!-- <template>
                     <mt-field :class="{'tcth-field-required': popFormRules['materialName'].required}" label="材料名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
                     <div v-if="popFormRules['materialName'].error" style="color: red;padding-left: 118px;">
@@ -119,6 +119,11 @@ export default {
                 warehouse: '' // 仓位
             },
             popFormRules: {
+                barCode: {
+                    required: true,
+                    message: '条形码不能为空',
+                    error: false
+                },
                 materialName: {
                     required: true,
                     message: '配件名不能为空',
@@ -231,10 +236,18 @@ export default {
         save() {
             if (this.requiredData()) {
                 fittingApi.saveFitting.r(this.fittingInfo).then(response => {
-                    Toast({
-                        message: '入库成功',
-                        duration: 3000
-                    })
+                    if (response.status === 200) {
+                        Toast({
+                            message: '入库成功',
+                            duration: 3000
+                        })
+                        this.$router.go(-1)
+                    } else {
+                        Toast({
+                            message: response.message,
+                            duration: 3000
+                        })
+                    }
                 })
             } else {
                 Toast('请输入红色字体必填项')

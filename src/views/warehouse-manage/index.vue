@@ -16,36 +16,55 @@
             <!-- tab-container -->
             <mt-tab-container v-model="selected" class="fitting-container">
                 <mt-tab-container-item id="1">
-                    <fitting v-if="selected == 1"></fitting>
+                    <fitting v-if="'1' == selected"></fitting>
                 </mt-tab-container-item>
                 <mt-tab-container-item id="2">
-                    <material v-if="selected == 2"></material>
+                    <material v-if="'2' == selected"></material>
                 </mt-tab-container-item>
                 <mt-tab-container-item id="3">
-                    <equipment v-if="selected == 3"></equipment>
+                    <equipment v-if="'3' == selected"></equipment>
                 </mt-tab-container-item>
             </mt-tab-container>
         </div>
     </div>
 </template>
 <script>
-import fitting from './fitting';
-import material from './material';
-import equipment from './equipment';
+import fitting from './fitting'
+import material from './material'
+import equipment from './equipment'
+import store from '@/store/index'
 
 export default {
     data() {
         return {
-            // value: '搜索',
             selected: '1'
-        };
+        }
     },
     components: {
         fitting,
         material,
         equipment
-    }
-};
+    },
+    watch: {
+        selected: function(a, b) {
+            if (this.selected !== this.fittingMenuIndex) {
+                store.commit('UPDATE_FITTINGMENUINDEX', a)
+            }
+        }
+    },
+    computed: {
+        fittingMenuIndex() {
+            console.log(store)
+            return store.state.fittingMenuIndex
+        }
+    },
+    created() {
+        if (this.fittingMenuIndex !== this.selected) {
+            this.selected = this.fittingMenuIndex
+        }
+    },
+    methods: {}
+}
 </script>
 <style>
 /* .container-box div + div{
@@ -58,7 +77,7 @@ export default {
     position: fixed;
     bottom: 0;
     color: #fff;
-    background: rgba(0,0,0,0.6);;
+    background: rgba(0, 0, 0, 0.6);
     padding: 5px;
     width: 100%;
     /* height: 40px; */
