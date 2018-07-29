@@ -73,7 +73,7 @@ export default {
                 // comprehensiveId: '',
                 fromDate: '',
                 endDate: '',
-                status: '0',
+                status: '1',
                 param: '',
                 page: 0,
                 pageSize: 20

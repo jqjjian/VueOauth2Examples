@@ -17,8 +17,9 @@
         </div>
         <div class="reservation-btn-box">
             <mt-button @click.native="handleEdit" size="small" v-if="!isEdit">修改</mt-button>
-            <mt-button @click.native="handleSave" v-else size="small">保存</mt-button>
-            <mt-button @click.native="handleCreat" type="primary" size="small" style="float: right;">开单</mt-button>
+            <mt-button @click.native="handleSave" type="primary" v-else size="small" style="float: right;">保存</mt-button>
+            <mt-button @click.native="handleCreat" v-if="!isEdit" type="primary" size="small" style="float: right;">开单</mt-button>
+            <mt-button @click.native="handleCancel " v-else size="small">取消</mt-button>
         </div>
     </div>
 </template>
@@ -52,10 +53,12 @@ export default {
         ...mapGetters('reservation', ['currentItem'])
     },
     methods: {
-        ...mapMutations('reservation', ['ADD_ITEM', 'SAVE_LIST']),
+        ...mapMutations('reservation', ['ADD_ITEM', 'SAVE_LIST', 'SET_CURRENT_ITEM']),
         loadMore() {},
+        // 保存修改预约单
         async handleSave() {
             const { data } = await reservationApi.setReservation.r(this.form)
+            this.SET_CURRENT_ITEM(data)
             if (this.isAdd) {
                 console.log(data)
                 this.isAdd = false
@@ -69,8 +72,29 @@ export default {
             this.form = R.clone(data)
             this.isEdit = false
         },
+        // 编辑
         handleEdit() {
             this.isEdit = true
+        },
+        // 开单
+        handleCreat() {
+
+        },
+        // 取消编辑
+        async handleCancel() {
+            if (this.isAdd) {
+                const result = await this.$message({
+                    title: '提示',
+                    message: '是否放弃已经输入的信息?',
+                    showCancelButton: true
+                })
+                if (result) {
+                    this.$router.push({ name: 'reservation-record-item' })
+                }
+            } else {
+                this.form = R.clone(this.currentItem)
+            }
+            this.isEdit = false
         }
     },
     async created() {
