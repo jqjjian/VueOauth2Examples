@@ -187,10 +187,21 @@ export default [
                             {
                                 path: '/mobile/business-manage/reservation-record',
                                 name: 'reservation-record',
-                                component: () => import('../components/default.vue'),
+                                component: () => import('../views/business-manage/reservation/index.vue'),
                                 meta: {
                                     name: '预约记录',
                                     icon: 'fa-yuyue'
+                                }
+                            },
+                            {
+                                path: '/mobile/business-manage/reservation-details',
+                                name: 'reservation-details',
+                                component: () => import('../views/business-manage/reservation/details.vue'),
+                                meta: {
+                                    name: '预约详情',
+                                    // icon: 'fa-yuyue'
+                                    allow: true,
+                                    hide: true
                                 }
                             },
                             {

@@ -6,11 +6,11 @@
         </mt-header>
         <div class="container-box">
             <mt-loadmore style="" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore">
-                <div class="selectCarTypeBox" style="z-index: 3000;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible && !pickerVisible">
+                <div class="selectCarTypeBox" style="z-index: 2007;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible && !pickerVisible">
                     <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
                     <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
                 </div>
-                <div class="page-part car-info">
+                <div class="page-part car-info" v-if="Permission.vis.hasOwnProperty('customerInformation')">
                     <mt-cell title="送修人信息" class="bold title"></mt-cell>
                     <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" readonly disableClear></mt-field>
                     <mt-field label="联系号码：" v-model="form.seCustomerInfo.tel" readonly disableClear></mt-field>
@@ -101,6 +101,7 @@
         </div>
         <mt-popup v-model="popupServiceVisible" popup-transition="popup-fade" class="mint-popup-select-list">
             <div class="select-list-wrap service" :class="[popupServiceVisible ? 'active' : '']">
+                <mt-button size="small" type="default" style="float: right; margin-top: 10px; margin-right: 10px;" @click.native="popupServiceVisible = false">关闭</mt-button>
                 <mt-radio title="选择服务项目：" v-model="serviceValue.title" :options="selectServiceindex" @change="handleSelectService">
                 </mt-radio>
                 <mt-field label="描述：" v-model="serviceValue.description" placeholder="请输入描述信息">
@@ -132,7 +133,7 @@
                         <div class="accessories-title bold" :key="v.name + i">{{v.name}}：</div>
                         <div v-if="v.children.length !== 0" :key="v.name + i + 'box'">
                             <template v-for="(k, j) in v.children">
-                                <mt-cell-swipe :key="'swipe' + j + i" v-if="selectServiceEdit" class="accessories-item" :right="[ // 配件左滑删除样式
+                                <mt-cell-swipe :key="'swipe' + j + i" v-if="selectServiceEdit" class="accessories-item" :right="i !== 2 ? [ // 配件左滑删除样式
                                         {
                                             content: '修改',
                                             style: {
@@ -157,11 +158,21 @@
                                                 deleteParts(j, k);
                                             }
                                         }
-                                    ]" :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} `" :label=" i !== 2 ? `编码：${k.code}` : ''">
-                                    <button class="my-input-button" @click.stop="handleChangeNumber(i, j, -1)">－</button>{{k.number}}
-                                    <button class="my-input-button" @click.stop="handleChangeNumber(i, j, 1)">＋</button>
+                                    ] : [{
+                                            content: '删除',
+                                            style: {
+                                                background: 'red',
+                                                color: '#fff'
+                                            },
+                                            handler() {
+                                                deleteParts(j, k);
+                                            }
+                                        }]" :title=" i=== 2 ? `${j + 1}.￥${k.price}` : `${j + 1}.${k.materialName} `" :label=" i !== 2 ? `编码：${k.code}` : ''">
+                                    <button v-if="i !== 2" class="my-input-button" @click.stop="handleChangeNumber(i, j, -1)">－</button>
+                                    <span v-if="i !== 2">{{k.number}}</span>
+                                    <button v-if="i !== 2" class="my-input-button" @click.stop="handleChangeNumber(i, j, 1)">＋</button>
                                 </mt-cell-swipe>
-                                <mt-cell :key="'swipe' + j + i" v-else :title=" i=== 2 ? `${j + 1}.${k.materialName}` : `${j + 1}.${k.materialName} `" :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell>
+                                <mt-cell :key="'swipe' + j + i" v-else :title=" i=== 2 ? `${j + 1}.￥${k.price}` : `${j + 1}.${k.materialName} `" :label=" i !== 2 ? `编码：${k.code}` : ''">{{ i !== 2 ? `数量：${k.number}` : ''}}</mt-cell>
                             </template>
                         </div>
                     </template>
@@ -667,7 +678,7 @@ export default {
                         classifyId: 0,
                         code: '',
                         materialId: '',
-                        materialName: `￥${result.value}`,
+                        materialName: '工时费', // `￥${result.value}`,
                         number: 1,
                         price: result.value,
                         serviceProjectId: that.currentService.serviceProjectId

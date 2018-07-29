@@ -7,7 +7,9 @@
             <!-- <mt-button icon="more" slot="right"></mt-button> -->
         </mt-header>
         <div class="scroll">
-            <mt-cell title="标题" label="描述信息" class="my-name"></mt-cell>
+            <mt-cell :title="loginUser.username" :label="`修理厂：${loginUser.shops[0].name}`" class="my-name">
+                <img slot="icon" src="" width="24" height="24" style="background: #ccc">
+            </mt-cell>
             <div class="page-part subBtn">
                 <mt-button size="large" type="default" @click="logout">退出登录</mt-button>
             </div>
@@ -17,12 +19,16 @@
 
 <script>
 import { oauthApi } from '@/api'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
             menus: [],
             title: ''
         }
+    },
+    computed: {
+        ...mapGetters('oauth', ['loginUser'])
     },
     methods: {
         async logout() {
