@@ -10,9 +10,10 @@
                     </div>
                 </template> -->
                 <mt-field class="tcth-field-required" label="配件名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
-                <mt-field class="tcth-field-required" label="适用车型" placeholder="请选择适用车型" :value="fittingInfo.brand + ' ' + fittingInfo.carSeries" :readonly="true">
+                <!-- <mt-field class="tcth-field-required" label="适用车型" placeholder="请选择适用车型" :value="fittingInfo.brand + ' ' + fittingInfo.carSeries" :readonly="true">
                     <mt-button size="small" @click="popupVisibleBrand=true">选择</mt-button>
-                </mt-field>
+                </mt-field> -->
+                <mt-field label="适用车型" placeholder="请输入适用车型" v-model="fittingInfo.fitCar"></mt-field>
                 <mt-field label="单位" placeholder="请输入单位" v-model="fittingInfo.unit"></mt-field>
                 <mt-field label="产地" placeholder="请输入产地" v-model="fittingInfo.originPlace"></mt-field>
             </div>
@@ -38,7 +39,7 @@
             <mt-button size="small" @click="save()">入库</mt-button>
             <mt-button size="small" @click="goonSave()">继续入库</mt-button>
         </div>
-        <mt-popup v-model="popupVisibleBrand" position="right" class="mint-popup-car" :modal="false" popup-transition="popup-fade">
+        <!-- <mt-popup v-model="popupVisibleBrand" position="right" class="mint-popup-car" :modal="false" popup-transition="popup-fade">
             <mt-header fixed title="选择适用车型">
                 <mt-button slot="left" @click="popupVisibleBrand = false">关闭</mt-button>
             </mt-header>
@@ -47,14 +48,14 @@
                     <mt-cell v-for="(item2,index2) in item.cells" :key="index2" :title="item2.brandName" is-link @click.native="showStyle(item2)"></mt-cell>
                 </mt-index-section>
             </mt-index-list>
-        </mt-popup>
-        <mt-popup v-model="popupVisibleStyle" position="right" class="mint-popup-style" :modal="true" popup-transition="popup-fade">
+        </mt-popup> -->
+        <!-- <mt-popup v-model="popupVisibleStyle" position="right" class="mint-popup-style" :modal="true" popup-transition="popup-fade">
             <mt-index-list class="style-indexlist" :show-indicator="false">
                 <mt-index-section v-for="(item,index) in stylelist" :key="index" :index="item.initial">
                     <mt-cell v-for="(item2,index2) in item.cells" :key="index2" :title="item2.styleName" @click.native="selectStyle(item2)"></mt-cell>
                 </mt-index-section>
             </mt-index-list>
-        </mt-popup>
+        </mt-popup> -->
         <mt-popup v-model="popupVisiblePrices" position="right" class="mint-popup-car" :modal="false" popup-transition="popup-fade" style="background:#fafafa">
             <div style="height: 100%;overflow-y: scroll;">
                 <mt-header title="新增价格" style="position: fixed;width: 100%;z-index: 100;top: 0;">
