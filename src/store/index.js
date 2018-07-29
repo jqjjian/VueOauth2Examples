@@ -10,7 +10,7 @@ export default new Vuex.Store({
     namespaced: true,
     state: {
         Permission: {},
-        fittingMenuIndex: '3'
+        fittingMenuIndex: '1'
     },
     actions,
     mutations,
