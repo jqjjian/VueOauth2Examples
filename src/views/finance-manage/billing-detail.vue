@@ -50,10 +50,10 @@
                 <span>剩余应付: {{extendedAmount}}元</span>
                 <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
             </div> -->
-            <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
+            <mt-button size="small" :disabled="extendedAmount != 0" @click.native="accountBilling()">确认付款</mt-button>
         </div>
-        <mt-popup v-model="visible" popup-transition="popup-fade" class="mint-popup-select-list">
-            <div v-html="html" style="width: 300px; height: 300px;"></div>
+        <mt-popup v-model="visible" popup-transition="popup-fade" class="mint-popup-select-list qr">
+            <img :src="qrSrc" alt="">
         </mt-popup>
     </div>
 </template>
@@ -72,6 +72,7 @@ export default {
             value: '',
             msg: 'msg',
             info: {},
+            qrSrc: '',
             payParams: {
                 // comprehensiveId: null,
                 // Cash: null, // 现金
@@ -124,7 +125,8 @@ export default {
             // } else {
             //     return false
             // }
-            return this.info.totalFee === 0 || this.payType === '' ? 1 : 0
+            // return this.info.totalFee === 0 || this.payType === '' ? 1 : 0
+            return this.payType === '' ? 1 : 0
         },
         payDate() {
             let myDate = new Date()
@@ -160,15 +162,16 @@ export default {
             this.payParams.totalAmount = 0.01 // this.info.totalFee
             this.payParams.shopId = this.loginUser.shops[0].uuid
             console.log(this.loginUser)
-            const qr = await accountApi.toAliPay.r(this.payParams)
-            // console.log(qr)
-            // this.html = qr
-            // this.visible = true
+            // const qr = await accountApi.toAliPay.r(this.payParams) // 阿野支付wap
+            const qr = await accountApi.getAliPayQrcode.r(this.payParams)
+            this.qrSrc = qr
+            console.log(qr)
+            this.visible = true
             // document.forms[0].submit();
-            const div = window.document.createElement('div')
-            div.innerHTML = qr
-            document.body.appendChild(div)
-            document.forms[0].submit()
+            // const div = window.document.createElement('div')
+            // div.innerHTML = qr
+            // document.body.appendChild(div)
+            // document.forms[0].submit()
             // accountApi.saveAccount.r(this.payType).then(response => {
             //     console.log(response)
             //     if (response.status === 200) {
@@ -198,6 +201,18 @@ export default {
 }
 .ycy-cell-blue {
     color: #26a1ff;
+}
+.mint-popup-select-list {
+    &.qr {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-content: center;
+        img {
+            width: 300px;
+            height: 300px;
+        }
+    }
 }
 .finance-buttom {
     background-color: rgba(0, 0, 0, 0.5);

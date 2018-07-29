@@ -62,7 +62,7 @@ export default {
                 endDate: '',
                 orderType: 0,
                 orderStyle: 0,
-                status: '1,2,3,4',
+                status: '1,2,3,4,5',
                 param: '',
                 page: 0,
                 pageSize: 20
