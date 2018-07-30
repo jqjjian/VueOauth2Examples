@@ -11,9 +11,13 @@
             </div>
             <label class="mint-radiolist-title">添加附件</label>
             <div style="margin-bottom: 29px;">
-                <mt-field v-for="(item,index) in extralist" :key="index" :label="'附件'+(index+1)" :placeholder="item" :disabled="true" type="number">
+                <!-- <mt-field v-for="(item,index) in extralist" :key="index" :label="'附件'+(index+1)" :placeholder="item" :disabled="true" type="number">
                     <mt-button size="small" v-if="index == 0" @click="showextra()">编辑</mt-button>
                     <mt-button size="small" v-else @click="deleteExtra(index)">删除</mt-button>
+                </mt-field> -->
+                <mt-field v-for="(item,index) in extralist" :key="index" :label="'附件'+(index+1)" v-model="extralist[index]" placeholder="请输入附件">
+                    <mt-button size="small" v-if="index == extralist.length - 1 && extralist[index]!=''" @click="addextra()">新增</mt-button>
+                    <mt-button size="small" v-if="index != 0" @click="deleteextra(index)">删除</mt-button>
                 </mt-field>
             </div>
             <div>
@@ -120,17 +124,18 @@ export default {
         MessageBox,
         Toast
     },
+    props: ['fittingInfo', 'isEdit'],
     created() {
-        console.log(this.$route.params)
+        console.log(this.fittingInfo)
         let info = this.$route.params.fittingInfo
         if (info) {
             this.isEdit = true
             this.fittingInfo.deviceType = this.fittingInfo.deviceType.toString()
-            // this.fittingInfo.
             this.extralist = info.extra !== '' ? JSON.parse(info.extra) : ['']
+        } else {
+            this.fittingInfo.prices[0].priceName = '租用价/次'
         }
     },
-    props: ['fittingInfo', 'isEdit'],
     methods: {
         requiredData() {
             let result = true
@@ -156,6 +161,7 @@ export default {
         },
         edit() {
             if (this.requiredData()) {
+                this.fittingInfo.extra = JSON.stringify(this.extralist)
                 fittingApi.saveFitting.r(this.fittingInfo).then(response => {
                     if (response.status === 200) {
                         Toast({
@@ -177,6 +183,7 @@ export default {
         save() {
             if (this.requiredData()) {
                 this.fittingInfo.classifyId = '3'
+                this.fittingInfo.extra = JSON.stringify(this.extralist)
                 fittingApi.saveFitting.r(this.fittingInfo).then(response => {
                     if (response.status === 200) {
                         Toast({
@@ -312,6 +319,13 @@ export default {
                     this.toastVisibleDesc = false
                 }, 5000)
             }
+        },
+        addextra() {
+            this.extralist.push('')
+        },
+        deleteextra(index) {
+            this.extralist.splice(index, 1)
+            console.log(this.extralist)
         }
     }
 }
