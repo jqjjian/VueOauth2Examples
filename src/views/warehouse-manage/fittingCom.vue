@@ -147,7 +147,7 @@ export default {
             this.isEdit = true
             this.fittingInfo = this.$route.params.fittingInfo
         }
-        this.getCarBrand()
+        // this.getCarBrand()
     },
     props: ['fittingInfo', 'isEdit'],
     methods: {
