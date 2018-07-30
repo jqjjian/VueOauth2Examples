@@ -144,9 +144,6 @@ export default {
             if (this.fittingInfo.materialName === '') {
                 result = false
             }
-            // if (this.fittingInfo.carSeries === '') {
-            //     result = false
-            // }
             if (!this.isEdit) {
                 if (this.fittingInfo.buyingPrice === null || this.fittingInfo.buyingPrice === '') {
                     result = false
@@ -186,6 +183,7 @@ export default {
         },
         save() {
             if (this.requiredData()) {
+                this.fittingInfo.classifyId = '2'
                 fittingApi.saveFitting.r(this.fittingInfo).then(response => {
                     if (response.status === 200) {
                         Toast({
@@ -211,7 +209,7 @@ export default {
                 carSeries: '', // 车型系列
                 classifyId: 1, // 所属配件分类
                 code: '', // 编码
-                deviceType: '1', // 设备类型
+                deviceType: '2', // 设备类型
                 extra: '', // 附件
                 fitCar: '', // 适用车型
                 freight: 0, // 运费

@@ -169,9 +169,6 @@ export default {
             if (this.fittingInfo.materialName === '') {
                 result = false
             }
-            if (this.fittingInfo.carSeries === '') {
-                result = false
-            }
             if (!this.isEdit) {
                 if (this.fittingInfo.buyingPrice === null || this.fittingInfo.buyingPrice === '') {
                     result = false
