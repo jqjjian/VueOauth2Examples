@@ -94,7 +94,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('work', ['CustomerInfo', 'isEdited', 'provinces']),
+        ...mapGetters('work', ['CustomerInfo', 'isEdited', 'provinces', 'WorkOrder']),
         finish() {
             let b = true
             for (let v of Object.values(this.popFormRules)) {
@@ -153,6 +153,9 @@ export default {
             }
             this.seCustomerInfo.carNumber = this.province + this.seCustomerInfo.carNumber
             this.SET_CUSTOMER_INFO(this.seCustomerInfo)
+            if (this.WorkOrder === null || this.WorkOrder.seCarInfo === null) {
+                this.CHANGE_EDIT_STATE(false)
+            }
             this.$router.push({ name: 'EditCarInfo-item' })
             // this.CHANGE_EDIT_STATE(true);
             // const tag = false;

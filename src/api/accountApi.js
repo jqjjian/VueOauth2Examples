@@ -21,6 +21,7 @@ const toAliPay = {
     p: [`post,${aliWapUrl}`],
     r: params => config.postJson(baseUrl + aliWapUrl, params)
 }
+
 export default {
     saveAccount,
     getAliPayQrcode,

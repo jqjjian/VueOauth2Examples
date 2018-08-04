@@ -9,7 +9,7 @@
         <div class="container-box reservation-details">
             <mt-field label="送修人" :disabled="!isEdit" :placeholder="isEdit ? '请输入用户名' : ''" v-model="form.carUserName"></mt-field>
             <mt-field label="手机号" :disabled="!isEdit" :placeholder="isEdit ? '请输入手机号' : ''" type="tel" v-model="form.phone"></mt-field>
-            <mt-field label="车牌号码" :disabled="!isEdit" :placeholder="isEdit ? '请输入邮箱' : ''" type="text" v-model="form.carInfo"></mt-field>
+            <mt-field label="车牌号码" :disabled="!isEdit" :placeholder="isEdit ? '请输入车牌号码' : ''" type="text" v-model="form.carInfo"></mt-field>
             <mt-field label="住址" :disabled="!isEdit" :placeholder="isEdit ? '请输入住址' : ''" type="text" v-model="form.address"></mt-field>
             <mt-field label="预约时间" :disabled="!isEdit" :placeholder="isEdit ? '请输入预约时间' : ''" type="text" v-model="form.reservationTime"></mt-field>
             <mt-field label="服务方式" disabled :placeholder="isEdit ? '请输入服务方式' : ''" type="text" v-model="serviceStyle[form.serviceStyle - 1]"></mt-field>
@@ -50,10 +50,12 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('reservation', ['currentItem'])
+        ...mapGetters('reservation', ['currentItem']),
+        ...mapGetters('work', ['CustomerInfo', 'isEdited', 'provinces'])
     },
     methods: {
         ...mapMutations('reservation', ['ADD_ITEM', 'SAVE_LIST', 'SET_CURRENT_ITEM']),
+        ...mapMutations('work', ['SET_CUSTOMER_INFO', 'CHANGE_EDIT_STATE', 'SET_WORK_ORDER']),
         loadMore() {},
         // 保存修改预约单
         async handleSave() {
@@ -78,7 +80,23 @@ export default {
         },
         // 开单
         handleCreat() {
-
+            this.SET_WORK_ORDER({
+                comprehensiveId: '',
+                orderType: 1,
+                remark: '',
+                seCustomerInfo: null,
+                seCarInfo: null
+            })
+            this.SET_CUSTOMER_INFO({
+                customerName: this.form.carUserName,
+                tel: this.form.phone,
+                carNumber: this.form.carInfo,
+                customerAddress: this.form.address
+            })
+            this.CHANGE_EDIT_STATE(true)
+            this.$router.push({
+                name: 'EditCustomerInfo-item'
+            })
         },
         // 取消编辑
         async handleCancel() {

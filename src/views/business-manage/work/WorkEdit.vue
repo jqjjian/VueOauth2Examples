@@ -6,10 +6,6 @@
         </mt-header>
         <div class="container-box">
             <mt-loadmore style="" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore">
-                <div class="selectCarTypeBox" style="z-index: 2007;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible && !pickerVisible">
-                    <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
-                    <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
-                </div>
                 <div class="page-part car-info" v-if="Permission.vis.hasOwnProperty('customerInformation')">
                     <mt-cell title="送修人信息" class="bold title"></mt-cell>
                     <mt-field label="送修人：" v-model="form.seCustomerInfo.customerName" readonly disableClear></mt-field>
@@ -177,6 +173,10 @@
                         </div>
                     </template>
                 </div>
+            </div>
+            <div class="selectCarTypeBox" style="z-index: 2007;" v-if="selectServicePopupVisible && selectServiceEdit && !selectServicePopupListVisible && !pickerVisible">
+                <!-- <mt-button type="default" size="normal" @click="hidePopup">取消</mt-button> -->
+                <mt-button type="primary" size="normal" @click="saveServiceParts">保存</mt-button>
             </div>
         </mt-popup>
         <mt-popup :modal="false" v-model="selectServicePopupListVisible" position="right" class="mint-popup-select-car" popup-transition="popup-fade">
