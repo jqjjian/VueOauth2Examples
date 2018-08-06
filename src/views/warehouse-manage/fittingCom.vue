@@ -2,7 +2,7 @@
     <div style="background: #fafafa;">
         <div style="padding-top:40px;padding-bottom:53px; backgroung: #000">
             <div style="margin-bottom: 10px;">
-                <mt-field label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
+                <mt-field class="tcth-field-required" label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
                 <!-- <template>
                     <mt-field :class="{'tcth-field-required': popFormRules['materialName'].required}" label="材料名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
                     <div v-if="popFormRules['materialName'].error" style="color: red;padding-left: 118px;">
@@ -142,11 +142,11 @@ export default {
         Toast
     },
     created() {
-        console.log(this.$route.params)
-        if (this.$route.params.fittingInfo) {
-            this.isEdit = true
-            this.fittingInfo = this.$route.params.fittingInfo
-        }
+        // console.log(this.$route.params)
+        // if (this.$route.params.fittingInfo) {
+        //     this.isEdit = true
+        //     this.fittingInfo = this.$route.params.fittingInfo
+        // }
         // this.getCarBrand()
     },
     props: ['fittingInfo', 'isEdit'],
@@ -166,6 +166,9 @@ export default {
         },
         requiredData() {
             let result = true
+            if (this.fittingInfo.barCode === '') {
+                result = false
+            }
             if (this.fittingInfo.materialName === '') {
                 result = false
             }
@@ -203,17 +206,24 @@ export default {
         save() {
             if (this.requiredData()) {
                 fittingApi.saveFitting.r(this.fittingInfo).then(response => {
-                    Toast({
-                        message: '入库成功',
-                        duration: 3000
-                    })
+                    if (response.status === 200) {
+                        Toast({
+                            message: '入库成功',
+                            duration: 3000
+                        })
+                    } else {
+                        Toast({
+                            message: response.message,
+                            duration: 3000
+                        })
+                    }
                 })
             } else {
                 Toast('请输入红色字体必填项')
             }
         },
         refresh() {
-            this.fittingInfo = {
+            let info = {
                 barCode: '', // 条形码
                 brand: '', // 品牌
                 buyingPrice: null, // 采购价
@@ -223,7 +233,7 @@ export default {
                 deviceType: '1', // 设备类型
                 extra: '', // 附件
                 fitCar: '', // 适用车型
-                freight: 0, // 运费
+                freight: null, // 运费
                 materialName: '', // 物料名称
                 num: null, // 数量
                 originPlace: '', // 产地
@@ -238,10 +248,26 @@ export default {
                 unit: '', // 单位
                 warehouse: '' // 仓位
             }
+            this.$emit('refresh', info)
         },
-        goonSave() {
-            this.save()
-            this.refresh()
+        async goonSave() {
+            if (this.requiredData()) {
+                let response = await fittingApi.saveFitting.r(this.fittingInfo)
+                if (response.status === 200) {
+                    Toast({
+                        message: '入库成功',
+                        duration: 3000
+                    })
+                    this.refresh()
+                } else {
+                    Toast({
+                        message: response.message,
+                        duration: 3000
+                    })
+                }
+            } else {
+                Toast('请输入红色字体必填项')
+            }
         },
         showStyle(brandinfo) {
             this.stylelist = []

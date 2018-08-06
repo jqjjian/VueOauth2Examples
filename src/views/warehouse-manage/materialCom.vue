@@ -2,12 +2,12 @@
     <div style="background: #fafafa;">
         <div style="padding-top:40px;padding-bottom:53px; backgroung: #000">
             <div style="margin-bottom: 10px;">
-                <mt-field label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
+                <mt-field class="tcth-field-required" label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
                 <mt-field class="tcth-field-required" label="材料名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
 
                 <mt-field label="规格" placeholder="请输入规格" v-model="fittingInfo.specification"></mt-field>
                 <mt-field label="适用车型" placeholder="请输入适用车型" v-model="fittingInfo.fitCar"></mt-field>
-                <mt-field class="tcth-field-required" label="单位" placeholder="请输入单位" v-model="fittingInfo.unit"></mt-field>
+                <mt-field label="单位" placeholder="请输入单位" v-model="fittingInfo.unit"></mt-field>
                 <mt-field label="产地" placeholder="请输入产地" v-model="fittingInfo.originPlace"></mt-field>
             </div>
             <div>
@@ -141,6 +141,9 @@ export default {
         },
         requiredData() {
             let result = true
+            if (this.fittingInfo.barCode === '') {
+                result = false
+            }
             if (this.fittingInfo.materialName === '') {
                 result = false
             }
@@ -202,17 +205,17 @@ export default {
             }
         },
         refresh() {
-            this.fittingInfo = {
+            let info = {
                 barCode: '', // 条形码
                 brand: '', // 品牌
                 buyingPrice: null, // 采购价
                 carSeries: '', // 车型系列
                 classifyId: 1, // 所属配件分类
                 code: '', // 编码
-                deviceType: '2', // 设备类型
+                deviceType: '1', // 设备类型
                 extra: '', // 附件
                 fitCar: '', // 适用车型
-                freight: 0, // 运费
+                freight: null, // 运费
                 materialName: '', // 物料名称
                 num: null, // 数量
                 originPlace: '', // 产地
@@ -222,15 +225,33 @@ export default {
                         priceName: '售价' // 价格名称
                     }
                 ],
-                specification: '', // 规格
+                specification: '通用', // 规格
                 status: 1, // 状态 0:下架 1：上架
                 unit: '', // 单位
                 warehouse: '' // 仓位
             }
+            this.$emit('refresh', info)
         },
         goonSave() {
-            this.save()
-            this.refresh()
+            if (this.requiredData()) {
+                this.fittingInfo.classifyId = '2'
+                fittingApi.saveFitting.r(this.fittingInfo).then(response => {
+                    if (response.status === 200) {
+                        Toast({
+                            message: '入库成功',
+                            duration: 3000
+                        })
+                        this.refresh()
+                    } else {
+                        Toast({
+                            message: response.message,
+                            duration: 3000
+                        })
+                    }
+                })
+            } else {
+                Toast('请输入红色字体必填项')
+            }
         },
         showStyle(brandinfo) {
             this.stylelist = []
