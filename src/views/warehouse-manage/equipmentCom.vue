@@ -2,7 +2,7 @@
     <div style="background: #fafafa;">
         <div style="padding-top:40px;padding-bottom:53px; backgroung: #000">
             <div style="margin-bottom: 10px;">
-                <mt-field label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
+                <mt-field class="tcth-field-required" label="条形码" placeholder="扫一扫" v-model="fittingInfo.barCode"></mt-field>
                 <mt-field class="tcth-field-required" label="设备名称" placeholder="请输入材料名称" v-model="fittingInfo.materialName"></mt-field>
                 <mt-field label="单位" placeholder="请输入单位" v-model="fittingInfo.unit"></mt-field>
             </div>
@@ -60,7 +60,7 @@
             </div>
         </mt-popup>
         <!-- 附件管理 -->
-        <mt-popup v-model="popupVisibleExtra" position="right" class="mint-popup-car" :modal="false" popup-transition="popup-fade" style="background:#fafafa">
+        <!-- <mt-popup v-model="popupVisibleExtra" position="right" class="mint-popup-car" :modal="false" popup-transition="popup-fade" style="background:#fafafa">
             <div style="height: 100%;overflow-y: scroll;">
                 <mt-header title="新增附件" style="position: fixed;width: 100%;z-index: 100;top: 0;">
                     <mt-button slot="left" @click="popupVisibleExtra = false">取消</mt-button>
@@ -77,7 +77,7 @@
                     <mt-button type="danger" style="width:80%" @click="saveExtra()">保存</mt-button>
                 </div>
             </div>
-        </mt-popup>
+        </mt-popup> -->
     </div>
 </template>
 <script>
@@ -139,6 +139,9 @@ export default {
     methods: {
         requiredData() {
             let result = true
+            if (this.fittingInfo.barCode === '') {
+                result = false
+            }
             if (this.fittingInfo.materialName === '') {
                 result = false
             }
@@ -202,7 +205,7 @@ export default {
             }
         },
         refresh() {
-            this.fittingInfo = {
+            let info = {
                 barCode: '', // 条形码
                 brand: '', // 品牌
                 buyingPrice: null, // 采购价
@@ -212,14 +215,14 @@ export default {
                 deviceType: '1', // 设备类型
                 extra: '', // 附件
                 fitCar: '', // 适用车型
-                freight: 0, // 运费
+                freight: null, // 运费
                 materialName: '', // 物料名称
                 num: null, // 数量
                 originPlace: '', // 产地
                 prices: [
                     {
                         price: null, // 售价
-                        priceName: '租用价/次' // 价格名称
+                        priceName: '售价' // 价格名称
                     }
                 ],
                 specification: '通用', // 规格
@@ -227,10 +230,29 @@ export default {
                 unit: '', // 单位
                 warehouse: '' // 仓位
             }
+            this.$emit('refresh', info)
         },
         goonSave() {
-            this.save()
-            this.refresh()
+            if (this.requiredData()) {
+                this.fittingInfo.classifyId = '3'
+                this.fittingInfo.extra = JSON.stringify(this.extralist)
+                fittingApi.saveFitting.r(this.fittingInfo).then(response => {
+                    if (response.status === 200) {
+                        Toast({
+                            message: '入库成功',
+                            duration: 3000
+                        })
+                        this.refresh()
+                    } else {
+                        Toast({
+                            message: '修改失败',
+                            duration: 3000
+                        })
+                    }
+                })
+            } else {
+                Toast('请输入红色字体必填项')
+            }
         },
         showprices() {
             this.newPrices = []
@@ -244,7 +266,7 @@ export default {
             this.extralist.forEach(element => {
                 this.newExtra.push(element)
             })
-            this.popupVisibleExtra = true
+            // this.popupVisibleExtra = true
         },
         addNewPrice() {
             let last = this.newPrices[this.newPrices.length - 1]
@@ -312,7 +334,7 @@ export default {
             if (last !== '' && last !== null) {
                 this.extralist = this.newExtra
                 this.fittingInfo.extra = JSON.stringify(this.newExtra)
-                this.popupVisibleExtra = false
+                // this.popupVisibleExtra = false
             } else {
                 this.toastVisibleDesc = true
                 setTimeout(() => {

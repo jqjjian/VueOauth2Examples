@@ -3,9 +3,9 @@
         <mt-header fixed :title="(isEdit? '修改' : '新增') + classifyName(classifyId)">
             <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
         </mt-header>
-        <fitting v-if="classifyId == 1" :fittingInfo="info" :isEdit="isEdit"></fitting>
-        <material v-if="classifyId == 2" :fittingInfo="info" :isEdit="isEdit"></material>
-        <equipment v-if="classifyId == 3" :fittingInfo="info" :isEdit="isEdit"></equipment>
+        <fitting v-if="classifyId == 1" :fittingInfo="info" :isEdit="isEdit" @refresh="refresh"></fitting>
+        <material v-if="classifyId == 2" :fittingInfo="info" :isEdit="isEdit" @refresh="refresh"></material>
+        <equipment v-if="classifyId == 3" :fittingInfo="info" :isEdit="isEdit" @refresh="refresh"></equipment>
     </div>
 </template>
 <script>
@@ -37,7 +37,7 @@ export default {
                         priceName: '售价' // 价格名称
                     }
                 ],
-                specification: '', // 规格
+                specification: '通用', // 规格
                 status: 1, // 状态 0:下架 1：上架
                 unit: '', // 单位
                 warehouse: '' // 仓位
@@ -66,6 +66,33 @@ export default {
                 '3': '设备'
             }
             return name[id]
+        },
+        refresh() {
+            this.info = {
+                barCode: '', // 条形码
+                brand: '', // 品牌
+                buyingPrice: null, // 采购价
+                carSeries: '', // 车型系列
+                classifyId: 1, // 所属配件分类
+                code: '', // 编码
+                deviceType: '1', // 设备类型
+                extra: '', // 附件
+                fitCar: '', // 适用车型
+                freight: null, // 运费
+                materialName: '', // 物料名称
+                num: null, // 数量
+                originPlace: '', // 产地
+                prices: [
+                    {
+                        price: null, // 售价
+                        priceName: '售价' // 价格名称
+                    }
+                ],
+                specification: '通用', // 规格
+                status: 1, // 状态 0:下架 1：上架
+                unit: '', // 单位
+                warehouse: '' // 仓位
+            }
         }
     }
 }
