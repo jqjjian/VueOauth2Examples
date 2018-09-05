@@ -1,7 +1,7 @@
 <template>
     <div>
         <mt-header fixed title="订单详情">
-            <mt-button icon="back" slot="left" @click.native="$router.back(-1)">返回</mt-button>
+            <mt-button icon="back" slot="left" @click.native="back">返回</mt-button>
         </mt-header>
         <div class="container-box scroll" style="padding-bottom: 80px;">
             <div class="ycy-cell-red">
@@ -50,7 +50,8 @@
                 <span>剩余应付: {{extendedAmount}}元</span>
                 <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
             </div> -->
-            <mt-button size="small" :disabled="extendedAmount != 0" @click.native="accountBilling()">确认付款</mt-button>
+            <mt-button v-if="info.status !== 5" size="small" :disabled="extendedAmount != 0" @click.native="accountBilling()">确认付款</mt-button>
+            <mt-button  v-else size="small" :disabled="extendedAmount != 0" >打 印</mt-button>
         </div>
         <mt-popup v-model="visible" popup-transition="popup-fade" class="mint-popup-select-list qr">
             <img :src="qrSrc" alt="">
@@ -107,6 +108,10 @@ export default {
     },
     computed: {
         ...mapGetters('oauth', ['loginUser']),
+        payStatus() {
+            console.log(this.info.status)
+            return this.info.status === 5
+        },
         extendedAmount() {
             // let total = 0
             // let tt =
@@ -158,15 +163,28 @@ export default {
     },
     methods: {
         async accountBilling() {
-            this.payParams.outTradeNo = this.info.comprehensiveCd
-            this.payParams.totalAmount = 0.01 // this.info.totalFee
-            this.payParams.shopId = this.loginUser.shops[0].uuid
-            console.log(this.loginUser)
-            // const qr = await accountApi.toAliPay.r(this.payParams) // 阿野支付wap
-            const qr = await accountApi.getAliPayQrcode.r(this.payParams)
-            this.qrSrc = qr
-            console.log(qr)
+            let time = null
+            this.payParams.outTradeNo = this.info.comprehensiveCd // 工单ID
+            this.payParams.totalAmount = 0.01 // this.info.totalFee //金额
+            this.payParams.shopId = this.loginUser.shops[0].uuid // 修理厂ID
+            let params = ''
+            for (let [k, v] of Object.entries(this.payParams)) {
+                params = `${params}${k}=${v}&`
+            }
+            this.qrSrc = `${window.gloable.payUrl}${accountApi.aliPayUrl}?${params}`
             this.visible = true
+            time = setInterval(async () => {
+                const res = await accountApi.getPayInfo.r({
+                    outTradeNo: this.payParams.outTradeNo,
+                    shopId: this.payParams.shopId
+                })
+                console.log(res)
+                if (true) {
+                    this.visible = false
+                    clearInterval(time)
+                    this.info.status = 5
+                }
+            }, 3000)
             // document.forms[0].submit();
             // const div = window.document.createElement('div')
             // div.innerHTML = qr
@@ -188,6 +206,22 @@ export default {
             //         })
             //     }
             // })
+        },
+        back() {
+            if (this.payStatus) {
+                this.$router.push({
+                    name: 'finance-manage-item',
+                    query: {
+                        payStatus: '1'
+                    }
+                })
+            } else {
+                this.$router.push({
+                    name: 'finance-manage-item',
+                    query: {
+                    }
+                })
+            }
         }
     }
 }
@@ -207,7 +241,7 @@ export default {
         display: flex;
         flex-flow: row nowrap;
         justify-content: center;
-        align-content: center;
+        align-items: center;
         img {
             width: 300px;
             height: 300px;

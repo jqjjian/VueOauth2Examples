@@ -3,6 +3,7 @@ const baseUrl = window.gloable.payUrl
 let accountUrl = '/account' // 获取待估价工单
 const aliPayUrl = '/pay/alipay/qrcode'
 const aliWapUrl = '/pay/alipay/wap'
+const getInfoUrl = '/pay/info'
 const saveAccount = {
     p: ['post,/account'],
     r: params => {
@@ -11,11 +12,14 @@ const saveAccount = {
 }
 
 // 生成支付宝二维码
-const getAliPayQrcode = {
-    p: [`get,${aliPayUrl}`],
-    r: params => config.get(baseUrl + aliPayUrl, params)
+// const getAliPayQrcode = {
+//     p: [`get,${aliPayUrl}`],
+//     r: params => config.get(baseUrl + aliPayUrl, params)
+// }
+const getPayInfo = {
+    p: [`get,${getInfoUrl}`],
+    r: params => config.get(baseUrl + getInfoUrl, params)
 }
-
 // wap 支付宝接口
 const toAliPay = {
     p: [`post,${aliWapUrl}`],
@@ -24,6 +28,7 @@ const toAliPay = {
 
 export default {
     saveAccount,
-    getAliPayQrcode,
-    toAliPay
+    aliPayUrl,
+    toAliPay,
+    getPayInfo
 }

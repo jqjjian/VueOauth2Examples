@@ -25,7 +25,8 @@ export default {
             this.CHANGE_EDIT_STATE(false);
             this.$router.push({
                 name: 'billing-detail-item',
-                params: { info }
+                params: { info },
+                query: {}
             });
         },
         handleCreate() {

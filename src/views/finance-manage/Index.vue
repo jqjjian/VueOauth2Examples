@@ -37,6 +37,11 @@ export default {
         return {
             selected: '1'
         };
+    },
+    created() {
+        if (this.$route.query.payStatus === '1') {
+            this.selected = '2'
+        }
     }
 };
 </script>
