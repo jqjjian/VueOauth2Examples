@@ -102,6 +102,11 @@ export default {
                     label: '微信',
                     value: 'wxpay',
                     icon: 'fa-wxpay'
+                },
+                {
+                    label: '现金支付',
+                    value: 'cash',
+                    icon: ''
                 }
             ]
         }
