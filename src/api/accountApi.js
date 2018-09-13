@@ -2,6 +2,7 @@ import config from './config'
 const baseUrl = window.gloable.payUrl
 let accountUrl = '/account' // 获取待估价工单
 const aliPayUrl = '/pay/alipay/qrcode'
+const wechatQrUrl = '/pay/wechat/qrcode'
 const aliWapUrl = '/pay/alipay/wap'
 const getInfoUrl = '/pay/info'
 const saveAccount = {
@@ -25,10 +26,15 @@ const toAliPay = {
     p: [`post,${aliWapUrl}`],
     r: params => config.postJson(baseUrl + aliWapUrl, params)
 }
-
+const getWechatQr = {
+    p: [`get,${wechatQrUrl}`],
+    r: params => config.get(baseUrl + wechatQrUrl, params)
+}
 export default {
     saveAccount,
     aliPayUrl,
+    wechatQrUrl,
     toAliPay,
-    getPayInfo
+    getPayInfo,
+    getWechatQr
 }

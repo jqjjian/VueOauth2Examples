@@ -51,7 +51,7 @@
                 <mt-button size="small" :disabled="extendedAmount!=0" @click.native="accountBilling()">确认付款</mt-button>
             </div> -->
             <mt-button v-if="info.status !== 5" size="small" :disabled="extendedAmount != 0" @click.native="accountBilling()">确认付款</mt-button>
-            <mt-button  v-else size="small" :disabled="extendedAmount != 0" >打 印</mt-button>
+            <mt-button v-else size="small">打 印</mt-button>
         </div>
         <mt-popup v-model="visible" popup-transition="popup-fade" class="mint-popup-select-list qr">
             <img :src="qrSrc" alt="">
@@ -136,7 +136,7 @@ export default {
             //     return false
             // }
             // return this.info.totalFee === 0 || this.payType === '' ? 1 : 0
-            return this.payType === '' ? 1 : 0
+            return this.payType === ''
         },
         payDate() {
             let myDate = new Date()
@@ -176,20 +176,32 @@ export default {
             for (let [k, v] of Object.entries(this.payParams)) {
                 params = `${params}${k}=${v}&`
             }
-            this.qrSrc = `${window.gloable.payUrl}${accountApi.aliPayUrl}?${params}`
             this.visible = true
-            time = setInterval(async () => {
-                const res = await accountApi.getPayInfo.r({
-                    outTradeNo: this.payParams.outTradeNo,
-                    shopId: this.payParams.shopId
-                })
-                console.log(res)
-                if (true) {
-                    this.visible = false
-                    clearInterval(time)
-                    this.info.status = 5
-                }
-            }, 3000)
+            if (this.payType === 'alipay') {
+                this.qrSrc = `${window.gloable.payUrl}${accountApi.aliPayUrl}?${params}`
+            } else if (this.payType === 'wxpay') {
+                this.qrSrc = `${window.gloable.payUrl}${accountApi.wechatQrUrl}?${params}`
+            } else {
+                this.visible = false
+                await this.$confirm('是否已经完成付款?', '交易提醒')
+                console.log('完成')
+                this.info.status = 5
+            }
+            if (this.payType !== 'cash') {
+                time = setInterval(async () => {
+                    const {data} = await accountApi.getPayInfo.r({
+                        outTradeNo: this.payParams.outTradeNo,
+                        shopId: this.payParams.shopId
+                    })
+                    console.log(data)
+                    if (data.status) {
+                        this.visible = false
+                        clearInterval(time)
+                        this.info.status = 5
+                    }
+                }, 3000)
+            }
+
             // document.forms[0].submit();
             // const div = window.document.createElement('div')
             // div.innerHTML = qr
@@ -223,8 +235,7 @@ export default {
             } else {
                 this.$router.push({
                     name: 'finance-manage-item',
-                    query: {
-                    }
+                    query: {}
                 })
             }
         }

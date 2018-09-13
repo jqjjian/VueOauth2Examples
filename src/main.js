@@ -12,7 +12,7 @@ Vue.use(MintUI)
 Vue.prototype.$toast = MintUI.Toast
 Vue.prototype.$message = MintUI.MessageBox
 Vue.prototype.$alert = MintUI.MessageBox.alert
-Vue.prototype.$confirm = MintUI.MessageBox.alert
+Vue.prototype.$confirm = MintUI.MessageBox.confirm
 Vue.prototype.$prompt = MintUI.MessageBox.prompt
 Vue.config.productionTip = false
 Vue.directive('has', {
