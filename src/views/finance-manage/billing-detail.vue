@@ -102,12 +102,13 @@ export default {
                     label: '微信',
                     value: 'wxpay',
                     icon: 'fa-wxpay'
-                },
-                {
-                    label: '现金支付',
-                    value: 'cash',
-                    icon: ''
                 }
+                // ,
+                // {
+                //     label: '现金支付',
+                //     value: 'cash',
+                //     icon: ''
+                // }
             ]
         }
     },
@@ -170,7 +171,7 @@ export default {
         async accountBilling() {
             let time = null
             this.payParams.outTradeNo = this.info.comprehensiveCd // 工单ID
-            this.payParams.totalAmount = 0.01 // this.info.totalFee //金额
+            this.payParams.totalAmount = this.info.totalFee // 金额
             this.payParams.shopId = this.loginUser.shops[0].uuid // 修理厂ID
             let params = ''
             for (let [k, v] of Object.entries(this.payParams)) {
